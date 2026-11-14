@@ -1,0 +1,31 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "wht_iga"
+version = "0.0.1"
+description = "Immersed isogeometric analysis on Kratos Multiphysics (WHTIGA work stream)"
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "numpy>=2.0",
+    "scipy>=1.13",
+    "numba>=0.60",
+]
+
+[project.optional-dependencies]
+cad = ["cadquery-ocp>=7.8"]
+viz = ["pyvista>=0.44", "meshio>=5.3", "h5py>=3.11"]
+solve = ["pypardiso>=0.4.6"]
+test = ["pytest>=8.0", "hypothesis>=6.100"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["wht_iga"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "kratos: requires the Kratos source build at E:\\kratos-build\\install",
+    "slow: long-running verification cases",
+]

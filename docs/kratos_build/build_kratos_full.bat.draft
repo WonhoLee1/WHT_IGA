@@ -1,0 +1,89 @@
+@echo off
+rem DRAFT reconstructed 2026-11-14 from E:\kratos-build\Release\CMakeCache.txt and the
+rem application list found in E:\kratos-build\install\libs. The original
+rem D:\PythonCodeStudy\kratos-deps\build_kratos_full.bat is a 1-byte file.
+rem NOT EXECUTED. Review against WHT_IGA/docs/KRATOS_BUILD.md before use.
+
+call "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Auxiliary\Build\vcvars64.bat"
+set PATH=D:\PythonCodeStudy\kratos-deps\buildenv\Scripts;%PATH%
+
+set CC=cl.exe
+set CXX=cl.exe
+set KRATOS_SOURCE=D:\PythonCodeStudy\kratos-src
+set KRATOS_BUILD=E:\kratos-build
+set KRATOS_BUILD_TYPE=Release
+set BOOST_ROOT=D:\PythonCodeStudy\kratos-deps\boost_1_86_0
+set PYTHON_EXECUTABLE=C:\Users\GOODMAN\miniconda3\envs\vdmc\python.exe
+
+set KRATOS_APP_DIR=applications
+set KRATOS_APPLICATIONS=
+CALL :add_app %KRATOS_APP_DIR%$a
+CALL :add_app %KRATOS_APP_DIR%$a
+CALL :add_app %KRATOS_APP_DIR%$a
+CALL :add_app %KRATOS_APP_DIR%$a
+CALL :add_app %KRATOS_APP_DIR%$a
+CALL :add_app %KRATOS_APP_DIR%$a
+CALL :add_app %KRATOS_APP_DIR%$a
+CALL :add_app %KRATOS_APP_DIR%$a
+CALL :add_app %KRATOS_APP_DIR%$a
+CALL :add_app %KRATOS_APP_DIR%$a
+CALL :add_app %KRATOS_APP_DIR%$a
+CALL :add_app %KRATOS_APP_DIR%$a
+CALL :add_app %KRATOS_APP_DIR%$a
+CALL :add_app %KRATOS_APP_DIR%$a
+CALL :add_app %KRATOS_APP_DIR%$a
+CALL :add_app %KRATOS_APP_DIR%$a
+CALL :add_app %KRATOS_APP_DIR%$a
+CALL :add_app %KRATOS_APP_DIR%$a
+CALL :add_app %KRATOS_APP_DIR%$a
+CALL :add_app %KRATOS_APP_DIR%$a
+CALL :add_app %KRATOS_APP_DIR%$a
+CALL :add_app %KRATOS_APP_DIR%$a
+CALL :add_app %KRATOS_APP_DIR%$a
+CALL :add_app %KRATOS_APP_DIR%$a
+CALL :add_app %KRATOS_APP_DIR%$a
+CALL :add_app %KRATOS_APP_DIR%$a
+CALL :add_app %KRATOS_APP_DIR%$a
+CALL :add_app %KRATOS_APP_DIR%$a
+CALL :add_app %KRATOS_APP_DIR%$a
+CALL :add_app %KRATOS_APP_DIR%$a
+CALL :add_app %KRATOS_APP_DIR%$a
+CALL :add_app %KRATOS_APP_DIR%$a
+CALL :add_app %KRATOS_APP_DIR%$a
+CALL :add_app %KRATOS_APP_DIR%$a
+CALL :add_app %KRATOS_APP_DIR%$a
+CALL :add_app %KRATOS_APP_DIR%$a
+CALL :add_app %KRATOS_APP_DIR%$a
+CALL :add_app %KRATOS_APP_DIR%$a
+CALL :add_app %KRATOS_APP_DIR%$a
+CALL :add_app %KRATOS_APP_DIR%$a
+CALL :add_app %KRATOS_APP_DIR%$a
+CALL :add_app %KRATOS_APP_DIR%$a
+CALL :add_app %KRATOS_APP_DIR%$a
+CALL :add_app %KRATOS_APP_DIR%$a
+CALL :add_app %KRATOS_APP_DIR%$a
+CALL :add_app %KRATOS_APP_DIR%$a
+CALL :add_app %KRATOS_APP_DIR%$a
+
+cmake -G"Ninja" ^
+ -H"%KRATOS_SOURCE%" ^
+ -B"%KRATOS_BUILD%/%KRATOS_BUILD_TYPE%" ^
+ -DCMAKE_BUILD_TYPE=%KRATOS_BUILD_TYPE% ^
+ -DCMAKE_INSTALL_PREFIX=E:/kratos-build/install ^
+ -DCMAKE_POLICY_VERSION_MINIMUM=3.5 ^
+ -DUSE_EIGEN_MKL=ON ^
+ -DUSE_EIGEN_SUITESPARSE=ON ^
+ -DMKL_RT_LIB=D:/PythonCodeStudy/kratos-deps/condadeps/Library/lib/mkl_rt.lib ^
+ -DINCLUDE_MMG=ON ^
+ -DMMG_ROOT=D:/PythonCodeStudy/kratos-deps/mmg-5.8-novtk ^
+ -DUSE_TRIANGLE_NONFREE_TPL=ON ^
+ -DKRATOS_BUILD_TESTING=OFF ^
+ -DKRATOS_GENERATE_PYTHON_STUBS=OFF
+
+rem -j 6 cap: higher parallelism crashed cl.exe on 32 GB RAM.
+cmake --build "%KRATOS_BUILD%/%KRATOS_BUILD_TYPE%" --target install -- -j 6
+goto:eof
+
+:add_app
+set KRATOS_APPLICATIONS=%KRATOS_APPLICATIONS%%1;
+goto:eof
