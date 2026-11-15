@@ -1,0 +1,7 @@
+# 2026-11-15_13:28:06 D:/mamba/envs/whtiga/python.exe docs/phase2/evidence/mkl/mkl_probe.py (bootstrap with MKL preload)
+pardiso ok 2.220446049250313e-16
+D:\mamba\envs\whtiga\Library\bin\libiomp5md.dll
+D:\mamba\envs\whtiga\Library\bin\mkl_core.3.dll
+D:\mamba\envs\whtiga\Library\bin\mkl_rt.3.dll
+D:\mamba\envs\whtiga\vcomp140.dll
+Using Intel MKL version 2026.0.2 build 20260915

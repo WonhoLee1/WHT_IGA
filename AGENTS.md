@@ -8,7 +8,7 @@ Kratos-based immersed IGA solver (WHTIGA work stream). These rules apply to ever
 3. Import Kratos only through `wht_iga.kratos_backend.load_kratos()`; it pins `E:\kratos-build\install` and rejects any other Kratos.
 4. Compare every numerical test against a reference value (analytic solution, reference assembler, Coreform CSV). No "it ran" tests.
 5. Report numbers you actually ran. Record spikes in `docs/spikes/SNN.md`.
-6. Stop and ask the user when the plan (`../research-coreform-IGA/master-plan_v2.md`) disagrees with what Kratos actually does.
+6. Stop and ask the user when the plan (`../research-coreform-IGA/master-plan_v2.1.md`) disagrees with what Kratos actually does.
 
 ## Must not
 1. `conda install` / `conda create`, or `pip install` without uv.
@@ -21,5 +21,5 @@ Kratos-based immersed IGA solver (WHTIGA work stream). These rules apply to ever
 ## Read
 - Environment (single source): [`docs/ENVIRONMENT.md`](docs/ENVIRONMENT.md)
 - Kratos build: [`docs/KRATOS_BUILD.md`](docs/KRATOS_BUILD.md)
-- Plan: [`../research-coreform-IGA/master-plan_v2.md`](../research-coreform-IGA/master-plan_v2.md)
+- Plan: [`../research-coreform-IGA/master-plan_v2.1.md`](../research-coreform-IGA/master-plan_v2.1.md)
 - Current task scope, Kratos pitfalls K1–K14, acceptance criteria: [`../research-coreform-IGA/implementation-request_v1.md`](../research-coreform-IGA/implementation-request_v1.md)

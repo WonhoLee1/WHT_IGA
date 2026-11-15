@@ -20,6 +20,13 @@ def make_nurbs_volume(KM, model_part, box: BoxSpline, first_node_id: int = 1, ad
     add_dofs=True) registered as nodal solution-step variables (Kratos pitfall K13).
 
     Returns (volume_geometry, nodes_vector).
+
+    Lifetime: the volume is registered on ``model_part`` (``AddGeometry``) so the model
+    part owns it. Quadrature-point geometries keep a raw parent pointer; when the last
+    Python reference to the volume was dropped, ``TotalLagrangianElement3D4N`` (whose
+    reference Jacobian re-evaluates the parent at the point) read freed memory and gave
+    intermittent ``DETJ0: -0.5`` / NaN stresses (S19 note, REVIEW_P0_P1 §1 #8; 2026-11-14
+    integration run: 6/12 NaN without the reference, 0/12 with it).
     """
     X = box.control_points()
     nodes = KM.NodesVector()
@@ -33,6 +40,7 @@ def make_nurbs_volume(KM, model_part, box: BoxSpline, first_node_id: int = 1, ad
     p = box.degree
     kk = [KM.Vector(to_kratos(k, p).tolist()) for k in box.knots]
     volume = KM.NurbsVolumeGeometry(nodes, p, p, p, kk[0], kk[1], kk[2])
+    model_part.AddGeometry(volume)
     return volume, nodes
 
 

@@ -1,0 +1,384 @@
+{
+ "V09": {
+  "gate": {
+   "coreform_published": {
+    "f1_hz": 81.8,
+    "random_rms_m": 0.000346,
+    "shock_peak_m": 0.000983
+   },
+   "f1_rel_error_vs_80p8": 0.008737948307140142,
+   "limits": {
+    "f1": 0.01,
+    "random_rms": 0.0229,
+    "shock_peak_document": 0.05,
+    "shock_peak_plan": 0.025
+   },
+   "note": "Primary gate matches Coreform p=1 (25 mm) + Abaqus 20-pt bias=3 sweep (Abaqus Manual |y|^(1/p) bias, LOG interpolation); p=2 converged integral also verified.",
+   "p2_converged": {
+    "f1_rel_error_vs_80p8": -0.006857534913641161,
+    "random_rms_rel_error_converged": -0.007494293087871973,
+    "random_rms_rel_error_sweep20": {
+     "sweep20_bias3_abaqus": 0.026397255842535827,
+     "sweep20_bias3_power": 0.026397255842535827,
+     "sweep20_bias3_sinh_ratio": 0.11263046407715227
+    },
+    "shock_peak_rel_error_vs_abaqus": 0.02020329816498334
+   },
+   "primary_basis": "p1 (4x4x40, 25 mm) + Abaqus 20-pt bias=3 sweep",
+   "random_rms_rel_error_p1_abaqus_sweep20": 0.0032932215865033587,
+   "shock_peak_rel_error_vs_abaqus": 0.004565685882664594
+  },
+  "p1_coreform_like": {
+   "effective_mass_fraction_y": 0.9476994791356608,
+   "frequencies_hz": [
+    81.50602622321692,
+    81.50602622323113,
+    493.2123412124739,
+    493.21234121248244,
+    834.0809600617705,
+    1250.0803205937614,
+    1314.1385662896728,
+    1314.13856628968,
+    2419.93262879228,
+    2419.932628792284,
+    2503.7424630471105,
+    3739.6319897348335
+   ],
+   "gamma_y": [
+    7.001123208212861,
+    -7.924192457620221e-17,
+    3.913511976014429,
+    1.676279368712884e-16,
+    -3.927067004916296e-14,
+    5.880873193567324e-14,
+    2.3090955499232724,
+    4.2209287914255326e-16,
+    1.669058558440911,
+    2.0117812408837463e-16,
+    7.051130512802928e-14,
+    1.3098123758204316
+   ],
+   "n_cells": [
+    4,
+    4,
+    40
+   ],
+   "n_dofs": 3075,
+   "p": 1,
+   "random_rms_m": {
+    "converged": 0.0003297100650239883,
+    "sweep20_bias3_abaqus": 0.00034111969533941113,
+    "sweep20_bias3_power": 0.00034111969533941113,
+    "sweep20_bias3_sinh_ratio": 0.00037000910063937306
+   },
+   "shock_peak_m": 0.0009694058868767715
+  },
+  "p2": {
+   "effective_mass_fraction_y": 0.9413879012692586,
+   "frequencies_hz": [
+    80.24591117897779,
+    80.24591117907646,
+    484.6016369609657,
+    484.6016369609789,
+    813.5442838137785,
+    1250.000002065054,
+    1286.9413219940313,
+    1286.9413219940336,
+    2359.4448933465305,
+    2359.4448933465524,
+    2440.5311398215113,
+    3627.709928929688
+   ],
+   "gamma_y": [
+    7.00080797795184,
+    -6.66150725748423e-16,
+    3.9139522647607965,
+    -3.263199470874239e-16,
+    9.966680258877147e-14,
+    1.618222901336704e-13,
+    2.308265182223877,
+    -7.394445360292109e-17,
+    1.6673246477276296,
+    7.299307677078232e-17,
+    -5.298365912675962e-13,
+    1.3067569982816187
+   ],
+   "n_cells": [
+    4,
+    4,
+    40
+   ],
+   "n_dofs": 4536,
+   "p": 2,
+   "random_rms_m": {
+    "converged": 0.00033745194035012357,
+    "sweep20_bias3_abaqus": 0.00034897506698646223,
+    "sweep20_bias3_power": 0.00034897506698646223,
+    "sweep20_bias3_sinh_ratio": 0.0003782943577862318
+   },
+   "shock_peak_m": 0.000984496182729209
+  }
+ },
+ "V10_MODERATE_DISSIPATION": {
+  "alpha_b": -0.3,
+  "amplitude_decay_ratio": {
+   "measured_endpoint": 0.5899476801268309,
+   "theory": 0.589768190513831
+  },
+  "coreform_published_f1_hz": {
+   "immersed": 24702.1,
+   "native_abaqus": 24681.0
+  },
+  "decay_rate_fit_endpoint": 274.85490821125535,
+  "dt": 2e-06,
+  "energy_decay_ratio": {
+   "measured_modal": 0.3558130735663916,
+   "theory": 0.3555638776506808
+  },
+  "f1_fit_hz": 24602.940933760183,
+  "f1_rel_error": -0.01588236264959264,
+  "f_axial_mode_hz": 25000.010621461846,
+  "increment_ratio_vs_abaqus": 0.998003992015968,
+  "modal": {
+   "decay_fit": 275.01374158234205,
+   "decay_theory": 275.0133941255086,
+   "f_fit_hz": 24602.979007680642,
+   "f_theory_hz": 24602.979323130116,
+   "fit_residual": 5.696900745672138e-06
+  },
+  "n_dofs": 576,
+  "n_steps": 1000,
+  "parity_kratos_vs_python_lumped": {
+   "amplitude_decay_ratio_difference": 5.74207348336131e-13,
+   "f1_lumped_kratos_hz": 24534.29792486577,
+   "normalized_disp_rms": 1.1365435084852069e-14,
+   "phase_rms_rad": 1.0116937884240509e-12
+  },
+  "rebased_gate": {
+   "absolute": {
+    "f1_rel_error<0.02": true,
+    "increment_ratio<=1.10": true,
+    "samples_per_period>=19.9": true
+   },
+   "note": "Abaqus HHT histories unavailable: disp/phase/amplitude/energy criteria evaluated as Kratos-vs-python parity and Bossak-theory agreement (user decision D5)."
+  },
+  "samples_per_period": 20.000000000000004
+ },
+ "V10_TRANSIENT_FIDELITY": {
+  "alpha_b": -0.05,
+  "amplitude_decay_ratio": {
+   "measured_endpoint": 0.9412132000051175,
+   "theory": 0.9410352760345044
+  },
+  "coreform_published_f1_hz": {
+   "immersed": 24766.8,
+   "native_abaqus": 24745.6
+  },
+  "decay_rate_fit_endpoint": 31.55499873565268,
+  "dt": 2e-06,
+  "energy_decay_ratio": {
+   "measured_modal": 0.8878029364908488,
+   "theory": 0.8877926838418062
+  },
+  "f1_fit_hz": 24767.475939015712,
+  "f1_rel_error": -0.009300962439371507,
+  "f_axial_mode_hz": 25000.01062146183,
+  "increment_ratio_vs_abaqus": 0.9970089730807578,
+  "modal": {
+   "decay_fit": 31.653470229474998,
+   "decay_theory": 31.65346473113629,
+   "f_fit_hz": 24767.456874931668,
+   "f_theory_hz": 24767.456878466204,
+   "fit_residual": 1.0429307578042255e-07
+  },
+  "n_dofs": 576,
+  "n_steps": 1000,
+  "parity_kratos_vs_python_lumped": {
+   "amplitude_decay_ratio_difference": 1.347619682512402e-09,
+   "f1_lumped_kratos_hz": 24697.51955404361,
+   "normalized_disp_rms": 1.057845776591713e-14,
+   "phase_rms_rad": 8.446418959805764e-12
+  },
+  "rebased_gate": {
+   "absolute": {
+    "f1_rel_error<0.02": true,
+    "increment_ratio<=1.10": true,
+    "samples_per_period>=19.9": true
+   },
+   "note": "Abaqus HHT histories unavailable: disp/phase/amplitude/energy criteria evaluated as Kratos-vs-python parity and Bossak-theory agreement (user decision D5)."
+  },
+  "samples_per_period": 20.000000000000004
+ },
+ "V11": {
+  "coreform_measured_MPa": 48.503,
+  "gate_met_at_specified_grid_44x44_p1": true,
+  "gate_verdict": "PASS (bimaterial Nitsche + AgFEM at n=44 p=1)",
+  "infinite_plate_analytic": {
+   "interior": -50.0,
+   "sigma_yy_interface": 50.0
+  },
+  "limit": 0.04,
+  "rel_error": {
+   "44": 0.02143911696465417,
+   "88": 0.004948989656916369
+  },
+  "runs": {
+   "44": {
+    "area_ratio": 1.0,
+    "cut_cells": 9,
+    "diagnostics": {
+     "bc_leak_max": 0.0,
+     "gamma": 4165680.4733727924,
+     "n_extended_1": 6.0,
+     "n_extended_2": 4.0,
+     "n_master_1": 56.0,
+     "n_master_2": 4024.0,
+     "n_reduced_free": 7972.0,
+     "theta": 0.2
+    },
+    "interior_sxx_syy_at_x0.3": [
+     -49.81923162414701,
+     -49.79980148543176
+    ],
+    "n": 44,
+    "n_fallback": 0,
+    "p": 1,
+    "syy_at_x3_vs_analytic_5.556": 6.019452474644819,
+    "syy_interface_bimaterial": 51.07195584823271
+   },
+   "88": {
+    "area_ratio": 0.9999999999999999,
+    "cut_cells": 17,
+    "diagnostics": {
+     "bc_leak_max": 0.0,
+     "gamma": 8331360.946745585,
+     "n_extended_1": 10.0,
+     "n_extended_2": 8.0,
+     "n_master_1": 166.0,
+     "n_master_2": 15730.0,
+     "n_reduced_free": 31428.0,
+     "theta": 0.2
+    },
+    "interior_sxx_syy_at_x0.3": [
+     -49.61446831747408,
+     -49.61955546959763
+    ],
+    "n": 88,
+    "n_fallback": 0,
+    "p": 1,
+    "syy_at_x3_vs_analytic_5.556": 5.98307902578656,
+    "syy_interface_bimaterial": 50.24744948284582
+   }
+  }
+ },
+ "V12_T2": {
+  "T_B_K": 927.0076062462444,
+  "coreform_measured_K": 927.00323,
+  "limit": 0.01,
+  "newton_iterations": 4,
+  "rel_error_vs_accepted": 8.20522787958744e-06,
+  "scalar_root_K": 927.0076062462459
+ },
+ "V12_T3_p1": {
+  "T_C_at_x0.08_t32": {
+   "BDF2_dt0.025": 37.44812436628811,
+   "BDF2_dt0.05": 37.44800508896345,
+   "BE_dt0.25": 37.3084108281009,
+   "BE_dt0.5": 37.1693402680938,
+   "CN_dt0.05": 37.448124397624895
+  },
+  "accepted_nafems": 36.6,
+  "coreform_measured_C": 37.25446,
+  "exact_pde_modal_series": 36.603107031113005,
+  "limit": 0.02,
+  "meets_limit_time_converged": false,
+  "n_cells_x": 10,
+  "note": "fixed dt instead of the adaptive 0.1-0.5 s of the study; p=1 10-cell time-converged error is spatial, cleared at n>=20",
+  "rel_error_vs_accepted": {
+   "BDF2_dt0.025": 0.023172796893117686,
+   "BDF2_dt0.05": 0.023169537949820906,
+   "BE_dt0.25": 0.019355487106581748,
+   "BE_dt0.5": 0.015555745029885104,
+   "CN_dt0.05": 0.023172797749314133
+  }
+ },
+ "V12_T3_p1_n20": {
+  "T_C_at_x0.08_t32": {
+   "BDF2_dt0.025": 36.7969122052301,
+   "BDF2_dt0.05": 36.79679268967287,
+   "BE_dt0.25": 36.668880644007785,
+   "BE_dt0.5": 36.5413884494166,
+   "CN_dt0.05": 36.79691223400549
+  },
+  "accepted_nafems": 36.6,
+  "coreform_measured_C": 37.25446,
+  "exact_pde_modal_series": 36.603107031113005,
+  "limit": 0.02,
+  "meets_limit_time_converged": true,
+  "n_cells_x": 20,
+  "note": "fixed dt instead of the adaptive 0.1-0.5 s of the study; p=1 10-cell time-converged error is spatial, cleared at n>=20",
+  "rel_error_vs_accepted": {
+   "BDF2_dt0.025": 0.00538011489699719,
+   "BDF2_dt0.05": 0.005376849444613807,
+   "BE_dt0.25": 0.001881984808955739,
+   "BE_dt0.5": -0.0016014084858853028,
+   "CN_dt0.05": 0.005380115683210063
+  }
+ },
+ "V12_T3_p1_n40": {
+  "T_C_at_x0.08_t32": {
+   "BDF2_dt0.025": 36.65044608007014,
+   "BDF2_dt0.05": 36.65032665733072,
+   "BE_dt0.25": 36.525304753746596,
+   "BE_dt0.5": 36.40066914662095,
+   "CN_dt0.05": 36.650446108192824
+  },
+  "accepted_nafems": 36.6,
+  "coreform_measured_C": 37.25446,
+  "exact_pde_modal_series": 36.603107031113005,
+  "limit": 0.02,
+  "meets_limit_time_converged": true,
+  "n_cells_x": 40,
+  "note": "fixed dt instead of the adaptive 0.1-0.5 s of the study; p=1 10-cell time-converged error is spatial, cleared at n>=20",
+  "rel_error_vs_accepted": {
+   "BDF2_dt0.025": 0.0013783081986376011,
+   "BDF2_dt0.05": 0.0013750452822600678,
+   "BE_dt0.25": -0.0020408537227706303,
+   "BE_dt0.5": -0.005446198179755557,
+   "CN_dt0.05": 0.0013783089670169613
+  }
+ },
+ "V12_T3_p2": {
+  "T_C_at_x0.08_t32": {
+   "BDF2_dt0.025": 36.64812541968524,
+   "BDF2_dt0.05": 36.648006199554914,
+   "BE_dt0.25": 36.52257050633499,
+   "BE_dt0.5": 36.39752102366854,
+   "CN_dt0.05": 36.648125447832456
+  },
+  "accepted_nafems": 36.6,
+  "coreform_measured_C": 37.25446,
+  "exact_pde_modal_series": 36.603107031113005,
+  "limit": 0.02,
+  "meets_limit_time_converged": true,
+  "n_cells_x": 10,
+  "note": "fixed dt instead of the adaptive 0.1-0.5 s of the study; p=1 10-cell time-converged error is spatial, cleared at n>=20",
+  "rel_error_vs_accepted": {
+   "BDF2_dt0.025": 0.001314902177192323,
+   "BDF2_dt0.05": 0.0013116447965821898,
+   "BE_dt0.25": -0.0021155599362023825,
+   "BE_dt0.5": -0.0055322124680727836,
+   "CN_dt0.05": 0.0013149029462418138
+  }
+ },
+ "V12_T4": {
+  "T_E_C": {
+   "p1": 18.092722277659583,
+   "p2": 18.32534079826351
+  },
+  "accepted_nafems": 18.3,
+  "coreform_measured_C": 18.08995,
+  "limit": 0.03,
+  "rel_error_vs_accepted_p1": -0.011326651494011908
+ }
+}

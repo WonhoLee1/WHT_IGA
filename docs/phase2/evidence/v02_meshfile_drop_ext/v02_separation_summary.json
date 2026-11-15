@@ -1,0 +1,79 @@
+{
+ "rows": [
+  {
+   "h": 6.0,
+   "e_u": 0.020547053887272636,
+   "e_s": 0.148359773891976,
+   "peak_A": 3.218929710198271e-06,
+   "err_A_Roark": 0.25444592699518903,
+   "err_A_Abaqus": 0.25967058294111767,
+   "n_cut": 226,
+   "n_fallback": 0,
+   "crown_fallback": 0
+  },
+  {
+   "h": 3.0,
+   "e_u": 0.00040913143898585745,
+   "e_s": 0.035415578644028715,
+   "peak_A": 4.6870223257348356e-06,
+   "err_A_Roark": 0.08558710497622139,
+   "err_A_Abaqus": 0.0779795828283263,
+   "n_cut": 900,
+   "n_fallback": 0,
+   "crown_fallback": 0
+  },
+  {
+   "h": 1.5,
+   "e_u": 3.570438953557998e-05,
+   "e_s": 0.008957840219481632,
+   "peak_A": 4.4223474222591195e-06,
+   "err_A_Roark": 0.024284290042645,
+   "err_A_Abaqus": 0.017106362646011914,
+   "n_cut": 3576,
+   "n_fallback": 0,
+   "crown_fallback": 0
+  },
+  {
+   "h": 0.75,
+   "e_u": 2.7709814317261676e-06,
+   "e_s": 0.0017030243552415112,
+   "peak_A": 4.360597163571401e-06,
+   "err_A_Roark": 0.009981971875252175,
+   "err_A_Abaqus": 0.002904271537070624,
+   "n_cut": 14228,
+   "n_fallback": 0,
+   "crown_fallback": 0
+  },
+  {
+   "h": 0.375,
+   "e_u": 0.0,
+   "e_s": 0.0,
+   "peak_A": 4.345989333538019e-06,
+   "err_A_Roark": 0.006598571751712614,
+   "err_A_Abaqus": 0.0004554185670176826,
+   "n_cut": 56804,
+   "n_fallback": 0,
+   "crown_fallback": 0
+  }
+ ],
+ "summary": {
+  "n_levels": 5,
+  "finest_reference_h": 0.375,
+  "gate_criteria": {
+   "peak_A_err_max": 0.01,
+   "e_s_rate_min": 1.8
+  },
+  "e_u": {
+   "rate_all": 4.208713170391851,
+   "rate_last3": 3.603011774616648
+  },
+  "e_s": {
+   "rate_all": 2.1317732565748586,
+   "rate_last3": 2.1891065708588475
+  },
+  "finest_peak_A_err_Roark": 0.006598571751712614,
+  "finest_peak_A_err_Abaqus": 0.0004554185670176826,
+  "integrator_note": "probes.py composite Gauss (qoi.py trapezoidal left untouched per #8 scope)",
+  "caveat": "주의: rate>2는 관측된 자기수렴 기울기이며 초수렴·이론차수 보장을 주장하지 않음. 기준해는 최세 IGA 해(h=0.375), Roark/Abaqus는 peak 참조용."
+ }
+}

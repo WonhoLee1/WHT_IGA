@@ -1,0 +1,215 @@
+{
+  "benchmarks": {
+    "E01_ips_thin_plate": {
+      "active_dofs": 16956,
+      "boundary_peak_stress": 3.8038714122491837e-06,
+      "n_cells": [
+        60,
+        30,
+        1
+      ],
+      "rel_err_bnd_vs_roark": 0.020872067912611984,
+      "rel_err_crown_vs_roark": 0.022238640966831737,
+      "roark_ref": 3.7261e-06,
+      "sigma_xx_crown": 3.808963400106512e-06,
+      "thin_feature_pass0": {
+        "detected": true,
+        "issues": [
+          "THIN_FEATURE: minimum solid thickness 1.00 cells <= 1.50"
+        ],
+        "min_feature_cells": 1.0
+      },
+      "thin_feature_pass1": {
+        "detected": false,
+        "min_feature_cells": 2.0
+      }
+    },
+    "E02_adaptive_THB": {
+      "far_field_l2_rel_diff_L0_vs_L2": 0.00043881151062043135,
+      "far_field_l2_rel_diff_L1_vs_L2": 1.6810309233668037e-05,
+      "levels": {
+        "0": {
+          "active_dofs": 1452,
+          "rel_err_vs_roark": 0.12379980585129705,
+          "sigma_crown": 4.187390456582518e-06,
+          "sigma_gradient_drop_1_to_1p5": 2.4350314288126477e-06,
+          "uniform_dofs": 1620
+        },
+        "1": {
+          "active_dofs": 2840,
+          "rel_err_vs_roark": 0.036506955438904434,
+          "sigma_crown": 3.862128566660902e-06,
+          "sigma_gradient_drop_1_to_1p5": 2.1053398369018377e-06,
+          "uniform_dofs": 7344
+        },
+        "2": {
+          "active_dofs": 6031,
+          "rel_err_vs_roark": 0.014890980249942728,
+          "sigma_crown": 3.781585281509312e-06,
+          "sigma_gradient_drop_1_to_1p5": 2.0241894991413878e-06,
+          "uniform_dofs": 40392
+        }
+      },
+      "roark_ref": 3.7261e-06
+    },
+    "V02_local_THB_L3": {
+      "active_dofs": 20566,
+      "base_cells": [
+        33,
+        7,
+        1
+      ],
+      "boundary_peak_stress": 4.350649934820303e-06,
+      "elapsed_s": 15.522565699997358,
+      "finest_h_xy": [
+        0.3787878787878788,
+        0.35714285714285715
+      ],
+      "leaves_per_level": {
+        "0": 183,
+        "1": 208,
+        "2": 752,
+        "3": 5248
+      },
+      "n_cut_cells": 440,
+      "n_leaves": 6391,
+      "n_slave_extended": 190,
+      "ref_c3d20": 4.34796947956784e-06,
+      "ref_roark": 4.3175e-06,
+      "rel_err_bnd_vs_c3d20": 0.0006164843762262907,
+      "rel_err_bnd_vs_roark": 0.007678039333017475,
+      "rel_err_pt_vs_c3d20": 0.0010421831350539952,
+      "rel_err_pt_vs_roark": 0.008106742334956738,
+      "sigma_xx_crown_pt": 4.3525008600311755e-06,
+      "symmetry": "quarter [0,100]x[0,20]x[-0.5,0.5] (full step [-100,100]x[-20,20]x[-0.5,0.5])",
+      "thb_levels": 3,
+      "uniform_fine_dofs_quarter": 462840
+    },
+    "V03_moment": {
+      "curved_cantilever": {
+        "gate_tol": 0.05,
+        "kratos_u_r_tip": -2.6650569048944446,
+        "kratos_u_x_tip": -1.5198803768216522,
+        "mesh_cells": [
+          4,
+          32,
+          2
+        ],
+        "prompt_ref_note": "Prompt cited u_r_ref=-0.0211622, which is inconsistent with M=100, E=1e7, R_i=4.12, R_o=4.32, b=0.1; exact Timoshenko-Goodier analytical value for these parameters is -2.67146011.",
+        "rel_error": 0.002140108927384863,
+        "timoshenko_goodier_u_r_exact": -2.670772649284193
+      },
+      "straight_cantilever_v03_json": {
+        "kratos_u_y_tip": -1.500374204689463e-06,
+        "rel_error": 0.0002494697929755148,
+        "v03_json_eb_ref": -1.4999999999999998e-06
+      }
+    },
+    "V04_bimetallic": {
+      "hybrid_hex8_cu_iga_w_tip_uy_mm": -0.002202782846963654,
+      "prompt_ref_note": "Prompt cited u_z=-5.50763e-5 m, which does not appear in v04.json; measured against actual v04.json MMTS values (-0.0021917808 mm EB, -0.0022036041 mm p2 merge).",
+      "pure_iga_2part_tie_tip_uy_mm": -0.002203436520040321,
+      "pure_iga_c0_merge_tip_uy_mm": -0.0022034365200516394,
+      "rel_diff_hybrid_vs_pure_iga": 0.00029666072551757524,
+      "rel_diff_merge_vs_tie": 5.136614200623108e-12,
+      "rel_err_vs_eb": 0.0053179122683966,
+      "v04_json_eb_ref_mm": -0.002191780821917808,
+      "v04_json_p2_merge_mm": -0.0022036041041246777
+    },
+    "V05_multiplanar": {
+      "euler_bernoulli_ref": -4e-09,
+      "monolithic_tip_uy": -3.9488181143624026e-09,
+      "prompt_ref_note": "Prompt cited 2.66065e-2 m, which does not appear in v05.json; measured against exact Euler-Bernoulli (-4.0e-9) and monolithic CAD equivalence (<= 3.3e-6).",
+      "rel_diff_7box_vs_mono": 0.0,
+      "rel_err_vs_eb": 0.012795471409399422,
+      "seven_box_tip_uy": -3.9488181143624026e-09
+    },
+    "commercial_solver_log_and_ram_switch": {
+      "all_6_stages_present": true,
+      "constrained_ram_auto_decision": {
+        "avail_bytes": 107374,
+        "est_amgcl_bytes": 3051188,
+        "est_pardiso_bytes": 49523402,
+        "kratos_solver": "amgcl_cg",
+        "requested_solver": "auto",
+        "selected_solver": "amgcl",
+        "switched": true,
+        "switched_reason": "[HWT-IGA SOLVER][AUTO-SOLVER] Switched direct->iterative: est_pardiso=0.046 GB > 70% of avail RAM (0.000 GB, budget=0.000 GB). Selected 'amgcl' (est_amgcl=0.003 GB)."
+      },
+      "default_auto_decision": {
+        "avail_bytes": 18849230848,
+        "est_amgcl_bytes": 3051188,
+        "est_pardiso_bytes": 49523402,
+        "kratos_solver": "pardiso_ldlt",
+        "requested_solver": "auto",
+        "selected_solver": "pardiso",
+        "switched": false,
+        "switched_reason": null
+      },
+      "out_drop_active_dofs": 342,
+      "out_ghost_active_dofs": 360,
+      "total_dofs": 360
+    },
+    "dependent_3_instance_assembly": {
+      "beam_i2": {
+        "rel_diff_u": 5.519283338818566e-12,
+        "rel_diff_voigt_stress": 5.506614165289657e-12
+      },
+      "beam_i3": {
+        "rel_diff_u": 2.2256108789055094e-12,
+        "rel_diff_voigt_stress": 2.2489963083707375e-12
+      }
+    },
+    "mesh_5format_roundtrip": {
+      ".bdf": {
+        "elem_sets_ok": true,
+        "face_sets_ok": true,
+        "max_node_err": 0.0,
+        "n_blocks": 2,
+        "node_sets_ok": true,
+        "parts_ok": true
+      },
+      ".fem": {
+        "elem_sets_ok": true,
+        "face_sets_ok": true,
+        "max_node_err": 0.0,
+        "n_blocks": 2,
+        "node_sets_ok": true,
+        "parts_ok": true
+      },
+      ".inp": {
+        "elem_sets_ok": true,
+        "face_sets_ok": true,
+        "max_node_err": 0.0,
+        "n_blocks": 2,
+        "node_sets_ok": true,
+        "parts_ok": true
+      },
+      ".k": {
+        "elem_sets_ok": true,
+        "face_sets_ok": true,
+        "max_node_err": 0.0,
+        "n_blocks": 2,
+        "node_sets_ok": true,
+        "parts_ok": true
+      },
+      ".msh": {
+        "elem_sets_ok": true,
+        "face_sets_ok": true,
+        "max_node_err": 0.0,
+        "n_blocks": 2,
+        "node_sets_ok": true,
+        "parts_ok": true
+      },
+      ".rad": {
+        "elem_sets_ok": true,
+        "face_sets_ok": true,
+        "max_node_err": 0.0,
+        "n_blocks": 2,
+        "node_sets_ok": true,
+        "parts_ok": true
+      }
+    }
+  },
+  "suite": "Phase 3 Gate G3 10-Criteria Benchmark Suite"
+}

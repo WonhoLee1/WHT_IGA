@@ -1,0 +1,77 @@
+{
+  "acceptance": {
+    "gate": "Phase 1/3 gate G1/G3: peak max-principal stress sigma_max at Point A converges toward Roark Kt (4.3175e-6) and C3D20 reference (4.34796947956784e-6); finest p=2/p=3 peak error <= 1% vs Roark and <= 0.5% vs reference; local THB L=3 achieves <= 0.5% vs reference with ~9x fewer DOFs than uniform h=0.375. Must be re-passed with extension enabled per G2.",
+    "peak_rel_err_vs_reference_tol": 0.005,
+    "peak_rel_err_vs_roark_tol": 0.01
+  },
+  "boundary_conditions": {
+    "left_face": "x = 0 pinned (all translations fixed)",
+    "other_faces_and_hole": "traction-free"
+  },
+  "geometry": {
+    "coupon_length_L": 200,
+    "coupon_width_D": 40,
+    "hole_radius_r": 10,
+    "line_probe": "transverse ligament from hole edge to free edge: x = L/2 = 100, y in [10, 20], z = t/2 = 0.5",
+    "point_A": [100.0, 10.0, 0.5],
+    "thickness_t": 1
+  },
+  "id": "V02",
+  "loads": {
+    "end_pressure_P": 1e-06,
+    "target": "uniaxial tension on right face (x = L)"
+  },
+  "materials": {
+    "E": 1,
+    "nu": 0,
+    "rho": 0,
+    "type": "homogeneous isotropic linear elastic"
+  },
+  "mesh_sweep": {
+    "discretization": "immersed trimmed U-splines",
+    "local_thb_refinement": {
+      "balancing": "2:1 balancing around hole cylindrical face; default offset p*h/2^L",
+      "base_h": 3.0,
+      "degree_p": 2,
+      "finest_h_per_level": [1.5, 0.75, 0.375],
+      "levels": [1, 2, 3]
+    },
+    "uniform_sweep": {
+      "background_element_size_h": "6/2^k, k = 0..4 (6.0, 3.0, 1.5, 0.75, 0.375)",
+      "degrees": [1, 2, 3]
+    }
+  },
+  "provenance": {
+    "reference_doc": "research-coreform-IGA/user-guide/verification-manual/problems/solid_mechanics/linear_elastic_stress/roark-17p1-7a/roark-17p1-7a.md",
+    "reference_doc_sections": "§2 Geometry (Table 1), §3 Material (Table 2), §4 Loading & BC (Table 3), §5 Mesh & discretization, §6 Reference & accepted solutions (Tables 4-5), §7.1 QoIs, §7.6 Local refinement, §8 Performance",
+    "reference_values_csv": "research-coreform-IGA/user-guide/generated-downloads/verification-manual/problems/solid_mechanics/linear_elastic_stress/roark-17p1-7a/: roark-17p1-7a-accepted-peak.csv, roark-17p1-7a-qoi.csv, roark-17p1-7a-refinement.csv, roark-17p1-7a-reference-performance.csv; HTML §8 also links roark-17p1-7a-solve-performance.csv and roark-17p1-7a-trim-performance.csv"
+  },
+  "reference_values": {
+    "accepted_roark_sigma_max": 4.3175e-06,
+    "finest_local_thb_L3_p2": {
+      "dofs": 57300,
+      "peak_rel_err_vs_reference": 0.0010543172236534442,
+      "peak_rel_err_vs_roark": 0.008118962056298435,
+      "stress_profile_rel_l2": 0.004302756569193314,
+      "uniform_dofs": 516858
+    },
+    "finest_uniform_p2_h0p375": {
+      "peak_rel_err_vs_reference": 0.001196912757019034,
+      "peak_rel_err_vs_roark": 0.008262563915475338,
+      "peak_stress": 4.3531736197050645e-06,
+      "stress_profile_rel_l2": 0.0009841012620145837
+    },
+    "nominal_stress_sigma_nom": 2e-06,
+    "reference_c3d20_mesh": {
+      "dofs": 3060672,
+      "elements": 202452,
+      "h": 0.375,
+      "nodes": 1020224
+    },
+    "reference_c3d20_sigma_max": 4.34796947956784e-06,
+    "roark_kt": 2.15875,
+    "roark_kt_formula": "Kt = sum_{i=0}^3 C_i * (2*r/D)^i with C = [3.00, -3.13, 3.66, -1.53]; 2*r/D = 0.5 -> Kt = 2.15875"
+  },
+  "status": "complete",
+  "title": "Stress concentration in a thin plate with hole (Roark 17.1-7a)"
+}

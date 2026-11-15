@@ -16,9 +16,54 @@ from dataclasses import dataclass, field
 
 import numpy as np
 
-from wht_iga.grid.bspline import basis_1d
+from numba import njit
+
+from wht_iga.grid.bspline import basis_1d, ders_basis_funs, find_span
 from wht_iga.grid.greville import greville
 from wht_iga.grid.knots import n_control_points, uniform_clamped
+
+
+@njit(cache=True)
+def _eval_box_field_njit(
+    kx: np.ndarray,
+    ky: np.ndarray,
+    kz: np.ndarray,
+    p: int,
+    nu: int,
+    nv: int,
+    nw: int,
+    coeffs: np.ndarray,
+    points: np.ndarray,
+) -> np.ndarray:
+    """Batch-evaluate a trivariate B-spline vector field at ``points`` (M, 3)."""
+    m = points.shape[0]
+    ncomp = coeffs.shape[1]
+    out = np.zeros((m, ncomp))
+    for n in range(m):
+        px = points[n, 0]
+        py = points[n, 1]
+        pz = points[n, 2]
+        sx = find_span(nu, p, px, kx)
+        sy = find_span(nv, p, py, ky)
+        sz = find_span(nw, p, pz, kz)
+        Nx = ders_basis_funs(sx, px, p, 0, kx)[0]
+        Ny = ders_basis_funs(sy, py, p, 0, ky)[0]
+        Nz = ders_basis_funs(sz, pz, p, 0, kz)[0]
+        ix0 = sx - p
+        iy0 = sy - p
+        iz0 = sz - p
+        for c in range(p + 1):
+            wz = Nz[c]
+            zbase = (iz0 + c) * nv
+            for b in range(p + 1):
+                wyz = Ny[b] * wz
+                yzbase = nu * (iy0 + b + zbase)
+                for a in range(p + 1):
+                    w = Nx[a] * wyz
+                    I = ix0 + a + yzbase
+                    for d in range(ncomp):
+                        out[n, d] += w * coeffs[I, d]
+    return out
 
 
 @dataclass
@@ -85,21 +130,15 @@ class BoxSpline:
 
     def evaluate(self, coeffs: np.ndarray, points: np.ndarray) -> np.ndarray:
         """Evaluate a vector field (n_ctrl, 3 coefficients) at physical points (n, 3)."""
-        p = self.degree
-        out = np.zeros((len(points), coeffs.shape[1]))
-        nu, nv, _ = self.n_cp
-        for n, x in enumerate(points):
-            spans, vals = [], []
-            for d in range(3):
-                s, ders = basis_1d(self.knots[d], p, x[d], 0)
-                spans.append(s - p)
-                vals.append(ders[0])
-            for c in range(p + 1):
-                for b in range(p + 1):
-                    for a in range(p + 1):
-                        I = (spans[0] + a) + nu * ((spans[1] + b) + nv * (spans[2] + c))
-                        out[n] += vals[0][a] * vals[1][b] * vals[2][c] * coeffs[I]
-        return out
+        pts = np.ascontiguousarray(points, dtype=np.float64)
+        cf = np.ascontiguousarray(coeffs, dtype=np.float64)
+        nu, nv, nw = (int(v) for v in self.n_cp)
+        return _eval_box_field_njit(
+            np.ascontiguousarray(self.knots[0], dtype=np.float64),
+            np.ascontiguousarray(self.knots[1], dtype=np.float64),
+            np.ascontiguousarray(self.knots[2], dtype=np.float64),
+            int(self.degree), nu, nv, nw, cf, pts,
+        )
 
     def boundary_control_points(self, axis: int, side: int) -> np.ndarray:
         """Indices of control points on face ``axis`` = lo (side 0) or hi (side 1)."""

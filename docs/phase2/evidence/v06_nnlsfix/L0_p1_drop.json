@@ -1,0 +1,57 @@
+{
+ "n_cells": [
+  10,
+  10,
+  10
+ ],
+ "h": 0.1,
+ "degree": 1,
+ "q": 2,
+ "n_geo": 24,
+ "u": 0.010128290951602477,
+ "ur": 0.009895849468466562,
+ "srr": 0.24074431220664402,
+ "stt": 0.016191185546262272,
+ "beta": 3000000.0,
+ "n_cut": 352,
+ "n_fallback": 2,
+ "dofs": 3993,
+ "total_force": [
+  6.363994123863839e-07,
+  6.363994123863843e-07,
+  6.366264787664177e-07
+ ],
+ "runtime_s": 11.364676400000462,
+ "ext_theta": 0.2,
+ "tie_info": {
+  "n_ties": 414,
+  "n_slave": 138,
+  "n_master": 509,
+  "theta": 0.2
+ },
+ "out_mode": "drop",
+ "n_inactive_ctrl": 684,
+ "sym_bc": "penalty",
+ "n_qp": 9304,
+ "rss_peak_gb_sampled": 0.044254302978515625,
+ "peak_wset_gb": 0.21941375732421875,
+ "tol": {
+  "u": 0.008,
+  "ur": 0.008,
+  "srr": 0.4,
+  "stt": 0.025
+ },
+ "pass": {
+  "u": false,
+  "ur": false,
+  "srr": true,
+  "stt": true
+ },
+ "tol_pure_q1_disp": 0.011,
+ "pass_pure_q1": {
+  "u": true,
+  "ur": true,
+  "srr": true,
+  "stt": true
+ }
+}

@@ -1,0 +1,93 @@
+{
+  "acceptance": {
+    "face_probe_U_max_abs_tol": 1.51e-05,
+    "interior_S_max_abs_tol": 5.46e-05,
+    "note": "Coreform Table 4 maximum observed absolute errors across all 6 (p, C) variants: Face U <= 1.51e-5, ODB Surface U <= 1.42e-5, Interior S <= 5.46e-5 (all 6 stress components including zero shear). Must also be re-passed with extension enabled per G2.",
+    "odb_surface_U_max_abs_tol": 1.42e-05
+  },
+  "boundary_conditions": {
+    "note": "Six standard uniformly distributed displacement BCs prescribing one normal component on each face; remaining components unconstrained except along intersecting edges/corners.",
+    "x_max": {
+      "component": "U1",
+      "value": 1
+    },
+    "x_min": {
+      "component": "U1",
+      "value": 0
+    },
+    "y_max": {
+      "component": "U2",
+      "value": 2
+    },
+    "y_min": {
+      "component": "U2",
+      "value": 0
+    },
+    "z_max": {
+      "component": "U3",
+      "value": 3
+    },
+    "z_min": {
+      "component": "U3",
+      "value": 0
+    }
+  },
+  "geometry": {
+    "domain": "x in [0, 1], y in [0, 1], z in [0, 1]",
+    "immersed_frame_center": [0.5, 0.5, 0.5],
+    "length_x": 1,
+    "length_y": 1,
+    "length_z": 1
+  },
+  "id": "V01",
+  "loads": {
+    "note": "No force or traction is applied."
+  },
+  "materials": {
+    "E": 1,
+    "abaqus_step": "Static, General with NLGEOM=OFF (small-displacement, infinitesimal strain)",
+    "lame_constants": "lambda = 0, mu = 0.5",
+    "nu": 0,
+    "type": "homogeneous isotropic linear elastic"
+  },
+  "mesh_sweep": {
+    "background_element_size_h": 0.6,
+    "discretization": "immersed trimmed U-splines, edge-centered rectilinear background grid",
+    "frame_origin": [0.5, 0.5, 0.5],
+    "fully_interior_element": "[0.2, 0.8] x [0.2, 0.8] x [0.2, 0.8]",
+    "grid_planes_per_axis": [-0.4, 0.2, 0.8, 1.4],
+    "probes": {
+      "face_probes": "21 x 21 (441 points) per face, including edges, center, and projected grid planes at 0.2 and 0.8",
+      "interior_probes": "3 x 3 x 3 (27 points) at {0.1, 0.5, 0.9}^3, all 6 stress components",
+      "odb_surface_sets": "SFM3D3 surface element set + paired node set on each trimmed face"
+    },
+    "variants": [
+      {"basis_class": "maximally_smooth", "continuity": "C0", "p": 1},
+      {"basis_class": "reduced_continuity", "continuity": "C0", "p": 2},
+      {"basis_class": "maximally_smooth", "continuity": "C1", "p": 2},
+      {"basis_class": "reduced_continuity", "continuity": "C0", "p": 3},
+      {"basis_class": "reduced_continuity", "continuity": "C1", "p": 3},
+      {"basis_class": "maximally_smooth", "continuity": "C2", "p": 3}
+    ]
+  },
+  "provenance": {
+    "reference_doc": "research-coreform-IGA/user-guide/verification-manual/problems/solid_mechanics/linear_elastic_stress/prescribed-displacement-cube/prescribed-displacement-cube.md",
+    "reference_doc_sections": "§2 Geometry, §3 Material (Table 1), §4 Loading & BC (Table 2), §5 Mesh & discretization (Table 3), §6 Reference & accepted solutions, §7 Results (Table 4)",
+    "reference_values_csv": "none (Table 4 values recorded directly from prescribed-displacement-cube.md)"
+  },
+  "reference_values": {
+    "coreform_table_4_max_abs_errors": {
+      "p1_C0": {"face_U": 6.45e-06, "interior_S": 8.11e-06, "odb_surface_U": 6.85e-06, "probe_location": 0},
+      "p2_C0": {"face_U": 1.32e-05, "interior_S": 3.22e-05, "odb_surface_U": 1.32e-05, "probe_location": 0},
+      "p2_C1": {"face_U": 9.89e-06, "interior_S": 2.33e-05, "odb_surface_U": 7.05e-06, "probe_location": 0},
+      "p3_C0": {"face_U": 1.51e-05, "interior_S": 5.46e-05, "odb_surface_U": 1.42e-05, "probe_location": 0},
+      "p3_C1": {"face_U": 7.26e-06, "interior_S": 1.18e-05, "odb_surface_U": 7.94e-06, "probe_location": 0},
+      "p3_C2": {"face_U": 9.67e-06, "interior_S": 2.78e-05, "odb_surface_U": 3.93e-06, "probe_location": 0}
+    },
+    "exact_displacement": "u(x, y, z) = (x, 2*y, 3*z)",
+    "exact_strain": "diag(1, 2, 3)",
+    "exact_stress": "diag(1, 2, 3)"
+  },
+  "status": "complete",
+  "title": "Prescribed displacement of a unit cube"
+}

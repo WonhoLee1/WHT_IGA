@@ -65,11 +65,51 @@ def configure_paths() -> None:
         while entry in sys.path:
             sys.path.remove(entry)
         sys.path.insert(0, entry)
+    dirs = [str(d) for d in dll_dirs() if d.is_dir()]
     if hasattr(os, "add_dll_directory"):
-        for d in dll_dirs():
-            if d.is_dir():
-                _dll_handles.append(os.add_dll_directory(str(d)))
+        for d in dirs:
+            _dll_handles.append(os.add_dll_directory(d))
+    # Kratos delay-loads MKL (Pardiso) with the legacy search order, which
+    # reads PATH, not add_dll_directory. Whatever mkl_rt PATH finds first wins:
+    # - a shell without the env dirs on PATH: 0xC06D007F on the first Pardiso
+    #   call (delay-load procedure not found), silent exit;
+    # - condadeps first: Kratos gets MKL 2026.1 (libomp) while pypardiso globs
+    #   sys.prefix and loads MKL 2026.2 (libiomp5md) -> "OMP: Error #15", abort.
+    # So the env MKL dir leads: one mkl_rt, one OpenMP runtime per process,
+    # shared by Kratos and pypardiso (2026-11-15).
+    lead = [mkl_dir()] if mkl_dir() else []
+    order = lead + [d for d in dirs if d not in lead]
+    rest = [p for p in os.environ.get("PATH", "").split(os.pathsep) if p and p not in order]
+    os.environ["PATH"] = os.pathsep.join(order + rest)
+    if lead and os.name == "nt":
+        # PATH alone is not enough: Kratos' import resolves mkl_rt.3.dll through
+        # the add_dll_directory dirs (condadeps) first. Preloading by full path
+        # makes Windows reuse this module for Kratos' by-name import, and
+        # PYPARDISO_MKL_RT points pypardiso at the same file.
+        import ctypes
+
+        rt = os.path.join(lead[0], "mkl_rt.3.dll")
+        _dll_handles.append(ctypes.CDLL(rt))
+        prev = os.environ.get("PYPARDISO_MKL_RT")
+        if prev and os.path.normcase(os.path.abspath(prev)) != os.path.normcase(rt):
+            import warnings
+
+            warnings.warn(f"PYPARDISO_MKL_RT={prev!r} differs from the MKL Kratos uses ({rt}); "
+                          "overriding it — two MKL copies in one process abort with OMP Error #15. "
+                          "Set WHT_IGA_MKL_DIR to choose the MKL for both.", RuntimeWarning)
+        os.environ["PYPARDISO_MKL_RT"] = rt
     _configured = True
+
+
+def mkl_dir() -> str | None:
+    """Directory whose mkl_rt.3.dll Kratos and pypardiso both load.
+
+    ``WHT_IGA_MKL_DIR`` overrides; default ``<sys.prefix>/Library/bin`` (the
+    whtiga env MKL, the one pypardiso finds by globbing ``sys.prefix``).
+    """
+    raw = os.environ.get("WHT_IGA_MKL_DIR")
+    d = Path(raw) if raw else Path(sys.prefix) / "Library" / "bin"
+    return str(d) if (d / "mkl_rt.3.dll").is_file() else None
 
 
 def _check_origin(module: ModuleType) -> None:
