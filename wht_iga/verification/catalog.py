@@ -3,7 +3,7 @@
 Maps Coreform IGA for Abaqus Verification Manual cases (``V01``–``V12``) and
 Example Problems (``E01``–``E05``) to standardized probe definitions, parameter
 sweeps, QoI extractors, phase gates, Coreform output CSV names, and reference
-CSV paths under ``research-coreform-IGA/user-guide/``.
+CSV paths under ``WHT_IGA/research-cf-IGA/user-guide/``.
 """
 
 from __future__ import annotations
@@ -25,7 +25,7 @@ CaseCategory = Literal["verification", "example"]
 PhaseGate = Literal["G1", "G2", "G3", "G4", "G5"]
 
 _DEFAULT_USER_GUIDE_ROOT = (
-    Path(__file__).resolve().parents[3] / "research-coreform-IGA" / "user-guide"
+    Path(__file__).resolve().parents[2] / "research-cf-IGA" / "user-guide"
 )
 
 
@@ -136,13 +136,13 @@ class CaseCatalogEntry:
         :class:`SweepSpec` parameter matrix for this case.
     reference_csv_relpaths:
         Tuple of reference CSV paths relative to
-        ``research-coreform-IGA/user-guide/``.
+        ``WHT_IGA/research-cf-IGA/user-guide/``.
     coreform_output_csvs:
         Tuple of Coreform-compatible output CSV/metric filenames produced by the
         verification pipeline.
     reference_doc_relpath:
         Source Markdown documentation path relative to
-        ``research-coreform-IGA/user-guide/``.
+        ``WHT_IGA/research-cf-IGA/user-guide/``.
     notes:
         Optional remarks or cross-gate requirements.
     """
@@ -1096,7 +1096,7 @@ def resolve_reference_csvs(
         Case identifier (e.g. ``"V02"`` or ``"e03"``).
     user_guide_root:
         Optional root directory overriding
-        ``research-coreform-IGA/user-guide``.
+        ``WHT_IGA/research-cf-IGA/user-guide``.
 
     Returns
     -------

@@ -70,9 +70,9 @@
     "note": "Follower and resultant traction variants are single-level coverage cases."
   },
   "provenance": {
-    "reference_doc": "research-coreform-IGA/user-guide/verification-manual/problems/solid_mechanics/linear_elastic_stress/beam-bending/beam-bending.md",
+    "reference_doc": "WHT_IGA/research-cf-IGA/user-guide/verification-manual/problems/solid_mechanics/linear_elastic_stress/beam-bending/beam-bending.md",
     "reference_doc_sections": "§2 Geometry (Table 1), §3 Material (Table 2), §4 Loading & BC (Table 3), §5 Mesh & discretization, §6 Reference & accepted solutions (Table 4), §7 Results",
-    "reference_values_csv": "research-coreform-IGA/user-guide/generated-downloads/verification-manual/problems/solid_mechanics/linear_elastic_stress/beam-bending/beam-bending-accepted.csv (equivalent loads + Euler-Bernoulli & finest C3D20 tip deflections); beam-bending-traction-variants.csv (base/follower/resultant); per-load *-tip-deflection.csv, *-solve-performance.csv, *-trim-performance.csv"
+    "reference_values_csv": "WHT_IGA/research-cf-IGA/user-guide/generated-downloads/verification-manual/problems/solid_mechanics/linear_elastic_stress/beam-bending/beam-bending-accepted.csv (equivalent loads + Euler-Bernoulli & finest C3D20 tip deflections); beam-bending-traction-variants.csv (base/follower/resultant); per-load *-tip-deflection.csv, *-solve-performance.csv, *-trim-performance.csv"
   },
   "reference_values": {
     "euler_bernoulli_tip_uy_m": {

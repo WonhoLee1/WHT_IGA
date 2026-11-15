@@ -1,0 +1,2878 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>coreform.abaqus.job – Coreform IGA for Abaqus</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../../../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../../../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../../../../">
+<link href="../../../../../assets/brand/icons/coreform-iga-icon.svg" rel="icon" type="image/svg+xml">
+<script src="../../../../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../../../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../../../site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../../../../site_libs/quarto-html/quarto-syntax-highlighting-dark-0a6b7249c26820e032cb0bd839ff02b1.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../../../../site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../../../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../../../site_libs/bootstrap/bootstrap-f9791fd2959c8c3cbc9955649c1be199.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../../../../site_libs/bootstrap/bootstrap-dark-f9791fd2959c8c3cbc9955649c1be199.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="light">
+<link href="../../../../../site_libs/bootstrap/bootstrap-f9791fd2959c8c3cbc9955649c1be199.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-sidebar docked quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../../../user-guide/index.html">User Guide</a></li><li class="breadcrumb-item"><a href="../../../../../user-guide/python-api/coreform/index.html">Scripting Reference</a></li><li class="breadcrumb-item"><a href="../../../../../user-guide/python-api/coreform/abaqus/index.html">abaqus</a></li><li class="breadcrumb-item"><a href="../../../../../user-guide/python-api/coreform/abaqus/job/index.html">job</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+      <a href="../../../../../index.html" class="sidebar-logo-link">
+      <img src="../../../../../assets/brand/logos/coreform-iga-for-abaqus-logo-wordmark-lightmode.svg" alt="" class="sidebar-logo light-content py-0 d-lg-inline d-none">
+      <img src="../../../../../assets/brand/logos/coreform-iga-for-abaqus-logo-wordmark-lightmode.svg" alt="" class="sidebar-logo dark-content py-0 d-lg-inline d-none">
+      </a>
+      <div class="sidebar-tools-main">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Welcome</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../../../install-config/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Installation &amp; Configuration</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../install-config/configuring-abaqus.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Download and Install Abaqus</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../install-config/downloading.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Downloading Coreform IGA for Abaqus</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../install-config/installing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Installing Coreform IGA for Abaqus</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../install-config/licensing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Licensing</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../install-config/windows-compiler-user-subroutines.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Windows Compiler for User Subroutines</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../../../user-guide/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">User Guide</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../user-guide/immersed-iga-overview.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Immersed IGA overview</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../user-guide/workflow-overview.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Workflow overview</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../user-guide/capabilities-and-limitations.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Current capabilities and limitations</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../user-guide/using-cifa-cae.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Using Coreform IGA for Abaqus/CAE</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../../../user-guide/response-spectrum/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Mode-based dynamics</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../user-guide/response-spectrum/running-a-response-spectrum.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Running a response spectrum analysis</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../user-guide/response-spectrum/case-files.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Response spectrum case files</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../user-guide/response-spectrum/random-response.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Random response analysis</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../user-guide/roadmap.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Roadmap</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../../../user-guide/release-notes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Release notes</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../user-guide/release-notes/release-notes-2026-11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">2026.11</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../user-guide/release-notes/release-notes-2026-10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">2026.10</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../user-guide/release-notes/release-notes-2026-9.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">2026.9</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../user-guide/release-notes/release-notes-2026-7.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">2026.7</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../user-guide/release-notes/release-notes-2026-3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">2026.3</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../../../user-guide/scripting-guide/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Scripting Guide</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../user-guide/scripting-guide/getting-started.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Getting started with scripting</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../user-guide/scripting-guide/probes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Working with Probes</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../user-guide/scripting-guide/meshes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Working with Meshes</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../user-guide/scripting-guide/jobs.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Running Jobs</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../../../user-guide/python-api/coreform/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Scripting Reference</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../../../user-guide/python-api/coreform/abaqus/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">abaqus</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth3 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../user-guide/python-api/coreform/abaqus/cf_export/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">cf_export</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../user-guide/python-api/coreform/abaqus/job/index.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">job</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../user-guide/python-api/coreform/abaqus/mesh/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">mesh</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../user-guide/python-api/coreform/abaqus/probe/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">probe</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../user-guide/python-api/coreform/job/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">job</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../user-guide/python-api/coreform/mesh/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">mesh</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../user-guide/python-api/coreform/probe/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">probe</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../user-guide/python-api/coreform/utils/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">utils</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../../../theory/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Theory</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../theory/consistent-unit-systems.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Consistent unit systems</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../../../example-problems/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Example Problems</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="false">
+ <span class="menu-text">Getting started</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../example-problems/thin-plate-with-hole/thin-plate-with-hole.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Stress concentration in a thin plate with a hole</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="false">
+ <span class="menu-text">Advanced capabilities</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-11" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../example-problems/plate-with-hole-adaptivity/plate-with-hole-adaptivity.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Local refinement toward a feature</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../example-problems/glass-to-metal-seal/glass-to-metal-seal.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Thermal cycling — glass-to-metal seal</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../example-problems/nearly-incompressible-elasticity/nearly-incompressible-elasticity.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Nearly incompressible elasticity — Cook’s membrane</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../example-problems/door-lock-assembly/door-lock-assembly.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Contact — Door lock assembly</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../../../verification-manual/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Verification Manual</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-12" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../../../verification-manual/problems/solid_mechanics/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Solid mechanics</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-13" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../../../verification-manual/problems/solid_mechanics/linear_elastic_stress/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Linear elastic stress</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-14" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-14" class="collapse list-unstyled sidebar-section depth3 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../verification-manual/problems/solid_mechanics/linear_elastic_stress/prescribed-displacement-cube/prescribed-displacement-cube.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Prescribed displacement of a unit cube</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../verification-manual/problems/solid_mechanics/linear_elastic_stress/roark-17p1-7a/roark-17p1-7a.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Stress concentration in a thin plate with hole</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../verification-manual/problems/solid_mechanics/linear_elastic_stress/beam-bending/beam-bending.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Cantilever beam bending</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../verification-manual/problems/solid_mechanics/linear_elastic_stress/bimetallic-beam-bending/bimetallic-beam-bending.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Cantilever bimetallic beam bending</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../verification-manual/problems/solid_mechanics/linear_elastic_stress/multiplanar-material-interfaces/multiplanar-material-interfaces.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Multi-planar material interfaces</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../verification-manual/problems/solid_mechanics/linear_elastic_stress/pressurized-sphere/pressurized-sphere.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Thick-walled spherical pressure vessel</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../verification-manual/problems/solid_mechanics/linear_elastic_stress/infinite-plate-with-hole/infinite-plate-with-hole.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Infinite plate with a hole</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../../../verification-manual/problems/solid_mechanics/contact/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Contact</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-15" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-15" class="collapse list-unstyled sidebar-section depth3 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../verification-manual/problems/solid_mechanics/contact/contact-indenter/contact-indenter.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Elastic spherical indenter sliding on a block</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../../../verification-manual/problems/solid_mechanics/thermal_strain/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Thermal strain</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-16" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-16" class="collapse list-unstyled sidebar-section depth3 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../verification-manual/problems/solid_mechanics/thermal_strain/nafems-p18-t1/nafems-p18-t1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">NAFEMS P18 T1 — membrane with circular hot spot</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../../../verification-manual/problems/solid_mechanics/shock_and_vibration/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Shock and vibration</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-17" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-17" class="collapse list-unstyled sidebar-section depth3 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../verification-manual/problems/solid_mechanics/shock_and_vibration/cantilever-shock-vibration/cantilever-shock-vibration.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Cantilever beam shock and vibration</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../../../verification-manual/problems/solid_mechanics/implicit_dynamics/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Implicit dynamics</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-18" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-18" class="collapse list-unstyled sidebar-section depth3 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../verification-manual/problems/solid_mechanics/implicit_dynamics/vibrating-beam/vibrating-beam.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Implicit-dynamic vibrating beam</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../../../verification-manual/problems/heat_transfer/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Heat transfer</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-19" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-19" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../../../verification-manual/problems/heat_transfer/steady_state/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Steady-state heat transfer</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-20" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-20" class="collapse list-unstyled sidebar-section depth3 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../verification-manual/problems/heat_transfer/steady_state/nafems-p18-t2/nafems-p18-t2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">NAFEMS P18 T2 — radiation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../verification-manual/problems/heat_transfer/steady_state/nafems-p18-t4/nafems-p18-t4.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">NAFEMS P18 T4 — convection</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../../../verification-manual/problems/heat_transfer/transient/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Transient heat transfer</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-21" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-21" class="collapse list-unstyled sidebar-section depth3 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../verification-manual/problems/heat_transfer/transient/nafems-p18-t3/nafems-p18-t3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">NAFEMS P18 T3 — transient conduction</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../abaqus_keyword_support_guide.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Abaqus keyword support guide</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../cifa-capabilities/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capabilities matrix</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+<div class="quarto-sidebar-footer"><div class="sidebar-footer-item">
+<div id="cifa-version-badge" class="small text-muted">
+
+</div>
+</div></div></nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#errors.py" id="toc-errors.py" class="nav-link active" data-scroll-target="#errors.py"><span class="header-section-number">1</span> errors.py</a>
+  <ul>
+  <li><a href="#coreform-abaqus-job-errors-jobruntimeerror" id="toc-coreform-abaqus-job-errors-jobruntimeerror" class="nav-link" data-scroll-target="#coreform-abaqus-job-errors-jobruntimeerror"><span class="header-section-number">1.1</span> <code>JobRuntimeError</code></a></li>
+  <li><a href="#coreform-abaqus-job-errors-jobfilecollisionerror" id="toc-coreform-abaqus-job-errors-jobfilecollisionerror" class="nav-link" data-scroll-target="#coreform-abaqus-job-errors-jobfilecollisionerror"><span class="header-section-number">1.2</span> <code>JobFileCollisionError</code></a>
+  <ul class="collapse">
+  <li><a href="#attributes" id="toc-attributes" class="nav-link" data-scroll-target="#attributes"><span class="header-section-number">1.2.1</span> Attributes</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#records.py" id="toc-records.py" class="nav-link" data-scroll-target="#records.py"><span class="header-section-number">2</span> records.py</a>
+  <ul>
+  <li><a href="#mdb-customdata-coreformiga-bound-interface" id="toc-mdb-customdata-coreformiga-bound-interface" class="nav-link" data-scroll-target="#mdb-customdata-coreformiga-bound-interface"><span class="header-section-number">2.1</span> <code>CoreformIGA</code></a>
+  <ul class="collapse">
+  <li><a href="#attributes-1" id="toc-attributes-1" class="nav-link" data-scroll-target="#attributes-1"><span class="header-section-number">2.1.1</span> Attributes</a></li>
+  <li><a href="#mdb-customdata-coreformiga-deletejob" id="toc-mdb-customdata-coreformiga-deletejob" class="nav-link" data-scroll-target="#mdb-customdata-coreformiga-deletejob"><span class="header-section-number">2.1.2</span> <code>deleteJob</code></a></li>
+  <li><a href="#mdb-customdata-coreformiga-job" id="toc-mdb-customdata-coreformiga-job" class="nav-link" data-scroll-target="#mdb-customdata-coreformiga-job"><span class="header-section-number">2.1.3</span> <code>Job</code></a></li>
+  <li><a href="#mdb-customdata-coreformiga-renamejob" id="toc-mdb-customdata-coreformiga-renamejob" class="nav-link" data-scroll-target="#mdb-customdata-coreformiga-renamejob"><span class="header-section-number">2.1.4</span> <code>renameJob</code></a></li>
+  </ul></li>
+  <li><a href="#mdb-customdata-coreformiga-jobs-jobname-bound-interface" id="toc-mdb-customdata-coreformiga-jobs-jobname-bound-interface" class="nav-link" data-scroll-target="#mdb-customdata-coreformiga-jobs-jobname-bound-interface"><span class="header-section-number">2.2</span> <code>jobs[jobName]</code></a>
+  <ul class="collapse">
+  <li><a href="#attributes-2" id="toc-attributes-2" class="nav-link" data-scroll-target="#attributes-2"><span class="header-section-number">2.2.1</span> Attributes</a></li>
+  <li><a href="#mdb-customdata-coreformiga-jobs-jobname-tospec" id="toc-mdb-customdata-coreformiga-jobs-jobname-tospec" class="nav-link" data-scroll-target="#mdb-customdata-coreformiga-jobs-jobname-tospec"><span class="header-section-number">2.2.2</span> <code>toSpec</code></a></li>
+  <li><a href="#mdb-customdata-coreformiga-jobs-jobname-setvalues" id="toc-mdb-customdata-coreformiga-jobs-jobname-setvalues" class="nav-link" data-scroll-target="#mdb-customdata-coreformiga-jobs-jobname-setvalues"><span class="header-section-number">2.2.3</span> <code>setValues</code></a></li>
+  <li><a href="#mdb-customdata-coreformiga-jobs-jobname-buildmesh" id="toc-mdb-customdata-coreformiga-jobs-jobname-buildmesh" class="nav-link" data-scroll-target="#mdb-customdata-coreformiga-jobs-jobname-buildmesh"><span class="header-section-number">2.2.4</span> <code>buildMesh</code></a></li>
+  <li><a href="#mdb-customdata-coreformiga-jobs-jobname-writeinput" id="toc-mdb-customdata-coreformiga-jobs-jobname-writeinput" class="nav-link" data-scroll-target="#mdb-customdata-coreformiga-jobs-jobname-writeinput"><span class="header-section-number">2.2.5</span> <code>writeInput</code></a></li>
+  <li><a href="#mdb-customdata-coreformiga-jobs-jobname-submit" id="toc-mdb-customdata-coreformiga-jobs-jobname-submit" class="nav-link" data-scroll-target="#mdb-customdata-coreformiga-jobs-jobname-submit"><span class="header-section-number">2.2.6</span> <code>submit</code></a></li>
+  <li><a href="#mdb-customdata-coreformiga-jobs-jobname-waitforcompletion" id="toc-mdb-customdata-coreformiga-jobs-jobname-waitforcompletion" class="nav-link" data-scroll-target="#mdb-customdata-coreformiga-jobs-jobname-waitforcompletion"><span class="header-section-number">2.2.7</span> <code>waitForCompletion</code></a></li>
+  <li><a href="#mdb-customdata-coreformiga-jobs-jobname-kill" id="toc-mdb-customdata-coreformiga-jobs-jobname-kill" class="nav-link" data-scroll-target="#mdb-customdata-coreformiga-jobs-jobname-kill"><span class="header-section-number">2.2.8</span> <code>kill</code></a></li>
+  <li><a href="#mdb-customdata-coreformiga-jobs-jobname-getruntimestatus" id="toc-mdb-customdata-coreformiga-jobs-jobname-getruntimestatus" class="nav-link" data-scroll-target="#mdb-customdata-coreformiga-jobs-jobname-getruntimestatus"><span class="header-section-number">2.2.9</span> <code>getRuntimeStatus</code></a></li>
+  <li><a href="#mdb-customdata-coreformiga-jobs-jobname-writerunscript" id="toc-mdb-customdata-coreformiga-jobs-jobname-writerunscript" class="nav-link" data-scroll-target="#mdb-customdata-coreformiga-jobs-jobname-writerunscript"><span class="header-section-number">2.2.10</span> <code>writeRunScript</code></a></li>
+  <li><a href="#mdb-customdata-coreformiga-jobs-jobname-openodb" id="toc-mdb-customdata-coreformiga-jobs-jobname-openodb" class="nav-link" data-scroll-target="#mdb-customdata-coreformiga-jobs-jobname-openodb"><span class="header-section-number">2.2.11</span> <code>openOdb</code></a></li>
+  </ul></li>
+  </ul></li>
+  </ul>
+<div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="index.pdf"><i class="bi bi-file-pdf"></i>Typst</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../../../user-guide/index.html">User Guide</a></li><li class="breadcrumb-item"><a href="../../../../../user-guide/python-api/coreform/index.html">Scripting Reference</a></li><li class="breadcrumb-item"><a href="../../../../../user-guide/python-api/coreform/abaqus/index.html">abaqus</a></li><li class="breadcrumb-item"><a href="../../../../../user-guide/python-api/coreform/abaqus/job/index.html">job</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">coreform.abaqus.job</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<!-- Generated by generate_coreform_api_reference.py; do not edit. -->
+<p><strong>Source directory:</strong> <code>interop/abaqus/cf_app/coreform/abaqus/job</code></p>
+<section id="directory-tree" class="level2 unnumbered unlisted">
+<h2 class="unnumbered unlisted anchored" data-anchor-id="directory-tree">Directory tree</h2>
+<div class="api-directory-tree">
+<ul>
+<li><a href="../../../../../user-guide/python-api/coreform/abaqus/job/index.html"><code>job/</code></a></li>
+</ul>
+</div>
+</section>
+<section id="errors.py" class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="errors.py"><span class="header-section-number">1</span> errors.py</h2>
+<p><strong>Module path:</strong> <code>coreform.abaqus.job.errors</code></p>
+<p><strong>Available API members</strong></p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Name</th>
+<th style="text-align: left;">Kind</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><a href="#coreform-abaqus-job-errors-jobfilecollisionerror-files"><code>JobFileCollisionError.files</code></a></td>
+<td style="text-align: left;">Attribute</td>
+<td style="text-align: left;">Existing output paths in deterministic reporting order.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="#coreform-abaqus-job-errors-jobruntimeerror"><code>JobRuntimeError</code></a></td>
+<td style="text-align: left;">Class</td>
+<td style="text-align: left;">A Coreform IGA job build/submit failure with a user-actionable message.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="#coreform-abaqus-job-errors-jobfilecollisionerror"><code>JobFileCollisionError</code></a></td>
+<td style="text-align: left;">Class</td>
+<td style="text-align: left;">Report recognized Abaqus output files that block Job submission.</td>
+</tr>
+</tbody>
+</table>
+<section id="coreform-abaqus-job-errors-jobruntimeerror" class="level3" data-number="1.1">
+<h3 data-number="1.1" class="anchored" data-anchor-id="coreform-abaqus-job-errors-jobruntimeerror"><span class="header-section-number">1.1</span> <code>JobRuntimeError</code></h3>
+<p><strong>Object path:</strong> <code>coreform.abaqus.job.errors.JobRuntimeError</code></p>
+<p>A Coreform IGA job build/submit failure with a user-actionable message.</p>
+</section>
+<section id="coreform-abaqus-job-errors-jobfilecollisionerror" class="level3" data-number="1.2">
+<h3 data-number="1.2" class="anchored" data-anchor-id="coreform-abaqus-job-errors-jobfilecollisionerror"><span class="header-section-number">1.2</span> <code>JobFileCollisionError</code></h3>
+<p><strong>Object path:</strong> <code>coreform.abaqus.job.errors.JobFileCollisionError</code></p>
+<p>Report recognized Abaqus output files that block Job submission.</p>
+<p><strong>Call syntax</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> JobFileCollisionError(files<span class="op">=</span>files)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Signatures</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>JobFileCollisionError(files: Union[<span class="st">'JobFileCollisionError'</span>, Iterable[<span class="bu">str</span>]])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Parameters</strong></p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Name</th>
+<th style="text-align: left;">Type</th>
+<th style="text-align: left;">Required</th>
+<th style="text-align: left;">Default</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>files</code></td>
+<td style="text-align: left;"><code>Union['JobFileCollisionError', Iterable[str]]</code></td>
+<td style="text-align: left;">Yes</td>
+<td style="text-align: left;">—</td>
+<td style="text-align: left;">Existing output paths that would be overwritten by submission.</td>
+</tr>
+</tbody>
+</table>
+<section id="attributes" class="level4" data-number="1.2.1">
+<h4 data-number="1.2.1" class="anchored" data-anchor-id="attributes"><span class="header-section-number">1.2.1</span> Attributes</h4>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Name</th>
+<th style="text-align: left;">Type</th>
+<th style="text-align: left;">Value</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><span id="coreform-abaqus-job-errors-jobfilecollisionerror-files"><code>files</code></span></td>
+<td style="text-align: left;"><code>Tuple[str, ...]</code></td>
+<td style="text-align: left;"><code>tuple(files)</code></td>
+<td style="text-align: left;">Existing output paths in deterministic reporting order.</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+</section>
+<section id="records.py" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="records.py"><span class="header-section-number">2</span> records.py</h2>
+<p><strong>Module path:</strong> <code>coreform.abaqus.job.records</code></p>
+<p><strong>Available API members</strong></p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Name</th>
+<th style="text-align: left;">Kind</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><a href="#mdb-customdata-coreformiga-jobs"><code>CoreformIGA.jobs</code></a></td>
+<td style="text-align: left;">Attribute</td>
+<td style="text-align: left;">Persistent Coreform IGA Job records indexed by name.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="#mdb-customdata-coreformiga-jobs-jobname-name"><code>jobs[jobName].name</code></a></td>
+<td style="text-align: left;">Attribute</td>
+<td style="text-align: left;">Repository key and Job name.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="#mdb-customdata-coreformiga-jobs-jobname-model"><code>jobs[jobName].model</code></a></td>
+<td style="text-align: left;">Attribute</td>
+<td style="text-align: left;">Abaqus model used by the Job, when applicable.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="#mdb-customdata-coreformiga-jobs-jobname-description"><code>jobs[jobName].description</code></a></td>
+<td style="text-align: left;">Attribute</td>
+<td style="text-align: left;">User-facing Job description.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="#mdb-customdata-coreformiga-jobs-jobname-meshexecutable"><code>jobs[jobName].meshExecutable</code></a></td>
+<td style="text-align: left;">Attribute</td>
+<td style="text-align: left;">Coreform IGA Mesh executable override.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="#mdb-customdata-coreformiga-jobs-jobname-mpiexec"><code>jobs[jobName].mpiexec</code></a></td>
+<td style="text-align: left;">Attribute</td>
+<td style="text-align: left;">MPI launcher override for the Mesh stage.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="#mdb-customdata-coreformiga-jobs-jobname-numigacpus"><code>jobs[jobName].numIgaCpus</code></a></td>
+<td style="text-align: left;">Attribute</td>
+<td style="text-align: left;">Number of CPUs assigned to the Mesh stage.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="#mdb-customdata-coreformiga-jobs-jobname-interopexecutable"><code>jobs[jobName].interopExecutable</code></a></td>
+<td style="text-align: left;">Attribute</td>
+<td style="text-align: left;">Abaqus interop executable override, when applicable.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="#mdb-customdata-coreformiga-jobs-jobname-numcpus"><code>jobs[jobName].numCpus</code></a></td>
+<td style="text-align: left;">Attribute</td>
+<td style="text-align: left;">Number of CPUs assigned to the solve stage.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="#mdb-customdata-coreformiga-jobs-jobname-numgpus"><code>jobs[jobName].numGPUs</code></a></td>
+<td style="text-align: left;">Attribute</td>
+<td style="text-align: left;">Number of GPUs assigned to an Abaqus solve stage.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="#mdb-customdata-coreformiga-jobs-jobname-multiprocessingmode"><code>jobs[jobName].multiprocessingMode</code></a></td>
+<td style="text-align: left;">Attribute</td>
+<td style="text-align: left;">Parallelization mode for an Abaqus solve stage.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="#mdb-customdata-coreformiga-jobs-jobname-threadsperprocess"><code>jobs[jobName].threadsPerProcess</code></a></td>
+<td style="text-align: left;">Attribute</td>
+<td style="text-align: left;">Threads assigned to each Abaqus solver process.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="#mdb-customdata-coreformiga-jobs-jobname-numdomains"><code>jobs[jobName].numDomains</code></a></td>
+<td style="text-align: left;">Attribute</td>
+<td style="text-align: left;">Number of domains used by the Abaqus solver.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="#mdb-customdata-coreformiga-jobs-jobname-memory"><code>jobs[jobName].memory</code></a></td>
+<td style="text-align: left;">Attribute</td>
+<td style="text-align: left;">Memory limit for an Abaqus solve stage.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="#mdb-customdata-coreformiga-jobs-jobname-memoryunits"><code>jobs[jobName].memoryUnits</code></a></td>
+<td style="text-align: left;">Attribute</td>
+<td style="text-align: left;">Units used to interpret the Abaqus solver memory limit.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="#mdb-customdata-coreformiga-deletejob"><code>CoreformIGA.deleteJob</code></a></td>
+<td style="text-align: left;">Instance method</td>
+<td style="text-align: left;">Delete a named persistent Job from this namespace.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="#mdb-customdata-coreformiga-job"><code>CoreformIGA.Job</code></a></td>
+<td style="text-align: left;">Instance method</td>
+<td style="text-align: left;">Create and persist a Coreform IGA Job in the MDB namespace.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="#mdb-customdata-coreformiga-renamejob"><code>CoreformIGA.renameJob</code></a></td>
+<td style="text-align: left;">Instance method</td>
+<td style="text-align: left;">Rename a Job that has not been prepared or submitted.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="#mdb-customdata-coreformiga-jobs-jobname-tospec"><code>jobs[jobName].toSpec</code></a></td>
+<td style="text-align: left;">Instance method</td>
+<td style="text-align: left;">Return the lossless portable specification for this Job record.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="#mdb-customdata-coreformiga-jobs-jobname-setvalues"><code>jobs[jobName].setValues</code></a></td>
+<td style="text-align: left;">Instance method</td>
+<td style="text-align: left;">Update this persistent Job through Abaqus-facing camelCase fields.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="#mdb-customdata-coreformiga-jobs-jobname-buildmesh"><code>jobs[jobName].buildMesh</code></a></td>
+<td style="text-align: left;">Instance method</td>
+<td style="text-align: left;">Run the Mesh and interop stages for this Job.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="#mdb-customdata-coreformiga-jobs-jobname-writeinput"><code>jobs[jobName].writeInput</code></a></td>
+<td style="text-align: left;">Instance method</td>
+<td style="text-align: left;">Write the raw Abaqus input deck consumed by the interop stage.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="#mdb-customdata-coreformiga-jobs-jobname-submit"><code>jobs[jobName].submit</code></a></td>
+<td style="text-align: left;">Instance method</td>
+<td style="text-align: left;">Prepare and submit this Job through its configured pipeline.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="#mdb-customdata-coreformiga-jobs-jobname-waitforcompletion"><code>jobs[jobName].waitForCompletion</code></a></td>
+<td style="text-align: left;">Instance method</td>
+<td style="text-align: left;">Block until a submitted Job finishes.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="#mdb-customdata-coreformiga-jobs-jobname-kill"><code>jobs[jobName].kill</code></a></td>
+<td style="text-align: left;">Instance method</td>
+<td style="text-align: left;">Terminate the running process associated with this Job.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="#mdb-customdata-coreformiga-jobs-jobname-getruntimestatus"><code>jobs[jobName].getRuntimeStatus</code></a></td>
+<td style="text-align: left;">Instance method</td>
+<td style="text-align: left;">Return a snapshot of this Job’s current runtime status.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="#mdb-customdata-coreformiga-jobs-jobname-writerunscript"><code>jobs[jobName].writeRunScript</code></a></td>
+<td style="text-align: left;">Instance method</td>
+<td style="text-align: left;">Write this Job pipeline as a runnable script file.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="#mdb-customdata-coreformiga-jobs-jobname-openodb"><code>jobs[jobName].openOdb</code></a></td>
+<td style="text-align: left;">Instance method</td>
+<td style="text-align: left;">Open and return this Job’s Abaqus output database.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="#mdb-customdata-coreformiga-bound-interface"><code>CoreformIGA</code></a></td>
+<td style="text-align: left;">Class</td>
+<td style="text-align: left;">The MDB-level Coreform IGA namespace (<code>mdb.customData.CoreformIGA</code>) that owns<br>the <code>jobs</code> repository and the public <code>Job(...)</code> constructor.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="#mdb-customdata-coreformiga-jobs-jobname-bound-interface"><code>jobs[jobName]</code></a></td>
+<td style="text-align: left;">Class</td>
+<td style="text-align: left;">Persistent job record: the nested spec is stored losslessly as JSON<br>(<code>_spec_json</code>, the source of truth for <code>toSpec</code>), and the common scalar<br>fields are loaded as read-only camelCase inspection attrs. Edits go through<br><code>setValues(...)</code> so validation, the stored spec, and journaling stay in step.</td>
+</tr>
+</tbody>
+</table>
+<section id="mdb-customdata-coreformiga-bound-interface" class="level3" data-number="2.1">
+<h3 data-number="2.1" class="anchored" data-anchor-id="mdb-customdata-coreformiga-bound-interface"><span class="header-section-number">2.1</span> <code>CoreformIGA</code></h3>
+<p><strong>Public path:</strong> <code>mdb.customData.CoreformIGA</code></p>
+<p><strong>Available API members</strong></p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Name</th>
+<th style="text-align: left;">Kind</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><a href="#mdb-customdata-coreformiga-jobs"><code>jobs</code></a></td>
+<td style="text-align: left;">Attribute</td>
+<td style="text-align: left;">Persistent Coreform IGA Job records indexed by name.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="#mdb-customdata-coreformiga-deletejob"><code>deleteJob</code></a></td>
+<td style="text-align: left;">Instance method</td>
+<td style="text-align: left;">Delete a named persistent Job from this namespace.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="#mdb-customdata-coreformiga-job"><code>Job</code></a></td>
+<td style="text-align: left;">Instance method</td>
+<td style="text-align: left;">Create and persist a Coreform IGA Job in the MDB namespace.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="#mdb-customdata-coreformiga-renamejob"><code>renameJob</code></a></td>
+<td style="text-align: left;">Instance method</td>
+<td style="text-align: left;">Rename a Job that has not been prepared or submitted.</td>
+</tr>
+</tbody>
+</table>
+<section id="attributes-1" class="level4" data-number="2.1.1">
+<h4 data-number="2.1.1" class="anchored" data-anchor-id="attributes-1"><span class="header-section-number">2.1.1</span> Attributes</h4>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Name</th>
+<th style="text-align: left;">Type</th>
+<th style="text-align: left;">Value</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><span id="mdb-customdata-coreformiga-jobs"><code>jobs</code></span></td>
+<td style="text-align: left;"><code>object</code></td>
+<td style="text-align: left;">—</td>
+<td style="text-align: left;">Persistent Coreform IGA Job records indexed by name.</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="mdb-customdata-coreformiga-deletejob" class="level4" data-number="2.1.2">
+<h4 data-number="2.1.2" class="anchored" data-anchor-id="mdb-customdata-coreformiga-deletejob"><span class="header-section-number">2.1.2</span> <code>deleteJob</code></h4>
+<p><strong>Defined on:</strong> <code>mdb.customData.CoreformIGA.deleteJob</code></p>
+<p><strong>Description:</strong> Delete a named persistent Job from this namespace.</p>
+<p><strong>Call syntax</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>jobs.deleteJob(name<span class="op">=</span>name)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Returns</strong></p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Type</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>None</code></td>
+<td style="text-align: left;">—</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Signatures</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>deleteJob(name: <span class="bu">str</span>) <span class="op">-&gt;</span> <span class="va">None</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Parameters</strong></p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Name</th>
+<th style="text-align: left;">Type</th>
+<th style="text-align: left;">Required</th>
+<th style="text-align: left;">Default</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>name</code></td>
+<td style="text-align: left;"><code>str</code></td>
+<td style="text-align: left;">Yes</td>
+<td style="text-align: left;">—</td>
+<td style="text-align: left;">Repository key of the Job to delete.</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="mdb-customdata-coreformiga-job" class="level4" data-number="2.1.3">
+<h4 data-number="2.1.3" class="anchored" data-anchor-id="mdb-customdata-coreformiga-job"><span class="header-section-number">2.1.3</span> <code>Job</code></h4>
+<p><strong>Defined on:</strong> <code>mdb.customData.CoreformIGA.Job</code></p>
+<p><strong>Description:</strong> Create and persist a Coreform IGA Job in the MDB namespace.</p>
+<p><strong>Call syntax</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> jobs.Job(spec<span class="op">=</span>spec)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> jobs.Job(name<span class="op">=</span>name, model<span class="op">=</span>model)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Returns</strong></p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Type</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>Job record</code></td>
+<td style="text-align: left;">Newly created persistent Job record.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Signatures</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>Job(<span class="op">*</span>, spec) <span class="op">-&gt;</span> <span class="bu">object</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>Job(<span class="op">*</span>, name, model, description<span class="op">=</span><span class="st">''</span>, meshExecutable<span class="op">=</span><span class="st">''</span>, mpiexec<span class="op">=</span><span class="st">''</span>, numIgaCpus<span class="op">=</span><span class="dv">1</span>, interopExecutable<span class="op">=</span><span class="st">''</span>, numCpus<span class="op">=</span><span class="dv">1</span>, numGPUs<span class="op">=</span><span class="dv">0</span>, multiprocessingMode<span class="op">=</span>ParallelMode.THREADS, threadsPerProcess<span class="op">=</span><span class="va">None</span>, numDomains<span class="op">=</span><span class="va">None</span>, memory<span class="op">=</span><span class="dv">90</span>, memoryUnits<span class="op">=</span>MemoryUnits.PERCENTAGE, queue<span class="op">=</span><span class="va">None</span>, meshQueue<span class="op">=</span><span class="va">None</span>, interopQueue<span class="op">=</span><span class="va">None</span>, solveQueue<span class="op">=</span><span class="va">None</span>) <span class="op">-&gt;</span> <span class="bu">object</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Parameters</strong></p>
+<p>For <code>Job(*, spec) -&gt; object</code>:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Name</th>
+<th style="text-align: left;">Type</th>
+<th style="text-align: left;">Required</th>
+<th style="text-align: left;">Default</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>spec</code></td>
+<td style="text-align: left;"><code>CoreformIGAJobSpec or Mapping[str, object]</code></td>
+<td style="text-align: left;">Yes</td>
+<td style="text-align: left;">—</td>
+<td style="text-align: left;">Complete portable specification or serialized specification mapping.</td>
+</tr>
+</tbody>
+</table>
+<p>For <code>Job(*, name, model, description='', meshExecutable='', mpiexec='', numIgaCpus=1, interopExecutable='', numCpus=1, numGPUs=0, multiprocessingMode=ParallelMode.THREADS, threadsPerProcess=None, numDomains=None, memory=90, memoryUnits=MemoryUnits.PERCENTAGE, queue=None, meshQueue=None, interopQueue=None, solveQueue=None) -&gt; object</code>:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Name</th>
+<th style="text-align: left;">Type</th>
+<th style="text-align: left;">Required</th>
+<th style="text-align: left;">Default</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>name</code></td>
+<td style="text-align: left;"><code>str</code></td>
+<td style="text-align: left;">Yes</td>
+<td style="text-align: left;">—</td>
+<td style="text-align: left;">Unique, nonempty Job name.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>model</code></td>
+<td style="text-align: left;"><code>str</code></td>
+<td style="text-align: left;">Yes</td>
+<td style="text-align: left;">—</td>
+<td style="text-align: left;">Abaqus model used by the solve pipeline.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>description</code></td>
+<td style="text-align: left;"><code>str</code></td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;"><code>''</code></td>
+<td style="text-align: left;">Optional Job description.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>meshExecutable</code></td>
+<td style="text-align: left;"><code>str</code></td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;"><code>''</code></td>
+<td style="text-align: left;">Coreform IGA Mesh executable override.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>mpiexec</code></td>
+<td style="text-align: left;"><code>str</code></td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;"><code>''</code></td>
+<td style="text-align: left;">MPI launcher override for the Mesh stage.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>numIgaCpus</code></td>
+<td style="text-align: left;"><code>int</code></td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;"><code>1</code></td>
+<td style="text-align: left;">Number of CPUs for the Mesh stage.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>interopExecutable</code></td>
+<td style="text-align: left;"><code>str</code></td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;"><code>''</code></td>
+<td style="text-align: left;">Abaqus interop executable override.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>numCpus</code></td>
+<td style="text-align: left;"><code>int</code></td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;"><code>1</code></td>
+<td style="text-align: left;">Number of CPUs for the solve stage.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>numGPUs</code></td>
+<td style="text-align: left;"><code>int</code></td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;"><code>0</code></td>
+<td style="text-align: left;">Number of GPUs for the solve stage.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>multiprocessingMode</code></td>
+<td style="text-align: left;"><code>ParallelMode or str</code></td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;"><code>ParallelMode.THREADS</code></td>
+<td style="text-align: left;">Abaqus solver parallelization mode.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>threadsPerProcess</code></td>
+<td style="text-align: left;"><code>int or None</code></td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;"><code>None</code></td>
+<td style="text-align: left;">Threads allocated to each solver process.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>numDomains</code></td>
+<td style="text-align: left;"><code>int or None</code></td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;"><code>None</code></td>
+<td style="text-align: left;">Number of Abaqus solver domains.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>memory</code></td>
+<td style="text-align: left;"><code>int</code></td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;"><code>90</code></td>
+<td style="text-align: left;">Abaqus solver memory limit.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>memoryUnits</code></td>
+<td style="text-align: left;"><code>MemoryUnits or str</code></td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;"><code>MemoryUnits.PERCENTAGE</code></td>
+<td style="text-align: left;">Units used to interpret <code>memory</code>.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>queue</code></td>
+<td style="text-align: left;"><code>Local, RemoteQueue, Mapping[str, object], or None</code></td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;"><code>None</code></td>
+<td style="text-align: left;">Default submission settings for every stage.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>meshQueue</code></td>
+<td style="text-align: left;"><code>Local, RemoteQueue, Mapping[str, object], or None</code></td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;"><code>None</code></td>
+<td style="text-align: left;">Mesh-stage submission override.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>interopQueue</code></td>
+<td style="text-align: left;"><code>Local, RemoteQueue, Mapping[str, object], or None</code></td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;"><code>None</code></td>
+<td style="text-align: left;">Interop-stage submission override.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>solveQueue</code></td>
+<td style="text-align: left;"><code>Local, RemoteQueue, Mapping[str, object], or None</code></td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;"><code>None</code></td>
+<td style="text-align: left;">Solve-stage submission override.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Parameter rules</strong></p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Rule</th>
+<th style="text-align: left;">Requirement</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Call forms</td>
+<td style="text-align: left;">Use exactly one of these call forms: <code>spec</code> or <code>abaqus_definition</code>.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Raises</strong></p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Type</th>
+<th style="text-align: left;">Condition</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>ValidationError</code></td>
+<td style="text-align: left;">If the specification, model, name, or execution settings are invalid.</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="mdb-customdata-coreformiga-renamejob" class="level4" data-number="2.1.4">
+<h4 data-number="2.1.4" class="anchored" data-anchor-id="mdb-customdata-coreformiga-renamejob"><span class="header-section-number">2.1.4</span> <code>renameJob</code></h4>
+<p><strong>Defined on:</strong> <code>mdb.customData.CoreformIGA.renameJob</code></p>
+<p><strong>Description:</strong> Rename a Job that has not been prepared or submitted.</p>
+<p><strong>Call syntax</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>jobs.renameJob(fromName<span class="op">=</span>fromName, toName<span class="op">=</span>toName)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Returns</strong></p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Type</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>None</code></td>
+<td style="text-align: left;">—</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Signatures</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>renameJob(fromName: <span class="bu">str</span>, toName: <span class="bu">str</span>) <span class="op">-&gt;</span> <span class="va">None</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Parameters</strong></p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Name</th>
+<th style="text-align: left;">Type</th>
+<th style="text-align: left;">Required</th>
+<th style="text-align: left;">Default</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>fromName</code></td>
+<td style="text-align: left;"><code>str</code></td>
+<td style="text-align: left;">Yes</td>
+<td style="text-align: left;">—</td>
+<td style="text-align: left;">Existing Job repository key.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>toName</code></td>
+<td style="text-align: left;"><code>str</code></td>
+<td style="text-align: left;">Yes</td>
+<td style="text-align: left;">—</td>
+<td style="text-align: left;">New unique Job name and repository key.</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="mdb-customdata-coreformiga-jobs-jobname-bound-interface" class="level3" data-number="2.2">
+<h3 data-number="2.2" class="anchored" data-anchor-id="mdb-customdata-coreformiga-jobs-jobname-bound-interface"><span class="header-section-number">2.2</span> <code>jobs[jobName]</code></h3>
+<p><strong>Public path:</strong> <code>mdb.customData.CoreformIGA.jobs[jobName]</code></p>
+<p><strong>Available API members</strong></p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Name</th>
+<th style="text-align: left;">Kind</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><a href="#mdb-customdata-coreformiga-jobs-jobname-name"><code>name</code></a></td>
+<td style="text-align: left;">Attribute</td>
+<td style="text-align: left;">Repository key and Job name.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="#mdb-customdata-coreformiga-jobs-jobname-model"><code>model</code></a></td>
+<td style="text-align: left;">Attribute</td>
+<td style="text-align: left;">Abaqus model used by the Job, when applicable.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="#mdb-customdata-coreformiga-jobs-jobname-description"><code>description</code></a></td>
+<td style="text-align: left;">Attribute</td>
+<td style="text-align: left;">User-facing Job description.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="#mdb-customdata-coreformiga-jobs-jobname-meshexecutable"><code>meshExecutable</code></a></td>
+<td style="text-align: left;">Attribute</td>
+<td style="text-align: left;">Coreform IGA Mesh executable override.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="#mdb-customdata-coreformiga-jobs-jobname-mpiexec"><code>mpiexec</code></a></td>
+<td style="text-align: left;">Attribute</td>
+<td style="text-align: left;">MPI launcher override for the Mesh stage.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="#mdb-customdata-coreformiga-jobs-jobname-numigacpus"><code>numIgaCpus</code></a></td>
+<td style="text-align: left;">Attribute</td>
+<td style="text-align: left;">Number of CPUs assigned to the Mesh stage.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="#mdb-customdata-coreformiga-jobs-jobname-interopexecutable"><code>interopExecutable</code></a></td>
+<td style="text-align: left;">Attribute</td>
+<td style="text-align: left;">Abaqus interop executable override, when applicable.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="#mdb-customdata-coreformiga-jobs-jobname-numcpus"><code>numCpus</code></a></td>
+<td style="text-align: left;">Attribute</td>
+<td style="text-align: left;">Number of CPUs assigned to the solve stage.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="#mdb-customdata-coreformiga-jobs-jobname-numgpus"><code>numGPUs</code></a></td>
+<td style="text-align: left;">Attribute</td>
+<td style="text-align: left;">Number of GPUs assigned to an Abaqus solve stage.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="#mdb-customdata-coreformiga-jobs-jobname-multiprocessingmode"><code>multiprocessingMode</code></a></td>
+<td style="text-align: left;">Attribute</td>
+<td style="text-align: left;">Parallelization mode for an Abaqus solve stage.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="#mdb-customdata-coreformiga-jobs-jobname-threadsperprocess"><code>threadsPerProcess</code></a></td>
+<td style="text-align: left;">Attribute</td>
+<td style="text-align: left;">Threads assigned to each Abaqus solver process.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="#mdb-customdata-coreformiga-jobs-jobname-numdomains"><code>numDomains</code></a></td>
+<td style="text-align: left;">Attribute</td>
+<td style="text-align: left;">Number of domains used by the Abaqus solver.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="#mdb-customdata-coreformiga-jobs-jobname-memory"><code>memory</code></a></td>
+<td style="text-align: left;">Attribute</td>
+<td style="text-align: left;">Memory limit for an Abaqus solve stage.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="#mdb-customdata-coreformiga-jobs-jobname-memoryunits"><code>memoryUnits</code></a></td>
+<td style="text-align: left;">Attribute</td>
+<td style="text-align: left;">Units used to interpret the Abaqus solver memory limit.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="#mdb-customdata-coreformiga-jobs-jobname-tospec"><code>toSpec</code></a></td>
+<td style="text-align: left;">Instance method</td>
+<td style="text-align: left;">Return the lossless portable specification for this Job record.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="#mdb-customdata-coreformiga-jobs-jobname-setvalues"><code>setValues</code></a></td>
+<td style="text-align: left;">Instance method</td>
+<td style="text-align: left;">Update this persistent Job through Abaqus-facing camelCase fields.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="#mdb-customdata-coreformiga-jobs-jobname-buildmesh"><code>buildMesh</code></a></td>
+<td style="text-align: left;">Instance method</td>
+<td style="text-align: left;">Run the Mesh and interop stages for this Job.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="#mdb-customdata-coreformiga-jobs-jobname-writeinput"><code>writeInput</code></a></td>
+<td style="text-align: left;">Instance method</td>
+<td style="text-align: left;">Write the raw Abaqus input deck consumed by the interop stage.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="#mdb-customdata-coreformiga-jobs-jobname-submit"><code>submit</code></a></td>
+<td style="text-align: left;">Instance method</td>
+<td style="text-align: left;">Prepare and submit this Job through its configured pipeline.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="#mdb-customdata-coreformiga-jobs-jobname-waitforcompletion"><code>waitForCompletion</code></a></td>
+<td style="text-align: left;">Instance method</td>
+<td style="text-align: left;">Block until a submitted Job finishes.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="#mdb-customdata-coreformiga-jobs-jobname-kill"><code>kill</code></a></td>
+<td style="text-align: left;">Instance method</td>
+<td style="text-align: left;">Terminate the running process associated with this Job.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="#mdb-customdata-coreformiga-jobs-jobname-getruntimestatus"><code>getRuntimeStatus</code></a></td>
+<td style="text-align: left;">Instance method</td>
+<td style="text-align: left;">Return a snapshot of this Job’s current runtime status.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><a href="#mdb-customdata-coreformiga-jobs-jobname-writerunscript"><code>writeRunScript</code></a></td>
+<td style="text-align: left;">Instance method</td>
+<td style="text-align: left;">Write this Job pipeline as a runnable script file.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><a href="#mdb-customdata-coreformiga-jobs-jobname-openodb"><code>openOdb</code></a></td>
+<td style="text-align: left;">Instance method</td>
+<td style="text-align: left;">Open and return this Job’s Abaqus output database.</td>
+</tr>
+</tbody>
+</table>
+<section id="attributes-2" class="level4" data-number="2.2.1">
+<h4 data-number="2.2.1" class="anchored" data-anchor-id="attributes-2"><span class="header-section-number">2.2.1</span> Attributes</h4>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Name</th>
+<th style="text-align: left;">Type</th>
+<th style="text-align: left;">Value</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><span id="mdb-customdata-coreformiga-jobs-jobname-name"><code>name</code></span></td>
+<td style="text-align: left;"><code>str</code></td>
+<td style="text-align: left;">—</td>
+<td style="text-align: left;">Repository key and Job name.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span id="mdb-customdata-coreformiga-jobs-jobname-model"><code>model</code></span></td>
+<td style="text-align: left;"><code>Optional[str]</code></td>
+<td style="text-align: left;">—</td>
+<td style="text-align: left;">Abaqus model used by the Job, when applicable.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span id="mdb-customdata-coreformiga-jobs-jobname-description"><code>description</code></span></td>
+<td style="text-align: left;"><code>str</code></td>
+<td style="text-align: left;">—</td>
+<td style="text-align: left;">User-facing Job description.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span id="mdb-customdata-coreformiga-jobs-jobname-meshexecutable"><code>meshExecutable</code></span></td>
+<td style="text-align: left;"><code>str</code></td>
+<td style="text-align: left;">—</td>
+<td style="text-align: left;">Coreform IGA Mesh executable override.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span id="mdb-customdata-coreformiga-jobs-jobname-mpiexec"><code>mpiexec</code></span></td>
+<td style="text-align: left;"><code>str</code></td>
+<td style="text-align: left;">—</td>
+<td style="text-align: left;">MPI launcher override for the Mesh stage.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span id="mdb-customdata-coreformiga-jobs-jobname-numigacpus"><code>numIgaCpus</code></span></td>
+<td style="text-align: left;"><code>int</code></td>
+<td style="text-align: left;">—</td>
+<td style="text-align: left;">Number of CPUs assigned to the Mesh stage.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span id="mdb-customdata-coreformiga-jobs-jobname-interopexecutable"><code>interopExecutable</code></span></td>
+<td style="text-align: left;"><code>Optional[str]</code></td>
+<td style="text-align: left;">—</td>
+<td style="text-align: left;">Abaqus interop executable override, when applicable.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span id="mdb-customdata-coreformiga-jobs-jobname-numcpus"><code>numCpus</code></span></td>
+<td style="text-align: left;"><code>int</code></td>
+<td style="text-align: left;">—</td>
+<td style="text-align: left;">Number of CPUs assigned to the solve stage.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span id="mdb-customdata-coreformiga-jobs-jobname-numgpus"><code>numGPUs</code></span></td>
+<td style="text-align: left;"><code>Optional[int]</code></td>
+<td style="text-align: left;">—</td>
+<td style="text-align: left;">Number of GPUs assigned to an Abaqus solve stage.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span id="mdb-customdata-coreformiga-jobs-jobname-multiprocessingmode"><code>multiprocessingMode</code></span></td>
+<td style="text-align: left;"><code>Optional[Union[ParallelMode, str]]</code></td>
+<td style="text-align: left;">—</td>
+<td style="text-align: left;">Parallelization mode for an Abaqus solve stage.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span id="mdb-customdata-coreformiga-jobs-jobname-threadsperprocess"><code>threadsPerProcess</code></span></td>
+<td style="text-align: left;"><code>Optional[int]</code></td>
+<td style="text-align: left;">—</td>
+<td style="text-align: left;">Threads assigned to each Abaqus solver process.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span id="mdb-customdata-coreformiga-jobs-jobname-numdomains"><code>numDomains</code></span></td>
+<td style="text-align: left;"><code>Optional[int]</code></td>
+<td style="text-align: left;">—</td>
+<td style="text-align: left;">Number of domains used by the Abaqus solver.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span id="mdb-customdata-coreformiga-jobs-jobname-memory"><code>memory</code></span></td>
+<td style="text-align: left;"><code>Optional[int]</code></td>
+<td style="text-align: left;">—</td>
+<td style="text-align: left;">Memory limit for an Abaqus solve stage.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span id="mdb-customdata-coreformiga-jobs-jobname-memoryunits"><code>memoryUnits</code></span></td>
+<td style="text-align: left;"><code>Optional[Union[MemoryUnits, str]]</code></td>
+<td style="text-align: left;">—</td>
+<td style="text-align: left;">Units used to interpret the Abaqus solver memory limit.</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="mdb-customdata-coreformiga-jobs-jobname-tospec" class="level4" data-number="2.2.2">
+<h4 data-number="2.2.2" class="anchored" data-anchor-id="mdb-customdata-coreformiga-jobs-jobname-tospec"><span class="header-section-number">2.2.2</span> <code>toSpec</code></h4>
+<p><strong>Defined on:</strong> <code>mdb.customData.CoreformIGA.jobs[jobName].toSpec</code></p>
+<p><strong>Description:</strong> Return the lossless portable specification for this Job record.</p>
+<p><strong>Call syntax</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> job.toSpec()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Returns</strong></p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Type</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>CoreformIGAJobSpec</code></td>
+<td style="text-align: left;">Return the lossless portable specification for this Job record.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Signatures</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>toSpec() <span class="op">-&gt;</span> CoreformIGAJobSpec</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Parameters</strong></p>
+<p>None.</p>
+</section>
+<section id="mdb-customdata-coreformiga-jobs-jobname-setvalues" class="level4" data-number="2.2.3">
+<h4 data-number="2.2.3" class="anchored" data-anchor-id="mdb-customdata-coreformiga-jobs-jobname-setvalues"><span class="header-section-number">2.2.3</span> <code>setValues</code></h4>
+<p><strong>Defined on:</strong> <code>mdb.customData.CoreformIGA.jobs[jobName].setValues</code></p>
+<p><strong>Description:</strong> Update this persistent Job through Abaqus-facing camelCase fields.</p>
+<p><strong>Call syntax</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>job.setValues(...)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Returns</strong></p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Type</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>None</code></td>
+<td style="text-align: left;">The record is updated in place.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Signatures</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>setValues(<span class="op">*</span>, model<span class="op">=</span>..., description<span class="op">=</span>..., meshExecutable<span class="op">=</span>..., mpiexec<span class="op">=</span>..., numIgaCpus<span class="op">=</span>..., interopExecutable<span class="op">=</span>..., numCpus<span class="op">=</span>..., numGPUs<span class="op">=</span>..., multiprocessingMode<span class="op">=</span>..., threadsPerProcess<span class="op">=</span>..., numDomains<span class="op">=</span>..., memory<span class="op">=</span>..., memoryUnits<span class="op">=</span>..., meshQueue<span class="op">=</span>..., interopQueue<span class="op">=</span>..., solveQueue<span class="op">=</span>...) <span class="op">-&gt;</span> <span class="va">None</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Parameters</strong></p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Name</th>
+<th style="text-align: left;">Type</th>
+<th style="text-align: left;">Required</th>
+<th style="text-align: left;">Default</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>model</code></td>
+<td style="text-align: left;"><code>str</code></td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">Current value</td>
+<td style="text-align: left;">Replace the Abaqus model name.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>description</code></td>
+<td style="text-align: left;"><code>str</code></td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">Current value</td>
+<td style="text-align: left;">Replace the Job description.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>meshExecutable</code></td>
+<td style="text-align: left;"><code>str</code></td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">Current value</td>
+<td style="text-align: left;">Replace the Mesh executable override.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>mpiexec</code></td>
+<td style="text-align: left;"><code>str</code></td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">Current value</td>
+<td style="text-align: left;">Replace the MPI launcher override.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>numIgaCpus</code></td>
+<td style="text-align: left;"><code>int</code></td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">Current value</td>
+<td style="text-align: left;">Replace the Mesh-stage CPU count.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>interopExecutable</code></td>
+<td style="text-align: left;"><code>str</code></td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">Current value</td>
+<td style="text-align: left;">Replace the interop executable override.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>numCpus</code></td>
+<td style="text-align: left;"><code>int</code></td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">Current value</td>
+<td style="text-align: left;">Replace the solve-stage CPU count.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>numGPUs</code></td>
+<td style="text-align: left;"><code>int</code></td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">Current value</td>
+<td style="text-align: left;">Replace the solve-stage GPU count.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>multiprocessingMode</code></td>
+<td style="text-align: left;"><code>ParallelMode or str</code></td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">Current value</td>
+<td style="text-align: left;">Replace the solver parallelization mode.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>threadsPerProcess</code></td>
+<td style="text-align: left;"><code>int or None</code></td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">Current value</td>
+<td style="text-align: left;">Replace the threads-per-process setting.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>numDomains</code></td>
+<td style="text-align: left;"><code>int or None</code></td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">Current value</td>
+<td style="text-align: left;">Replace the Abaqus solver domain count.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>memory</code></td>
+<td style="text-align: left;"><code>int</code></td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">Current value</td>
+<td style="text-align: left;">Replace the solver memory limit.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>memoryUnits</code></td>
+<td style="text-align: left;"><code>MemoryUnits or str</code></td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">Current value</td>
+<td style="text-align: left;">Replace the solver memory units.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>meshQueue</code></td>
+<td style="text-align: left;"><code>Local, RemoteQueue, Mapping[str, object], or None</code></td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">Current value</td>
+<td style="text-align: left;">Replace the Mesh-stage submission settings.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>interopQueue</code></td>
+<td style="text-align: left;"><code>Local, RemoteQueue, Mapping[str, object], or None</code></td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">Current value</td>
+<td style="text-align: left;">Replace the interop-stage submission settings.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>solveQueue</code></td>
+<td style="text-align: left;"><code>Local, RemoteQueue, Mapping[str, object], or None</code></td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">Current value</td>
+<td style="text-align: left;">Replace the solve-stage submission settings.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Raises</strong></p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Type</th>
+<th style="text-align: left;">Condition</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>ValidationError</code></td>
+<td style="text-align: left;">If an update is unsupported or produces an invalid Job.</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="mdb-customdata-coreformiga-jobs-jobname-buildmesh" class="level4" data-number="2.2.4">
+<h4 data-number="2.2.4" class="anchored" data-anchor-id="mdb-customdata-coreformiga-jobs-jobname-buildmesh"><span class="header-section-number">2.2.4</span> <code>buildMesh</code></h4>
+<p><strong>Defined on:</strong> <code>mdb.customData.CoreformIGA.jobs[jobName].buildMesh</code></p>
+<p><strong>Description:</strong> Run the Mesh and interop stages for this Job.</p>
+<p><strong>Call syntax</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> job.buildMesh()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Returns</strong></p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Type</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>JobExecutionResult</code></td>
+<td style="text-align: left;">Run the Mesh and interop stages for this Job.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Signatures</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>buildMesh(workDirectory: <span class="bu">object</span> <span class="op">=</span> <span class="va">None</span>) <span class="op">-&gt;</span> JobExecutionResult</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Parameters</strong></p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Name</th>
+<th style="text-align: left;">Type</th>
+<th style="text-align: left;">Required</th>
+<th style="text-align: left;">Default</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>workDirectory</code></td>
+<td style="text-align: left;"><code>object</code></td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;"><code>None</code></td>
+<td style="text-align: left;">Existing operation directory, or <code>None</code> to use the Job default.</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="mdb-customdata-coreformiga-jobs-jobname-writeinput" class="level4" data-number="2.2.5">
+<h4 data-number="2.2.5" class="anchored" data-anchor-id="mdb-customdata-coreformiga-jobs-jobname-writeinput"><span class="header-section-number">2.2.5</span> <code>writeInput</code></h4>
+<p><strong>Defined on:</strong> <code>mdb.customData.CoreformIGA.jobs[jobName].writeInput</code></p>
+<p><strong>Description:</strong> Write the raw Abaqus input deck consumed by the interop stage.</p>
+<p><strong>Call syntax</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>job.writeInput()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Returns</strong></p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Type</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>None</code></td>
+<td style="text-align: left;">—</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Signatures</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>writeInput(workDirectory: <span class="bu">object</span> <span class="op">=</span> <span class="va">None</span>) <span class="op">-&gt;</span> <span class="va">None</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Parameters</strong></p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Name</th>
+<th style="text-align: left;">Type</th>
+<th style="text-align: left;">Required</th>
+<th style="text-align: left;">Default</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>workDirectory</code></td>
+<td style="text-align: left;"><code>object</code></td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;"><code>None</code></td>
+<td style="text-align: left;">Existing operation directory, or <code>None</code> to use the Job default.</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="mdb-customdata-coreformiga-jobs-jobname-submit" class="level4" data-number="2.2.6">
+<h4 data-number="2.2.6" class="anchored" data-anchor-id="mdb-customdata-coreformiga-jobs-jobname-submit"><span class="header-section-number">2.2.6</span> <code>submit</code></h4>
+<p><strong>Defined on:</strong> <code>mdb.customData.CoreformIGA.jobs[jobName].submit</code></p>
+<p><strong>Description:</strong> Prepare and submit this Job through its configured pipeline.</p>
+<p><strong>Call syntax</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> job.submit()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Returns</strong></p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Type</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>JobExecutionResult</code></td>
+<td style="text-align: left;">Prepare and submit this Job through its configured pipeline.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Signatures</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>submit(workDirectory: <span class="bu">object</span> <span class="op">=</span> <span class="va">None</span>, overwriteExistingFiles: <span class="bu">bool</span> <span class="op">=</span> <span class="va">False</span>, consistencyChecking: <span class="bu">str</span> <span class="op">=</span> <span class="st">'ON'</span>) <span class="op">-&gt;</span> JobExecutionResult</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Parameters</strong></p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Name</th>
+<th style="text-align: left;">Type</th>
+<th style="text-align: left;">Required</th>
+<th style="text-align: left;">Default</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>workDirectory</code></td>
+<td style="text-align: left;"><code>object</code></td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;"><code>None</code></td>
+<td style="text-align: left;">Existing operation directory, or <code>None</code> to use the Job default.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>overwriteExistingFiles</code></td>
+<td style="text-align: left;"><code>bool</code></td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;"><code>False</code></td>
+<td style="text-align: left;">Whether recognized prior Job outputs may be replaced.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>consistencyChecking</code></td>
+<td style="text-align: left;"><code>str</code></td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;"><code>'ON'</code></td>
+<td style="text-align: left;">Abaqus input-generation consistency-checking value.</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="mdb-customdata-coreformiga-jobs-jobname-waitforcompletion" class="level4" data-number="2.2.7">
+<h4 data-number="2.2.7" class="anchored" data-anchor-id="mdb-customdata-coreformiga-jobs-jobname-waitforcompletion"><span class="header-section-number">2.2.7</span> <code>waitForCompletion</code></h4>
+<p><strong>Defined on:</strong> <code>mdb.customData.CoreformIGA.jobs[jobName].waitForCompletion</code></p>
+<p><strong>Description:</strong> Block until a submitted Job finishes.</p>
+<p><strong>Call syntax</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>job.waitForCompletion()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Returns</strong></p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Type</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>None</code></td>
+<td style="text-align: left;">—</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Signatures</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>waitForCompletion() <span class="op">-&gt;</span> <span class="va">None</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Parameters</strong></p>
+<p>None.</p>
+</section>
+<section id="mdb-customdata-coreformiga-jobs-jobname-kill" class="level4" data-number="2.2.8">
+<h4 data-number="2.2.8" class="anchored" data-anchor-id="mdb-customdata-coreformiga-jobs-jobname-kill"><span class="header-section-number">2.2.8</span> <code>kill</code></h4>
+<p><strong>Defined on:</strong> <code>mdb.customData.CoreformIGA.jobs[jobName].kill</code></p>
+<p><strong>Description:</strong> Terminate the running process associated with this Job.</p>
+<p><strong>Call syntax</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>job.kill()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Returns</strong></p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Type</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>None</code></td>
+<td style="text-align: left;">—</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Signatures</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>kill() <span class="op">-&gt;</span> <span class="va">None</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Parameters</strong></p>
+<p>None.</p>
+</section>
+<section id="mdb-customdata-coreformiga-jobs-jobname-getruntimestatus" class="level4" data-number="2.2.9">
+<h4 data-number="2.2.9" class="anchored" data-anchor-id="mdb-customdata-coreformiga-jobs-jobname-getruntimestatus"><span class="header-section-number">2.2.9</span> <code>getRuntimeStatus</code></h4>
+<p><strong>Defined on:</strong> <code>mdb.customData.CoreformIGA.jobs[jobName].getRuntimeStatus</code></p>
+<p><strong>Description:</strong> Return a snapshot of this Job’s current runtime status.</p>
+<p><strong>Call syntax</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> job.getRuntimeStatus()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Returns</strong></p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Type</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>dict[str, object]</code></td>
+<td style="text-align: left;">Return a snapshot of this Job’s current runtime status.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Signatures</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>getRuntimeStatus() <span class="op">-&gt;</span> <span class="bu">dict</span>[<span class="bu">str</span>, <span class="bu">object</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Parameters</strong></p>
+<p>None.</p>
+</section>
+<section id="mdb-customdata-coreformiga-jobs-jobname-writerunscript" class="level4" data-number="2.2.10">
+<h4 data-number="2.2.10" class="anchored" data-anchor-id="mdb-customdata-coreformiga-jobs-jobname-writerunscript"><span class="header-section-number">2.2.10</span> <code>writeRunScript</code></h4>
+<p><strong>Defined on:</strong> <code>mdb.customData.CoreformIGA.jobs[jobName].writeRunScript</code></p>
+<p><strong>Description:</strong> Write this Job pipeline as a runnable script file.</p>
+<p><strong>Call syntax</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>job.writeRunScript(fileName<span class="op">=</span>fileName)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Returns</strong></p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Type</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>None</code></td>
+<td style="text-align: left;">—</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Signatures</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>writeRunScript(fileName: <span class="bu">object</span>, dialect: <span class="bu">str</span> <span class="op">=</span> <span class="st">'POWERSHELL'</span>, prepareInputs: <span class="bu">bool</span> <span class="op">=</span> <span class="va">True</span>) <span class="op">-&gt;</span> <span class="va">None</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Parameters</strong></p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Name</th>
+<th style="text-align: left;">Type</th>
+<th style="text-align: left;">Required</th>
+<th style="text-align: left;">Default</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>fileName</code></td>
+<td style="text-align: left;"><code>object</code></td>
+<td style="text-align: left;">Yes</td>
+<td style="text-align: left;">—</td>
+<td style="text-align: left;">Destination script path accepted by the Abaqus file API.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>dialect</code></td>
+<td style="text-align: left;"><code>str</code></td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;"><code>'POWERSHELL'</code></td>
+<td style="text-align: left;">Uppercase script dialect accepted by <code>render_script</code>.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>prepareInputs</code></td>
+<td style="text-align: left;"><code>bool</code></td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;"><code>True</code></td>
+<td style="text-align: left;">Whether to write required Abaqus inputs before rendering the script.</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="mdb-customdata-coreformiga-jobs-jobname-openodb" class="level4" data-number="2.2.11">
+<h4 data-number="2.2.11" class="anchored" data-anchor-id="mdb-customdata-coreformiga-jobs-jobname-openodb"><span class="header-section-number">2.2.11</span> <code>openOdb</code></h4>
+<p><strong>Defined on:</strong> <code>mdb.customData.CoreformIGA.jobs[jobName].openOdb</code></p>
+<p><strong>Description:</strong> Open and return this Job’s Abaqus output database.</p>
+<p><strong>Call syntax</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> job.openOdb()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Returns</strong></p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Type</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>object</code></td>
+<td style="text-align: left;">Open and return this Job’s Abaqus output database.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Signatures</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>openOdb() <span class="op">-&gt;</span> <span class="bu">object</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Parameters</strong></p>
+<p>None.</p>
+
+
+</section>
+</section>
+</section>
+
+</main> <!-- /main -->
+<!-- Version badge and switcher for versioned CIFA documentation snapshots.
+     version.json (written by write_version_manifest.py) sits at the site root;
+     versions.json (written by ./build docs cifa deploy) sits one level above
+     the snapshot directory and lists every published version. -->
+<script>
+(function () {
+  function siteRoot() {
+    var script = document.querySelector('script[src*="site_libs/quarto-html/"]');
+    if (script) { return script.getAttribute("src").split("site_libs/")[0]; }
+    var logo = document.querySelector('.sidebar-logo, .navbar-logo');
+    if (logo && logo.getAttribute("src")) { return logo.getAttribute("src").split("assets/")[0]; }
+    return "./";
+  }
+  var root = siteRoot();
+  var badge = document.getElementById("cifa-version-badge");
+  if (!badge) { return; }
+  fetch(root + "version.json").then(function (r) { return r.ok ? r.json() : null; }).then(function (manifest) {
+    if (!manifest) { return; }
+    var label = manifest.channel === "release" ? manifest.version
+              : manifest.channel === "development" ? "development (" + manifest.version + ")"
+              : "local render (" + manifest.version + ")";
+    badge.textContent = "Version: " + label;
+    if (manifest.channel === "local") { return; }
+    return fetch(root + "../versions.json").then(function (r) { return r.ok ? r.json() : null; }).then(function (versions) {
+      if (!versions) { return; }
+      var select = document.createElement("select");
+      select.className = "form-select form-select-sm";
+      select.setAttribute("aria-label", "Documentation version");
+      function option(value, text, selected) {
+        var o = document.createElement("option"); o.value = value; o.textContent = text; o.selected = !!selected; select.appendChild(o);
+      }
+      var current = manifest.channel === "release" ? manifest.version : "development";
+      if (versions.development) { option("development", "development", current === "development"); }
+      (versions.releases || []).forEach(function (name) {
+        option(name, name === versions.latest ? name + " (latest)" : name, current === name);
+      });
+      select.addEventListener("change", function () {
+        var here = window.location.pathname;
+        var rootPath = new URL(root, window.location.href).pathname;
+        var relative = here.startsWith(rootPath) ? here.slice(rootPath.length) : "";
+        window.location.href = new URL("../" + select.value + "/" + relative, new URL(root, window.location.href)).href;
+      });
+      badge.appendChild(document.createElement("br"));
+      badge.appendChild(select);
+    });
+  }).catch(function () {});
+})();
+</script>
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

@@ -32,10 +32,10 @@ from wht_iga.verification import (
     write_coreform_csv,
 )
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
+WHT_IGA_ROOT = Path(__file__).resolve().parents[2]
 COREFORM_ROARK_CSV = (
-    REPO_ROOT
-    / "research-coreform-IGA"
+    WHT_IGA_ROOT
+    / "research-cf-IGA"
     / "user-guide"
     / "generated-downloads"
     / "verification-manual"

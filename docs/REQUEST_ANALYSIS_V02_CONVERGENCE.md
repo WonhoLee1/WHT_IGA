@@ -4,7 +4,7 @@
 
 ## 0. 프로젝트 맥락 (최소)
 
-- 저장소: `D:\PythonCodeStudy\CAD-CAE-COPILOT\WHT_IGA` (Kratos 10.4.3 + Python immersed IGA). 계획서 `research-coreform-IGA/master-plan_v2.1.md` (§7.4 절단 적분, §7.5 extension, §10.1 V02).
+- 저장소: `D:\PythonCodeStudy\CAD-CAE-COPILOT\WHT_IGA` (Kratos 10.4.3 + Python immersed IGA). 계획서 `WHT_IGA/research-cf-IGA/master-plan_v2.1.md` (§7.4 절단 적분, §7.5 extension, §10.1 V02).
 - 경로 R1: 배경 직교 B-spline 격자(p=2), 셀마다 Kratos 적분점 기하 + `SmallDisplacementElement3D4N`, 절단 셀은 Python에서 만든 적분 규칙(`qp_table`)을 넘긴다. OUT 셀은 ghost 강성 α=1e-8.
 - 실행 환경: `D:\mamba\envs\whtiga\python.exe`. Kratos 소스(`D:\PythonCodeStudy\kratos-src`)·빌드(`E:\kratos-build`) 수정 금지, 재빌드 금지. skip/xfail로 실패 숨기기 금지.
 

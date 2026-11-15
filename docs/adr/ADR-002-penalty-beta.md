@@ -2,7 +2,7 @@
 
 - Status: decided (Track SOLVE, Phase 1)
 - Date: 2026-11-14 / branch: WHTIGA / Kratos 10.4.3 source build (`E:\kratos-build\install`)
-- Plan ref: `research-coreform-IGA/master-plan_v2.md` section 5.4, 7.6
+- Plan ref: `WHT_IGA/research-cf-IGA/master-plan_v2.md` section 5.4, 7.6
   (beta = c_pen . E . p^2 / h, default c_pen = 1e3 placeholder, fixed by sweep)
 
 ## Decision

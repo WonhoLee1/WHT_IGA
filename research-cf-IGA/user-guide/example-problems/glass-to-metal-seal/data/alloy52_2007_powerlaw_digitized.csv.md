@@ -1,0 +1,19 @@
+# https://docs.coreform.com/cifa/latest/example-problems/glass-to-metal-seal/data/alloy52_2007_powerlaw_digitized.csv
+
+Source: https://docs.coreform.com/cifa/latest/example-problems/glass-to-metal-seal/data/alloy52_2007_powerlaw_digitized.csv
+
+---
+
+source_total_true_strain,equivalent_plastic_strain,true_stress_MPa
+0.00113247,0.00000000,234.4
+0.00500000,0.00380147,248.1
+0.01000000,0.00853668,302.9
+0.02000000,0.01823704,364.9
+0.03000000,0.02804194,405.3
+0.05000000,0.04776321,463.0
+0.07500000,0.07252629,512.1
+0.10000000,0.09734163,550.3
+0.12500000,0.12219182,581.3
+0.15000000,0.14705942,608.7
+0.17500000,0.17194793,631.8
+0.18000000,0.17692702,636.1

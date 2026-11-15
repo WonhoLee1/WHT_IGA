@@ -1,0 +1,22 @@
+# https://docs.coreform.com/cifa/latest/generated-downloads/verification-manual/problems/solid_mechanics/linear_elastic_stress/beam-bending/beam-bending-pressure-total-force-trim-performance.csv
+
+Source: https://docs.coreform.com/cifa/latest/generated-downloads/verification-manual/problems/solid_mechanics/linear_elastic_stress/beam-bending/beam-bending-pressure-total-force-trim-performance.csv
+
+---
+
+load_case,p,level,h_z,background_elements,active_elements,trimmed_elements,num_cpus,wall_s
+pressure_total_force,1,0,0.25,63,5,2,1,3.0155901089310646
+pressure_total_force,1,1,0.125,275,81,74,2,2.624512903392315
+pressure_total_force,1,2,0.0625,931,425,290,4,8.61634973436594
+pressure_total_force,1,3,0.03125,4235,2673,1154,8,32.59697627276182
+pressure_total_force,1,4,0.015625,24187,18785,4610,16,124.34804318100214
+pressure_total_force,2,0,0.25,225,5,2,1,4.029842972755432
+pressure_total_force,2,1,0.125,637,81,74,2,7.4352040737867355
+pressure_total_force,2,2,0.0625,1701,425,290,4,9.391088388860226
+pressure_total_force,2,3,0.03125,6253,2673,1154,8,28.458363860845566
+pressure_total_force,2,4,0.015625,30429,18785,4610,16,218.29145766049623
+pressure_total_force,3,0,0.25,539,5,2,1,21.473360888659954
+pressure_total_force,3,1,0.125,1215,81,74,2,22.510974928736687
+pressure_total_force,3,2,0.0625,2783,425,290,4,28.93203355371952
+pressure_total_force,3,3,0.03125,8775,2673,1154,8,57.741316586732864
+pressure_total_force,3,4,0.015625,37559,18785,4610,16,151.23458413779736

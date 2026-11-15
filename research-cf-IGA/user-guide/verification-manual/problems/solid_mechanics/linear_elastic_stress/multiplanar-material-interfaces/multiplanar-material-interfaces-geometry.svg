@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 560" role="img" aria-labelledby="title desc">
+  <title id="title">Multi-planar material-interface cross-sections</title>
+  <desc id="desc">One monolithic reference and six square cross-sections partitioned into two or three material cells.</desc>
+  <style>
+    .panel { fill: #fff; stroke: #d8dde3; stroke-width: 2; rx: 8; }
+    .outline { stroke: #20252b; stroke-width: 2; stroke-linejoin: round; }
+    .a { fill: #F04562; }
+    .b { fill: #F6772A; }
+    .c { fill: #F8CE32; }
+    .label { font: 18px sans-serif; fill: #292f36; text-anchor: middle; }
+    .sub { font: 14px sans-serif; fill: #59616b; text-anchor: middle; }
+  </style>
+
+  <g transform="translate(20 20)">
+    <rect class="panel" width="250" height="245"/>
+    <rect class="a outline" x="55" y="25" width="140" height="140"/>
+    <text class="label" x="125" y="198">Monolithic reference</text>
+    <text class="sub" x="125" y="222">one cell</text>
+  </g>
+
+  <g transform="translate(295 20)">
+    <rect class="panel" width="250" height="245"/>
+    <path class="a outline" d="M55 165H101.667V118.333H148.333V165H195V25H55Z"/>
+    <rect class="b outline" x="101.667" y="118.333" width="46.666" height="46.667"/>
+    <text class="label" x="125" y="198">Bottom-centered ⅓</text>
+    <text class="sub" x="125" y="222">two cells</text>
+  </g>
+
+  <g transform="translate(570 20)">
+    <rect class="panel" width="250" height="245"/>
+    <path class="a outline" d="M125 165H195V25H55V95H125Z"/>
+    <rect class="b outline" x="55" y="95" width="70" height="70"/>
+    <text class="label" x="125" y="198">Bottom-left ½</text>
+    <text class="sub" x="125" y="222">two cells</text>
+  </g>
+
+  <g transform="translate(845 20)">
+    <rect class="panel" width="250" height="245"/>
+    <path class="a outline" fill-rule="evenodd" d="M55 25H195V165H55ZM101.667 71.667V118.333H148.333V71.667Z"/>
+    <rect class="b outline" x="101.667" y="71.667" width="46.666" height="46.666"/>
+    <text class="label" x="125" y="198">Centered ⅓</text>
+    <text class="sub" x="125" y="222">two cells</text>
+  </g>
+
+  <g transform="translate(157.5 295)">
+    <rect class="panel" width="250" height="245"/>
+    <path class="a outline" d="M55 71.667H101.667L148.333 118.333H195V25H55Z"/>
+    <path class="b outline" d="M55 71.667H101.667L148.333 118.333H195V165H55Z"/>
+    <text class="label" x="125" y="198">Zig-zag</text>
+    <text class="sub" x="125" y="222">two equal cells</text>
+  </g>
+
+  <g transform="translate(435 295)">
+    <rect class="panel" width="250" height="245"/>
+    <path class="a outline" d="M55 71.667H125V118.333H195V25H55Z"/>
+    <path class="b outline" d="M55 71.667H125V118.333H195V165H55Z"/>
+    <text class="label" x="125" y="198">Nested L</text>
+    <text class="sub" x="125" y="222">two equal cells</text>
+  </g>
+
+  <g transform="translate(712.5 295)">
+    <rect class="panel" width="250" height="245"/>
+    <path class="b outline" d="M55 25H101.667V118.333H148.333V165H55Z"/>
+    <path class="a outline" d="M101.667 25H195V165H148.333V71.667H101.667Z"/>
+    <rect class="c outline" x="101.667" y="71.667" width="46.666" height="46.666"/>
+    <text class="label" x="125" y="198">Tetris</text>
+    <text class="sub" x="125" y="222">two L cells + square</text>
+  </g>
+</svg>

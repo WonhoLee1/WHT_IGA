@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="430" viewBox="0 0 1100 430" role="img"
+     aria-labelledby="title description">
+  <title id="title">NAFEMS P18 T2 geometry and thermal boundary conditions</title>
+  <desc id="description">A 0.1 metre conducting rod held at one thousand kelvin at end A and radiating to a three hundred kelvin environment at end B.</desc>
+  <defs>
+    <marker id="arrow-dark" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="8" markerHeight="8"
+            orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#30475c"/>
+    </marker>
+    <marker id="arrow-red" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8"
+            orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#c44b40"/>
+    </marker>
+    <style>
+      .body { fill: #e8f0f5; stroke: #20384d; stroke-width: 6; }
+      .label { fill: #20384d; font: 30px Arial, Helvetica, sans-serif; }
+      .thermal { fill: #b63f34; font: 29px Arial, Helvetica, sans-serif; }
+      .dimension { fill: none; stroke: #30475c; stroke-width: 3; marker-start: url(#arrow-dark); marker-end: url(#arrow-dark); }
+      .flux { fill: none; stroke: #c44b40; stroke-width: 5; marker-end: url(#arrow-red); }
+    </style>
+  </defs>
+
+  <rect class="body" x="175" y="125" width="700" height="115" rx="6"/>
+  <line x1="175" y1="95" x2="175" y2="270" stroke="#c44b40" stroke-width="10"/>
+  <text class="label" x="145" y="82">A</text>
+  <text class="label" x="870" y="82">B</text>
+  <text class="thermal" x="55" y="190">1000 K</text>
+  <text class="label" x="525" y="195" text-anchor="middle">k = 55.6 W/(m K)</text>
+
+  <line class="flux" x1="895" y1="145" x2="985" y2="95"/>
+  <line class="flux" x1="895" y1="183" x2="1005" y2="183"/>
+  <line class="flux" x1="895" y1="220" x2="985" y2="270"/>
+  <text class="label" x="930" y="320" text-anchor="middle">radiation</text>
+  <text class="label" x="930" y="355" text-anchor="middle">T∞ = 300 K</text>
+
+  <line class="dimension" x1="180" y1="305" x2="870" y2="305"/>
+  <text class="label" x="525" y="350" text-anchor="middle">0.1 m</text>
+</svg>

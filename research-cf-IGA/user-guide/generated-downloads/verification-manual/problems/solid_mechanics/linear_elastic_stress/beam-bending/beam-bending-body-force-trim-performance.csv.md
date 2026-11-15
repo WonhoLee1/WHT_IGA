@@ -1,0 +1,22 @@
+# https://docs.coreform.com/cifa/latest/generated-downloads/verification-manual/problems/solid_mechanics/linear_elastic_stress/beam-bending/beam-bending-body-force-trim-performance.csv
+
+Source: https://docs.coreform.com/cifa/latest/generated-downloads/verification-manual/problems/solid_mechanics/linear_elastic_stress/beam-bending/beam-bending-body-force-trim-performance.csv
+
+---
+
+load_case,p,level,h_z,background_elements,active_elements,trimmed_elements,num_cpus,wall_s
+body_force,1,0,0.25,63,5,2,1,3.4408351331949234
+body_force,1,1,0.125,275,81,74,2,3.148470088839531
+body_force,1,2,0.0625,931,425,290,4,8.956209026277065
+body_force,1,3,0.03125,4235,2673,1154,8,27.127060033380985
+body_force,1,4,0.015625,24187,18785,4610,16,140.93904278427362
+body_force,2,0,0.25,225,5,2,1,5.387706644833088
+body_force,2,1,0.125,637,81,74,2,4.246512182056904
+body_force,2,2,0.0625,1701,425,290,4,10.271178655326366
+body_force,2,3,0.03125,6253,2673,1154,8,34.14317063987255
+body_force,2,4,0.015625,30429,18785,4610,16,126.12883312255144
+body_force,3,0,0.25,539,5,2,1,21.998806558549404
+body_force,3,1,0.125,1215,81,74,2,22.362249620258808
+body_force,3,2,0.0625,2783,425,290,4,28.611098989844322
+body_force,3,3,0.03125,8775,2673,1154,8,55.38422288000584
+body_force,3,4,0.015625,37559,18785,4610,16,169.50393670797348

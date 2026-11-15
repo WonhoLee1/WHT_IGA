@@ -1,0 +1,22 @@
+# https://docs.coreform.com/cifa/latest/generated-downloads/verification-manual/problems/solid_mechanics/linear_elastic_stress/beam-bending/beam-bending-gravity-trim-performance.csv
+
+Source: https://docs.coreform.com/cifa/latest/generated-downloads/verification-manual/problems/solid_mechanics/linear_elastic_stress/beam-bending/beam-bending-gravity-trim-performance.csv
+
+---
+
+load_case,p,level,h_z,background_elements,active_elements,trimmed_elements,num_cpus,wall_s
+gravity,1,0,0.25,63,5,2,1,1.2401188537478447
+gravity,1,1,0.125,275,81,74,2,2.6550554409623146
+gravity,1,2,0.0625,931,425,290,4,6.951254032552242
+gravity,1,3,0.03125,4235,2673,1154,8,26.596811413764954
+gravity,1,4,0.015625,24187,18785,4610,16,117.70206340402365
+gravity,2,0,0.25,225,5,2,1,5.607419431209564
+gravity,2,1,0.125,637,81,74,2,3.960497163236141
+gravity,2,2,0.0625,1701,425,290,4,9.599182039499283
+gravity,2,3,0.03125,6253,2673,1154,8,35.46610866487026
+gravity,2,4,0.015625,30429,18785,4610,16,128.5946617424488
+gravity,3,0,0.25,539,5,2,1,32.794266775250435
+gravity,3,1,0.125,1215,81,74,2,22.488292403519154
+gravity,3,2,0.0625,2783,425,290,4,28.928487688302994
+gravity,3,3,0.03125,8775,2673,1154,8,55.36787270009518
+gravity,3,4,0.015625,37559,18785,4610,16,175.55198961496353

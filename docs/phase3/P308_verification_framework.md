@@ -27,7 +27,7 @@ Coreform IGA for Abaqus Verification Manual(`V01`–`V12`) 및 Example Problems(
 ### 2.2 `catalog.py`
 - 데이터클래스: `ProbeSpec` (종류: `"point"`, `"face_grid"`, `"line"`, `"volume_quadrature"`, `"history"`), `SweepSpec` (`degrees`, `continuities`, `mesh_sizes`, `workflows`, `load_cases`, `time_steps`, `padding`), `CaseCatalogEntry` (Phase Gate `"G1"`–`"G5"` 매핑 포함).
 - `CASE_CATALOG`: 17개 전체 케이스(`V01`–`V12`, `E01`–`E05`) 등록.
-- 헬퍼 함수: `get_catalog_entry(case_id)`, `list_cases_by_phase(phase_gate)`, `resolve_reference_csvs(case_id, user_guide_root=None)` (`research-coreform-IGA/user-guide/` 하위 CSV 경로 해석).
+- 헬퍼 함수: `get_catalog_entry(case_id)`, `list_cases_by_phase(phase_gate)`, `resolve_reference_csvs(case_id, user_guide_root=None)` (`WHT_IGA/research-cf-IGA/user-guide/` 하위 CSV 경로 해석).
 
 ---
 

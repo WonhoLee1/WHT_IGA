@@ -2,7 +2,7 @@
 
 - 상태: **확정** (사용자 승인 2026-11-14 — v2 D1)
 - 날짜: 2026-11-14 / 브랜치: WHTIGA / Kratos 10.4.3 소스빌드 (`E:\kratos-build\install`, 96bad120)
-- 결정 트리 근거: `research-coreform-IGA/master-plan_v2.md` §5.3
+- 결정 트리 근거: `WHT_IGA/research-cf-IGA/master-plan_v2.md` §5.3
   ("S03·S04·S05 통과 → R1. S05만 실패 → R2. S04 실패 → R3 + C++ 조기 착수")
 
 ## 결정

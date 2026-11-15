@@ -5,7 +5,7 @@
 - 분석 대상 파일 및 최신 증거:
   - [`WHT_IGA/docs/phase2/evidence/v06_nnlsfix/`](file:///D:/PythonCodeStudy/CAD-CAE-COPILOT/WHT_IGA/docs/phase2/evidence/v06_nnlsfix/) (`L0_p1_drop.json`, `L0_p2_drop.json`, [`L0_p3_drop.json`](file:///D:/PythonCodeStudy/CAD-CAE-COPILOT/WHT_IGA/docs/phase2/evidence/v06_nnlsfix/L0_p3_drop.json), `L1_p1_drop.json`, `L1_p2_drop.json`, `L2_p1_drop.json`, [`L2_p2_drop.json`](file:///D:/PythonCodeStudy/CAD-CAE-COPILOT/WHT_IGA/docs/phase2/evidence/v06_nnlsfix/L2_p2_drop.json))
   - [`WHT_IGA/tests/kratos_spikes/test_p2mesh_v06.py`](file:///D:/PythonCodeStudy/CAD-CAE-COPILOT/WHT_IGA/tests/kratos_spikes/test_p2mesh_v06.py), [`test_p2mesh_v06geo.py`](file:///D:/PythonCodeStudy/CAD-CAE-COPILOT/WHT_IGA/tests/kratos_spikes/test_p2mesh_v06geo.py)
-  - [`pressurized-sphere-qoi.csv`](file:///D:/PythonCodeStudy/CAD-CAE-COPILOT/research-coreform-IGA/user-guide/generated-downloads/verification-manual/problems/solid_mechanics/linear_elastic_stress/pressurized-sphere/pressurized-sphere-qoi.csv), [`pressurized-sphere.md`](file:///D:/PythonCodeStudy/CAD-CAE-COPILOT/research-coreform-IGA/user-guide/verification-manual/problems/solid_mechanics/linear_elastic_stress/pressurized-sphere/pressurized-sphere.md)
+  - [`pressurized-sphere-qoi.csv`](file:///D:/PythonCodeStudy/CAD-CAE-COPILOT/WHT_IGA/research-cf-IGA/user-guide/generated-downloads/verification-manual/problems/solid_mechanics/linear_elastic_stress/pressurized-sphere/pressurized-sphere-qoi.csv), [`pressurized-sphere.md`](file:///D:/PythonCodeStudy/CAD-CAE-COPILOT/WHT_IGA/research-cf-IGA/user-guide/verification-manual/problems/solid_mechanics/linear_elastic_stress/pressurized-sphere/pressurized-sphere.md)
   - [`WHT_IGA/wht_iga/reference/box.py`](file:///D:/PythonCodeStudy/CAD-CAE-COPILOT/WHT_IGA/wht_iga/reference/box.py), [`wht_iga/solver/penalty.py`](file:///D:/PythonCodeStudy/CAD-CAE-COPILOT/WHT_IGA/wht_iga/solver/penalty.py), [`wht_iga/solver/trimmed.py`](file:///D:/PythonCodeStudy/CAD-CAE-COPILOT/WHT_IGA/wht_iga/solver/trimmed.py), [`wht_iga/stabilize/extension.py`](file:///D:/PythonCodeStudy/CAD-CAE-COPILOT/WHT_IGA/wht_iga/stabilize/extension.py)
   - [`WHT_IGA/scripts/vcond_roark.py`](file:///D:/PythonCodeStudy/CAD-CAE-COPILOT/WHT_IGA/scripts/vcond_roark.py), [`WHT_IGA/docs/phase1/evidence/vcond/results.json`](file:///D:/PythonCodeStudy/CAD-CAE-COPILOT/WHT_IGA/docs/phase1/evidence/vcond/results.json), [`WHT_IGA/scripts/v02_roark.py`](file:///D:/PythonCodeStudy/CAD-CAE-COPILOT/WHT_IGA/scripts/v02_roark.py)
 
@@ -40,7 +40,7 @@
 
 ### 1.2 Coreform(`0.584%`)과의 차이 원인: 이론적 잠김 + 이산화 구조
 
-[`pressurized-sphere-qoi.csv`](file:///D:/PythonCodeStudy/CAD-CAE-COPILOT/research-coreform-IGA/user-guide/generated-downloads/verification-manual/problems/solid_mechanics/linear_elastic_stress/pressurized-sphere/pressurized-sphere-qoi.csv#L2-L21) 및 [`pressurized-sphere.md`](file:///D:/PythonCodeStudy/CAD-CAE-COPILOT/research-coreform-IGA/user-guide/verification-manual/problems/solid_mechanics/linear_elastic_stress/pressurized-sphere/pressurized-sphere.md#L356-L460) §8을 대조하면 매우 시사적인 패턴이 나타납니다.
+[`pressurized-sphere-qoi.csv`](file:///D:/PythonCodeStudy/CAD-CAE-COPILOT/WHT_IGA/research-cf-IGA/user-guide/generated-downloads/verification-manual/problems/solid_mechanics/linear_elastic_stress/pressurized-sphere/pressurized-sphere-qoi.csv#L2-L21) 및 [`pressurized-sphere.md`](file:///D:/PythonCodeStudy/CAD-CAE-COPILOT/WHT_IGA/research-cf-IGA/user-guide/verification-manual/problems/solid_mechanics/linear_elastic_stress/pressurized-sphere/pressurized-sphere.md#L356-L460) §8을 대조하면 매우 시사적인 패턴이 나타납니다.
 
 | 지표 (`p=1`) | Coreform (`plain immersed`) | Coreform (`regproj` / `wt2`) | **WHT_IGA (`p=1`)** | 해석 |
 |---|---|---|---|---|
@@ -56,7 +56,7 @@
    - 실제 구각 변형은 반경 압축($\varepsilon_{rr} < 0$)과 두 직교 원주 방향 인장($\varepsilon_{\theta\theta} = \varepsilon_{\phi\phi} > 0$)이 구면 법선 $\hat{\mathbf{r}}$ 기준으로 발생하지만, 직교 좌표축에 비스듬히 놓인 단일 $Q_1$ 삼선형 요소는 굽힘/곡률 변형을 **기생 전단 변형률(Parasitic Shear) 에너지**로 과잉 평가하여 변위 진폭을 에너지적으로 억제(또는 바이어스)합니다.
    - 실제로 위에서 구한 $L^2$ 투영(`0.086%`) 대비 에너지 노름(Galerkin) 변위 오차가 `1.020%`로 12배 큰 이유가 바로 **두께 1셀 $Q_1$ 요소의 잠김에 의한 에너지 투영 찌그러짐**이며, $L1$부터 두께 2셀 이상이 되자 수렴율 `1.80 → 1.94`로 잠김이 즉시 풀립니다.
 2. **기술적 원인 — Coreform Abaqus 솔버의 패딩 격자 및 자유도 추출 차이:**
-   - [`pressurized-sphere.md`](file:///D:/PythonCodeStudy/CAD-CAE-COPILOT/research-coreform-IGA/user-guide/verification-manual/problems/solid_mechanics/linear_elastic_stress/pressurized-sphere/pressurized-sphere.md#L356-L460)에 따르면, Coreform의 $h=0.1, p=1$ 배경 격자는 `(10 + 2p)^3 = 12^3 = 1,728` 셀(Unclamped 노트용 양측 유령 셀 패딩)이며 Abaqus 입력 생성 시 **`2,860`개 요소 / `2,195`개 노드(`6,585` DOFs)**(`regproj`: `12,174` DOFs, `wt2`: `9,834` DOFs)를 풉니다.
+   - [`pressurized-sphere.md`](file:///D:/PythonCodeStudy/CAD-CAE-COPILOT/WHT_IGA/research-cf-IGA/user-guide/verification-manual/problems/solid_mechanics/linear_elastic_stress/pressurized-sphere/pressurized-sphere.md#L356-L460)에 따르면, Coreform의 $h=0.1, p=1$ 배경 격자는 `(10 + 2p)^3 = 12^3 = 1,728` 셀(Unclamped 노트용 양측 유령 셀 패딩)이며 Abaqus 입력 생성 시 **`2,860`개 요소 / `2,195`개 노드(`6,585` DOFs)**(`regproj`: `12,174` DOFs, `wt2`: `9,834` DOFs)를 풉니다.
    - 반면 WHT_IGA는 `10^3 = 1,000` 셀의 순수 B-spline 제어점 **`509`개 마스터 노드(`1,527` DOFs, Coreform의 1/4 자유도)**로 완전 적분만 수행합니다.
 3. **부가 구현 디테일 — [`extension.py:144`](file:///D:/PythonCodeStudy/CAD-CAE-COPILOT/WHT_IGA/wht_iga/stabilize/extension.py#L144) 타이브레이킹:**
    - [`trimmed.py:267`](file:///D:/PythonCodeStudy/CAD-CAE-COPILOT/WHT_IGA/wht_iga/solver/trimmed.py#L267)이 `E.build_extension(..., outward=None)`으로 호출하여 동거리 마스터 블록 선택 시 내향 법선($-\hat{\mathbf{r}}$) 대신 사전식 인덱스 `(k0, j0, i0)`로 타이브레이킹합니다. (단, 실험 2 확인 결과 `L0 p=1` 변위 영향은 `0.0045%p`로 미미합니다.)
@@ -92,7 +92,7 @@
    - 예측 `n_geo=192` 바닥(`ur`): $\frac{8.690\times 10^{-4}}{64} = \mathbf{1.358 \times 10^{-5}}$ $\Longleftrightarrow$ 실측 `L2 p=2`: **`1.358e-5`**
    **유효숫자 3자리까지 완벽히 일치합니다!** 즉 `L2 p=2`의 오차조차 거의 전부가 `n_geo=192` 기하 오차였습니다.
 4. **현재 실행 중인 `L2 p=3`(`n_geo=192`)에 대한 예측**:
-   - [`pressurized-sphere-qoi.csv:42-45`](file:///D:/PythonCodeStudy/CAD-CAE-COPILOT/research-coreform-IGA/user-guide/generated-downloads/verification-manual/problems/solid_mechanics/linear_elastic_stress/pressurized-sphere/pressurized-sphere-qoi.csv#L42-L45)의 `p=3, level=2` 허용치는 `u ≤ 2.5e-5`, **`ur ≤ 5.0e-6`**, `srr ≤ 1.0e-3`, `stt ≤ 8.0e-5`입니다.
+   - [`pressurized-sphere-qoi.csv:42-45`](file:///D:/PythonCodeStudy/CAD-CAE-COPILOT/WHT_IGA/research-cf-IGA/user-guide/generated-downloads/verification-manual/problems/solid_mechanics/linear_elastic_stress/pressurized-sphere/pressurized-sphere-qoi.csv#L42-L45)의 `p=3, level=2` 허용치는 `u ≤ 2.5e-5`, **`ur ≤ 5.0e-6`**, `srr ≤ 1.0e-3`, `stt ≤ 8.0e-5`입니다.
    - `n_geo=192`로는 기하 바닥만 `ur ≈ 1.36e-5 > 5.0e-6`이므로, **`L2 p=3`은 `u, srr, stt`는 통과하더라도 `ur` 한 항목에서 반드시 `1.36e-5 > 5.0e-6`로 FAIL**할 수밖에 없습니다.
 
 #### ✅ `V06 p=3` (`L0_p3`, `L1_p3`, `L2_p3`) PASS 해법

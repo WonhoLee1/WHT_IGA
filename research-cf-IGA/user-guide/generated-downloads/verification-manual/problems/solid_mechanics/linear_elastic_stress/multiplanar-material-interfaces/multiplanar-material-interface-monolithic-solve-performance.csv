@@ -1,0 +1,13 @@
+cross_section,p,level,h_z,elements,nodes,dofs,threads,domains,cpu_s,wall_s,completed
+monolithic,1,0,10.0,579,482,1446,1,,0.54,1.0,True
+monolithic,1,1,5.0,1137,1152,3456,2,1,0.73,0.0,True
+monolithic,1,2,2.5,4345,4778,14334,4,1,1.8,2.0,True
+monolithic,1,3,1.25,26605,28296,84888,8,1,11.0,4.0,True
+monolithic,2,0,10.0,571,607,1821,1,,0.67,1.0,True
+monolithic,2,1,5.0,1137,1487,4461,2,1,1.2,2.0,True
+monolithic,2,2,2.5,4345,5781,17343,4,1,5.6,2.0,True
+monolithic,2,3,1.25,27055,31916,95748,8,1,34.0,11.0,True
+monolithic,3,0,10.0,571,786,2358,1,,1.6,2.0,True
+monolithic,3,1,5.0,1137,1896,5688,2,1,6.3,5.0,True
+monolithic,3,2,2.5,4993,7274,21822,4,1,35.0,12.0,True
+monolithic,3,3,1.25,29817,37002,111006,8,1,256.0,55.0,True

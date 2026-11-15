@@ -1,0 +1,100 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 620" role="img"
+     aria-labelledby="title description">
+  <title id="title">Unit cube geometry</title>
+  <desc id="description">
+    A wireframe unit cube with all eight vertices labeled by their Cartesian
+    coordinates and a coordinate-system triad.
+  </desc>
+
+  <defs>
+    <style>
+      .edge {
+        fill: none;
+        stroke: #263746;
+        stroke-width: 4;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+      .hidden {
+        stroke: #82909c;
+        stroke-dasharray: 10 10;
+      }
+      .vertex {
+        fill: #ffffff;
+        stroke: #263746;
+        stroke-width: 4;
+      }
+      .coordinate {
+        fill: #17212b;
+        font-family: "STIX Two Math", "Cambria Math", serif;
+        font-size: 24px;
+      }
+      .axis {
+        fill: none;
+        stroke: #263746;
+        stroke-width: 4;
+        stroke-linecap: round;
+      }
+      .axis-label {
+        fill: #263746;
+        font-family: Arial, sans-serif;
+        font-size: 24px;
+        font-style: italic;
+        font-weight: 700;
+      }
+    </style>
+  </defs>
+
+  <rect width="960" height="620" fill="#ffffff"/>
+
+  <!-- The three hidden edges meet at (0, 1, 0). -->
+  <path class="edge hidden" d="M250 490 L400 370 L740 370"/>
+  <path class="edge hidden" d="M400 370 L400 90"/>
+
+  <!-- Visible wireframe. -->
+  <path class="edge" d="M250 490 L590 490 L740 370"/>
+  <path class="edge" d="M250 490 L250 210 L400 90"/>
+  <path class="edge" d="M590 490 L590 210 L740 90 L740 370"/>
+  <path class="edge" d="M250 210 L590 210"/>
+  <path class="edge" d="M400 90 L740 90"/>
+
+  <!-- Vertices. -->
+  <g>
+    <circle class="vertex" cx="250" cy="490" r="7"/>
+    <circle class="vertex" cx="590" cy="490" r="7"/>
+    <circle class="vertex" cx="400" cy="370" r="7"/>
+    <circle class="vertex" cx="740" cy="370" r="7"/>
+    <circle class="vertex" cx="250" cy="210" r="7"/>
+    <circle class="vertex" cx="590" cy="210" r="7"/>
+    <circle class="vertex" cx="400" cy="90" r="7"/>
+    <circle class="vertex" cx="740" cy="90" r="7"/>
+  </g>
+
+  <!-- Vertex-coordinate annotations. -->
+  <g class="coordinate">
+    <text x="275" y="528">(0, 0, 0)</text>
+    <text x="615" y="528">(1, 0, 0)</text>
+    <text x="372" y="352" text-anchor="end">(0, 1, 0)</text>
+    <text x="765" y="390">(1, 1, 0)</text>
+    <text x="222" y="216" text-anchor="end">(0, 0, 1)</text>
+    <text x="615" y="216">(1, 0, 1)</text>
+    <text x="372" y="72" text-anchor="end">(0, 1, 1)</text>
+    <text x="765" y="80">(1, 1, 1)</text>
+  </g>
+
+  <!-- Cartesian coordinate-system triad. -->
+  <g aria-label="Cartesian coordinate system">
+    <line class="axis" x1="105" y1="535" x2="192" y2="535"/>
+    <polygon points="207,535 186,524 186,546" fill="#263746"/>
+    <text class="axis-label" x="218" y="543">x</text>
+
+    <line class="axis" x1="105" y1="535" x2="157" y2="488"/>
+    <polygon points="168,478 159,499 146,485" fill="#263746"/>
+    <text class="axis-label" x="174" y="480">y</text>
+
+    <line class="axis" x1="105" y1="535" x2="105" y2="452"/>
+    <polygon points="105,437 94,458 116,458" fill="#263746"/>
+    <text class="axis-label" x="116" y="450">z</text>
+
+  </g>
+</svg>

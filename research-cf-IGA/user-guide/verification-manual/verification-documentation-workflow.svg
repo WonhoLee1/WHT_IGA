@@ -1,0 +1,134 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 1100 640"
+     role="img"
+     aria-labelledby="workflow-title workflow-description">
+  <title id="workflow-title">Coreform IGA verification documentation workflow</title>
+  <desc id="workflow-description">
+    Coreform IGA software is developed and reviewed, automated verification tests record
+    numerical results and analysis artifacts, and the documentation build
+    combines summaries, Matplotlib plots, ParaView renderings, and authored
+    engineering explanations into published verification evidence.
+  </desc>
+
+  <defs>
+    <filter id="shadow" x="-10%" y="-15%" width="120%" height="140%">
+      <feDropShadow dx="0" dy="3" stdDeviation="4"
+                    flood-color="#101828" flood-opacity="0.12"/>
+    </filter>
+  </defs>
+
+  <g fill="none"
+     stroke="#667085"
+     stroke-width="3"
+     stroke-linecap="round"
+     stroke-linejoin="round">
+    <path d="M 295 95 H 405"/>
+    <path d="M 680 95 H 790"/>
+
+    <path d="M 935 160 V 195 C 935 215, 165 205, 165 230"/>
+    <path d="M 935 160 V 195 C 935 215, 550 205, 550 230"/>
+    <path d="M 935 160 V 230"/>
+
+    <path d="M 165 335 C 165 420, 495 405, 495 450"/>
+    <path d="M 550 335 V 450"/>
+    <path d="M 935 335 C 935 420, 605 405, 605 450"/>
+    <path d="M 295 520 H 405"/>
+
+    <path d="M 680 520 H 790"/>
+  </g>
+
+  <g fill="#667085">
+    <path d="M 405 87 L 420 95 L 405 103 Z"/>
+    <path d="M 790 87 L 805 95 L 790 103 Z"/>
+
+    <path d="M 157 230 L 173 230 L 165 245 Z"/>
+    <path d="M 542 230 L 558 230 L 550 245 Z"/>
+    <path d="M 927 230 L 943 230 L 935 245 Z"/>
+
+    <path d="M 487 450 L 503 450 L 495 465 Z"/>
+    <path d="M 542 450 L 558 450 L 550 465 Z"/>
+    <path d="M 597 450 L 613 450 L 605 465 Z"/>
+
+    <path d="M 405 512 L 420 520 L 405 528 Z"/>
+    <path d="M 790 512 L 805 520 L 790 528 Z"/>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="35" y="45" width="260" height="100" rx="14"
+          fill="#eaf9ef" stroke="#20803f" stroke-width="3"/>
+    <rect x="420" y="45" width="260" height="100" rx="14"
+          fill="#eaf2ff" stroke="#3366a3" stroke-width="3"/>
+    <rect x="805" y="35" width="260" height="125" rx="14"
+          fill="#fff7e6" stroke="#a15c00" stroke-width="3"/>
+
+    <rect x="35" y="245" width="260" height="90" rx="14"
+          fill="#f7f8fa" stroke="#5b6472" stroke-width="2.5"/>
+    <rect x="420" y="245" width="260" height="90" rx="14"
+          fill="#f7f8fa" stroke="#5b6472" stroke-width="2.5"/>
+    <rect x="805" y="245" width="260" height="90" rx="14"
+          fill="#f7f8fa" stroke="#5b6472" stroke-width="2.5"/>
+
+    <rect x="35" y="475" width="260" height="90" rx="14"
+          fill="#f4edff" stroke="#7d1dcc" stroke-width="2.5"/>
+    <rect x="420" y="465" width="260" height="110" rx="14"
+          fill="#eaf9ef" stroke="#20803f" stroke-width="3"/>
+    <rect x="805" y="452" width="260" height="136" rx="14"
+          fill="#ddf6e5" stroke="#20803f" stroke-width="3"/>
+  </g>
+
+  <g font-family="Inter, Aptos, 'Helvetica Neue', Arial, sans-serif"
+     text-anchor="middle"
+     fill="#1f2937">
+    <text x="165" y="82" font-size="21" font-weight="700">
+      <tspan x="165" dy="0">Develop and review</tspan>
+      <tspan x="165" dy="28">Coreform IGA software</tspan>
+    </text>
+
+    <text x="550" y="82" font-size="21" font-weight="700">
+      <tspan x="550" dy="0">Run automated</tspan>
+      <tspan x="550" dy="28">verification tests</tspan>
+    </text>
+
+    <text x="935" y="72" font-size="21" font-weight="700">
+      <tspan x="935" dy="0">Record numerical results</tspan>
+      <tspan x="935" dy="28">and analysis artifacts</tspan>
+    </text>
+    <text x="935" y="132" font-size="16" fill="#7a4800">
+      Tested evidence
+    </text>
+
+    <text x="165" y="283" font-size="20" font-weight="700">
+      <tspan x="165" dy="0">Read and summarize</tspan>
+      <tspan x="165" dy="27">test results</tspan>
+    </text>
+
+    <text x="550" y="283" font-size="20" font-weight="700">
+      <tspan x="550" dy="0">Generate</tspan>
+      <tspan x="550" dy="27">Matplotlib plots</tspan>
+    </text>
+
+    <text x="935" y="283" font-size="20" font-weight="700">
+      <tspan x="935" dy="0">Generate</tspan>
+      <tspan x="935" dy="27">ParaView renderings</tspan>
+    </text>
+
+    <text x="165" y="513" font-size="20" font-weight="700">
+      <tspan x="165" dy="0">Author the engineering</tspan>
+      <tspan x="165" dy="27">explanation</tspan>
+    </text>
+
+    <text x="550" y="500" font-size="21" font-weight="700">
+      <tspan x="550" dy="0">Assemble the manual</tspan>
+      <tspan x="550" dy="28">with Quarto</tspan>
+    </text>
+    <text x="550" y="553" font-size="16" fill="#166534">
+      Documentation build
+    </text>
+
+    <text x="935" y="485" font-size="21" font-weight="700">
+      <tspan x="935" dy="0">Publish verification</tspan>
+      <tspan x="935" dy="28">prose, tables, figures,</tspan>
+      <tspan x="935" dy="28">and downloads</tspan>
+    </text>
+  </g>
+</svg>

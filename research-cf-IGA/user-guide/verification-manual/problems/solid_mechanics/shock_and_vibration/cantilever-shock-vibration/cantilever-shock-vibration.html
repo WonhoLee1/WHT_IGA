@@ -1,0 +1,2417 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Cantilever beam shock and vibration – Coreform IGA for Abaqus</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="../../../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../../../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../../../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../../../../">
+<link href="../../../../../assets/brand/icons/coreform-iga-icon.svg" rel="icon" type="image/svg+xml">
+<script src="../../../../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../../../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../../../site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../../../../site_libs/quarto-html/quarto-syntax-highlighting-dark-0a6b7249c26820e032cb0bd839ff02b1.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../../../../site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../../../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../../../site_libs/bootstrap/bootstrap-f9791fd2959c8c3cbc9955649c1be199.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../../../../site_libs/bootstrap/bootstrap-dark-f9791fd2959c8c3cbc9955649c1be199.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="light">
+<link href="../../../../../site_libs/bootstrap/bootstrap-f9791fd2959c8c3cbc9955649c1be199.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar docked quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../../../verification-manual/index.html">Verification Manual</a></li><li class="breadcrumb-item"><a href="../../../../../verification-manual/problems/solid_mechanics/index.html">Solid mechanics</a></li><li class="breadcrumb-item"><a href="../../../../../verification-manual/problems/solid_mechanics/shock_and_vibration/index.html">Shock and vibration</a></li><li class="breadcrumb-item"><a href="../../../../../verification-manual/problems/solid_mechanics/shock_and_vibration/cantilever-shock-vibration/cantilever-shock-vibration.html">Cantilever beam shock and vibration</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+      <a href="../../../../../index.html" class="sidebar-logo-link">
+      <img src="../../../../../assets/brand/logos/coreform-iga-for-abaqus-logo-wordmark-lightmode.svg" alt="" class="sidebar-logo light-content py-0 d-lg-inline d-none">
+      <img src="../../../../../assets/brand/logos/coreform-iga-for-abaqus-logo-wordmark-lightmode.svg" alt="" class="sidebar-logo dark-content py-0 d-lg-inline d-none">
+      </a>
+      <div class="sidebar-tools-main">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Welcome</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../../../install-config/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Installation &amp; Configuration</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../install-config/configuring-abaqus.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Download and Install Abaqus</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../install-config/downloading.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Downloading Coreform IGA for Abaqus</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../install-config/installing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Installing Coreform IGA for Abaqus</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../install-config/licensing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Licensing</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../install-config/windows-compiler-user-subroutines.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Windows Compiler for User Subroutines</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../../../user-guide/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">User Guide</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../user-guide/immersed-iga-overview.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Immersed IGA overview</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../user-guide/workflow-overview.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Workflow overview</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../user-guide/capabilities-and-limitations.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Current capabilities and limitations</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../user-guide/using-cifa-cae.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Using Coreform IGA for Abaqus/CAE</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../../../user-guide/response-spectrum/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Mode-based dynamics</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../user-guide/response-spectrum/running-a-response-spectrum.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Running a response spectrum analysis</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../user-guide/response-spectrum/case-files.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Response spectrum case files</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../user-guide/response-spectrum/random-response.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Random response analysis</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../user-guide/roadmap.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Roadmap</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../../../user-guide/release-notes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Release notes</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../user-guide/release-notes/release-notes-2026-11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">2026.11</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../user-guide/release-notes/release-notes-2026-10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">2026.10</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../user-guide/release-notes/release-notes-2026-9.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">2026.9</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../user-guide/release-notes/release-notes-2026-7.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">2026.7</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../user-guide/release-notes/release-notes-2026-3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">2026.3</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../../../user-guide/scripting-guide/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Scripting Guide</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../user-guide/scripting-guide/getting-started.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Getting started with scripting</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../user-guide/scripting-guide/probes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Working with Probes</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../user-guide/scripting-guide/meshes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Working with Meshes</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../user-guide/scripting-guide/jobs.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Running Jobs</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../../../user-guide/python-api/coreform/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Scripting Reference</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../../../user-guide/python-api/coreform/abaqus/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">abaqus</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth3 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../user-guide/python-api/coreform/abaqus/cf_export/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">cf_export</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../user-guide/python-api/coreform/abaqus/job/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">job</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../user-guide/python-api/coreform/abaqus/mesh/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">mesh</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../user-guide/python-api/coreform/abaqus/probe/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">probe</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../user-guide/python-api/coreform/job/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">job</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../user-guide/python-api/coreform/mesh/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">mesh</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../user-guide/python-api/coreform/probe/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">probe</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../user-guide/python-api/coreform/utils/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">utils</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../../../theory/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Theory</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../theory/consistent-unit-systems.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Consistent unit systems</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../../../example-problems/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Example Problems</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="false">
+ <span class="menu-text">Getting started</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../example-problems/thin-plate-with-hole/thin-plate-with-hole.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Stress concentration in a thin plate with a hole</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="false">
+ <span class="menu-text">Advanced capabilities</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-11" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../example-problems/plate-with-hole-adaptivity/plate-with-hole-adaptivity.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Local refinement toward a feature</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../example-problems/glass-to-metal-seal/glass-to-metal-seal.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Thermal cycling — glass-to-metal seal</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../example-problems/nearly-incompressible-elasticity/nearly-incompressible-elasticity.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Nearly incompressible elasticity — Cook’s membrane</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../example-problems/door-lock-assembly/door-lock-assembly.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Contact — Door lock assembly</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../../../verification-manual/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Verification Manual</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-12" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../../../verification-manual/problems/solid_mechanics/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Solid mechanics</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-13" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../../../verification-manual/problems/solid_mechanics/linear_elastic_stress/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Linear elastic stress</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-14" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-14" class="collapse list-unstyled sidebar-section depth3 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../verification-manual/problems/solid_mechanics/linear_elastic_stress/prescribed-displacement-cube/prescribed-displacement-cube.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Prescribed displacement of a unit cube</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../verification-manual/problems/solid_mechanics/linear_elastic_stress/roark-17p1-7a/roark-17p1-7a.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Stress concentration in a thin plate with hole</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../verification-manual/problems/solid_mechanics/linear_elastic_stress/beam-bending/beam-bending.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Cantilever beam bending</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../verification-manual/problems/solid_mechanics/linear_elastic_stress/bimetallic-beam-bending/bimetallic-beam-bending.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Cantilever bimetallic beam bending</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../verification-manual/problems/solid_mechanics/linear_elastic_stress/multiplanar-material-interfaces/multiplanar-material-interfaces.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Multi-planar material interfaces</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../verification-manual/problems/solid_mechanics/linear_elastic_stress/pressurized-sphere/pressurized-sphere.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Thick-walled spherical pressure vessel</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../verification-manual/problems/solid_mechanics/linear_elastic_stress/infinite-plate-with-hole/infinite-plate-with-hole.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Infinite plate with a hole</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../../../verification-manual/problems/solid_mechanics/contact/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Contact</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-15" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-15" class="collapse list-unstyled sidebar-section depth3 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../verification-manual/problems/solid_mechanics/contact/contact-indenter/contact-indenter.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Elastic spherical indenter sliding on a block</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../../../verification-manual/problems/solid_mechanics/thermal_strain/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Thermal strain</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-16" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-16" class="collapse list-unstyled sidebar-section depth3 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../verification-manual/problems/solid_mechanics/thermal_strain/nafems-p18-t1/nafems-p18-t1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">NAFEMS P18 T1 — membrane with circular hot spot</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../../../verification-manual/problems/solid_mechanics/shock_and_vibration/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Shock and vibration</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-17" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-17" class="collapse list-unstyled sidebar-section depth3 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../verification-manual/problems/solid_mechanics/shock_and_vibration/cantilever-shock-vibration/cantilever-shock-vibration.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Cantilever beam shock and vibration</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../../../verification-manual/problems/solid_mechanics/implicit_dynamics/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Implicit dynamics</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-18" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-18" class="collapse list-unstyled sidebar-section depth3 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../verification-manual/problems/solid_mechanics/implicit_dynamics/vibrating-beam/vibrating-beam.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Implicit-dynamic vibrating beam</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../../../verification-manual/problems/heat_transfer/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Heat transfer</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-19" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-19" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../../../verification-manual/problems/heat_transfer/steady_state/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Steady-state heat transfer</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-20" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-20" class="collapse list-unstyled sidebar-section depth3 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../verification-manual/problems/heat_transfer/steady_state/nafems-p18-t2/nafems-p18-t2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">NAFEMS P18 T2 — radiation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../verification-manual/problems/heat_transfer/steady_state/nafems-p18-t4/nafems-p18-t4.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">NAFEMS P18 T4 — convection</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../../../../verification-manual/problems/heat_transfer/transient/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Transient heat transfer</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-21" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-21" class="collapse list-unstyled sidebar-section depth3 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../verification-manual/problems/heat_transfer/transient/nafems-p18-t3/nafems-p18-t3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">NAFEMS P18 T3 — transient conduction</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../abaqus_keyword_support_guide.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Abaqus keyword support guide</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../../../cifa-capabilities/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Capabilities matrix</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+<div class="quarto-sidebar-footer"><div class="sidebar-footer-item">
+<div id="cifa-version-badge" class="small text-muted">
+
+</div>
+</div></div></nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#objective" id="toc-objective" class="nav-link active" data-scroll-target="#objective"><span class="header-section-number">1</span> Objective</a></li>
+  <li><a href="#geometry" id="toc-geometry" class="nav-link" data-scroll-target="#geometry"><span class="header-section-number">2</span> Geometry</a></li>
+  <li><a href="#material" id="toc-material" class="nav-link" data-scroll-target="#material"><span class="header-section-number">3</span> Material</a></li>
+  <li><a href="#loading-boundary-conditions" id="toc-loading-boundary-conditions" class="nav-link" data-scroll-target="#loading-boundary-conditions"><span class="header-section-number">4</span> Loading &amp; boundary conditions</a></li>
+  <li><a href="#mesh-discretization" id="toc-mesh-discretization" class="nav-link" data-scroll-target="#mesh-discretization"><span class="header-section-number">5</span> Mesh &amp; discretization</a></li>
+  <li><a href="#reference-accepted-solutions" id="toc-reference-accepted-solutions" class="nav-link" data-scroll-target="#reference-accepted-solutions"><span class="header-section-number">6</span> Reference &amp; accepted solutions</a></li>
+  <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results"><span class="header-section-number">7</span> Results</a>
+  <ul class="collapse">
+  <li><a href="#implementation-against-abaqus" id="toc-implementation-against-abaqus" class="nav-link" data-scroll-target="#implementation-against-abaqus"><span class="header-section-number">7.1</span> Implementation against Abaqus</a></li>
+  <li><a href="#eigenfrequencies" id="toc-eigenfrequencies" class="nav-link" data-scroll-target="#eigenfrequencies"><span class="header-section-number">7.2</span> Eigenfrequencies</a></li>
+  <li><a href="#response" id="toc-response" class="nav-link" data-scroll-target="#response"><span class="header-section-number">7.3</span> Response</a></li>
+  </ul></li>
+  <li><a href="#discussion" id="toc-discussion" class="nav-link" data-scroll-target="#discussion"><span class="header-section-number">8</span> Discussion</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references"><span class="header-section-number">9</span> References</a></li>
+  <li><a href="#appendix" id="toc-appendix" class="nav-link" data-scroll-target="#appendix"><span class="header-section-number">10</span> Appendix</a>
+  <ul class="collapse">
+  <li><a href="#capabilities-exercised" id="toc-capabilities-exercised" class="nav-link" data-scroll-target="#capabilities-exercised"><span class="header-section-number">10.1</span> Capabilities exercised</a></li>
+  <li><a href="#supported-abaqus-keywords" id="toc-supported-abaqus-keywords" class="nav-link" data-scroll-target="#supported-abaqus-keywords"><span class="header-section-number">10.2</span> Supported Abaqus keywords</a></li>
+  <li><a href="#download-artifacts" id="toc-download-artifacts" class="nav-link" data-scroll-target="#download-artifacts"><span class="header-section-number">10.3</span> Download artifacts</a></li>
+  <li><a href="#provenance" id="toc-provenance" class="nav-link" data-scroll-target="#provenance"><span class="header-section-number">10.4</span> Provenance</a></li>
+  </ul></li>
+  </ul>
+<div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="cantilever-shock-vibration.pdf"><i class="bi bi-file-pdf"></i>Typst</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content page-columns page-full" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../../../../verification-manual/index.html">Verification Manual</a></li><li class="breadcrumb-item"><a href="../../../../../verification-manual/problems/solid_mechanics/index.html">Solid mechanics</a></li><li class="breadcrumb-item"><a href="../../../../../verification-manual/problems/solid_mechanics/shock_and_vibration/index.html">Shock and vibration</a></li><li class="breadcrumb-item"><a href="../../../../../verification-manual/problems/solid_mechanics/shock_and_vibration/cantilever-shock-vibration/cantilever-shock-vibration.html">Cantilever beam shock and vibration</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Cantilever beam shock and vibration</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<!-- TODO: these custom macros render in HTML (MathJax) but NOT in the Typst PDF
+     (Pandoc can't convert them). See TODO.md. -->
+<div style="display:none" aria-hidden="true">
+<p><span class="math display">\[
+\newcommand{\ltwonorm}{L^2}
+\newcommand{\degree}[1]{p = #1}
+\newcommand{\Degree}[1]{\mathcal{P}^{#1}}
+\]</span></p>
+</div>
+<aside class="callout callout-note cifa-evidence-status" data-evidence-state="current-exact" data-evidence-lane="publication">
+<p>
+Current evidence (exact required source revision e48e5098b2f869612b491032a1ca2b17aa1b6354). Execution status is not itself numerical verification.
+</p>
+<pre></pre>
+</aside>
+<section id="objective" class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="objective"><span class="header-section-number">1</span> Objective</h2>
+<p>Verify mode-based linear dynamics on a cantilever beam: a frequency extraction, a random response to a base-acceleration power spectral density, and a peak response to a base-acceleration shock spectrum.</p>
+<p>Coreform IGA elements are Abaqus user elements. Abaqus/Standard will extract eigenmodes for them, but it does not post-process a random response or a response spectrum from those elements, so for an immersed model the frequency extraction is the last result the solver produces. Coreform computes the two remaining procedures from that modal basis instead.</p>
+<p>That arrangement has two things to verify, and this study checks both.</p>
+<ol type="1">
+<li><strong>The implementation.</strong> On the body-fitted mesh Abaqus computes all three steps itself, so the Coreform random response and response spectrum can be compared against the solver’s own answers on an identical modal basis. Any difference here is implementation error alone.</li>
+<li><strong>The discretization.</strong> The immersed Coreform IGA modal basis, post-processed by Coreform, is compared against the body-fitted Abaqus analysis end to end. Any difference here is the difference between two meshes.</li>
+</ol>
+</section>
+<section id="geometry" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="geometry"><span class="header-section-number">2</span> Geometry</h2>
+<div id="tbl-tbl-geometry" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-tbl-geometry-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;1: Cantilever beam geometry.
+</figcaption>
+<div aria-describedby="tbl-tbl-geometry-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Parameter</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Width <span class="math inline">\(b\)</span></td>
+<td><span class="math inline">\(0.1\ m\)</span></td>
+</tr>
+<tr class="even">
+<td>Height <span class="math inline">\(h\)</span></td>
+<td><span class="math inline">\(0.1\ m\)</span></td>
+</tr>
+<tr class="odd">
+<td>Length <span class="math inline">\(L\)</span></td>
+<td><span class="math inline">\(1\ m\)</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>The beam is the same one used by the static <a href="../../../../../verification-manual/problems/solid_mechanics/linear_elastic_stress/beam-bending/beam-bending.html">cantilever beam bending</a> study, so the two chapters describe one physical beam under different analyses. The section is square, which makes every bending mode a degenerate pair and puts a torsional mode inside the analysis band.</p>
+</section>
+<section id="material" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="material"><span class="header-section-number">3</span> Material</h2>
+<div id="tbl-tbl-material" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-tbl-material-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;2: Linear elastic material.
+</figcaption>
+<div aria-describedby="tbl-tbl-material-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Property</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Young’s modulus <span class="math inline">\(E\)</span></td>
+<td><span class="math inline">\(200 \times 10^{9}\ Pa\)</span></td>
+</tr>
+<tr class="even">
+<td>Poisson’s ratio <span class="math inline">\(\nu\)</span></td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td>Mass density <span class="math inline">\(\rho\)</span></td>
+<td><span class="math inline">\(8.00 \times 10^{3}\ kg/m^3^\)</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>Poisson’s ratio is zero so that the three-dimensional solid reproduces the one-dimensional beam theory the accepted frequencies come from.</p>
+</section>
+<section id="loading-boundary-conditions" class="level2" data-number="4">
+<h2 data-number="4" class="anchored" data-anchor-id="loading-boundary-conditions"><span class="header-section-number">4</span> Loading &amp; boundary conditions</h2>
+<p>The root face at <span class="math inline">\(z = 0\)</span> is fully clamped. Both dynamic steps excite the structure through a primary base motion in the global <span class="math inline">\(y\)</span> direction, the weak bending direction of the section.</p>
+<div id="tbl-tbl-loading" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-tbl-loading-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;3: Excitation and analysis settings, shared by both discretizations.
+</figcaption>
+<div aria-describedby="tbl-tbl-loading-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Quantity</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Analysis band</td>
+<td><span class="math inline">\(10\ Hz\)</span> to <span class="math inline">\(2.00 \times 10^{3}\ Hz\)</span></td>
+</tr>
+<tr class="even">
+<td>Modes extracted</td>
+<td><span class="math inline">\(20\)</span></td>
+</tr>
+<tr class="odd">
+<td>Modal damping <span class="math inline">\(\xi\)</span></td>
+<td>20.0 ^{-3}</td>
+</tr>
+<tr class="even">
+<td>Base acceleration PSD</td>
+<td>10.0 ^{-3} g²/Hz, flat</td>
+</tr>
+<tr class="odd">
+<td>Frequency points per interval</td>
+<td><span class="math inline">\(20\)</span></td>
+</tr>
+<tr class="even">
+<td>Bias parameter</td>
+<td>3</td>
+</tr>
+<tr class="odd">
+<td>Modal summation</td>
+<td><code>SRSS</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>The random response is driven by a flat base-acceleration spectral density across the band, the shape a vibration qualification test specifies. The response spectrum is driven by a base-acceleration shock spectrum that rises to a plateau and rolls off.</p>
+<div id="tbl-tbl-spectrum" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-tbl-spectrum-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;4: Base-acceleration shock spectrum, tabulated at the modal damping ratio.
+</figcaption>
+<div aria-describedby="tbl-tbl-spectrum-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Magnitude (m/s²)</th>
+<th>Frequency (Hz)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>20</td>
+<td>10</td>
+</tr>
+<tr class="even">
+<td>200</td>
+<td>100</td>
+</tr>
+<tr class="odd">
+<td>200</td>
+<td>600</td>
+</tr>
+<tr class="even">
+<td>60</td>
+<td>2.00 ^{3}</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+</section>
+<section id="mesh-discretization" class="level2" data-number="5">
+<h2 data-number="5" class="anchored" data-anchor-id="mesh-discretization"><span class="header-section-number">5</span> Mesh &amp; discretization</h2>
+<p>Two discretizations of the same beam. The body-fitted case is a structured C3D8 mesh that Abaqus owns end to end. The immersed case is a Coreform IGA mesh on a rectilinear background grid, trimmed to the beam.</p>
+<div id="tbl-tbl-mesh" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-tbl-mesh-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;5: Discretizations compared.
+</figcaption>
+<div aria-describedby="tbl-tbl-mesh-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Case</th>
+<th>Discretization</th>
+<th>Element size</th>
+<th>Dynamics computed by</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>abaqus_h0p1</code></td>
+<td>Body-fitted Abaqus (C3D8)</td>
+<td><span class="math inline">\(50.0 \times 10^{-3}\ m\)</span></td>
+<td>Abaqus/Standard</td>
+</tr>
+<tr class="even">
+<td><code>immersed_h0p1</code></td>
+<td>Immersed Coreform IGA</td>
+<td><span class="math inline">\(25.0 \times 10^{-3}\ m\)</span></td>
+<td>Coreform, from the modal basis</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>The immersed case uses a finer background cell than the body-fitted element size. A linear immersed basis needs four cells across the section to resolve bending; at two cells the fundamental frequency comes out several percent stiff.</p>
+</section>
+<section id="reference-accepted-solutions" class="level2" data-number="6">
+<h2 data-number="6" class="anchored" data-anchor-id="reference-accepted-solutions"><span class="header-section-number">6</span> Reference &amp; accepted solutions</h2>
+<p>The fundamental bending frequency of a clamped-free Euler-Bernoulli beam is</p>
+<p><span class="math display">\[
+f_1 = \frac{\beta_1^2}{2 \pi L^2} \sqrt{\frac{E I}{\rho A}}, \qquad \beta_1 = 1.8751
+\]</span></p>
+<p>with <span class="math inline">\(I = b h^3 / 12\)</span> the second moment of area and <span class="math inline">\(A = b h\)</span> the cross-sectional area. A three-dimensional solid sits slightly above this value because beam theory omits shear flexibility.</p>
+<p>The random response and response spectrum quantities have no closed form, so the body-fitted Abaqus analysis is the accepted reference for them. Because Abaqus also computes both procedures on the body-fitted modal basis, the Coreform implementations are additionally checked against the solver directly, which is a stronger statement than the mesh comparison.</p>
+</section>
+<section id="results" class="level2" data-number="7">
+<h2 data-number="7" class="anchored" data-anchor-id="results"><span class="header-section-number">7</span> Results</h2>
+<section id="implementation-against-abaqus" class="level3" data-number="7.1">
+<h3 data-number="7.1" class="anchored" data-anchor-id="implementation-against-abaqus"><span class="header-section-number">7.1</span> Implementation against Abaqus</h3>
+<p>On a given modal basis the Coreform procedures and Abaqus solve the same problem, so they must agree to solver precision. Abaqus produces displacement-based dynamics output even for user elements, so this comparison is available on both discretizations.</p>
+<p>The reported quantity is the component the base motion excites, which is what this chapter’s results are about and the only component whose magnitude is set by the excitation rather than by cross-coupling.</p>
+<div id="tbl-tbl-implementation" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-tbl-implementation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;6: Coreform against Abaqus/Standard on an identical modal basis, worst relative difference in the excited component. Accepted below 5.00 ^{-6}, and the immersed error is additionally required to stay within 4 times the body-fitted one.
+</figcaption>
+<div aria-describedby="tbl-tbl-implementation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Procedure</th>
+<th>Body-fitted</th>
+<th>Immersed</th>
+<th>Ratio</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Random response</td>
+<td>212 ^{-9}</td>
+<td>213 ^{-9}</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>Response spectrum</td>
+<td>97.1 ^{-9}</td>
+<td>121 ^{-9}</td>
+<td>1.25</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p><a download="implementation.csv" href="../../../../../generated-downloads/verification-manual/problems/solid_mechanics/shock_and_vibration/cantilever-shock-vibration/implementation.csv" class="small">Download data (CSV)</a></p>
+<p>Both discretizations agree with the solver at the precision of the single-precision fields Abaqus writes, and they agree with each other: the immersed modal basis costs the implementation nothing. That parity is asserted by the study rather than left to the reader, because it is the claim that lets the immersed workflow stand in for a solver-computed one.</p>
+<div class="callout callout-style-simple callout-note callout-titled" title="Why the comparison is per component">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Why the comparison is per component
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Judging the whole displacement field instead would let a small secondary component decide the number. The axial component here peaks near eight percent of the field peak, so points that clear a field-wide floor still sit in that component’s own round-off, and the worst of them grows with however many output points a mesh happens to carry. The immersed mesh has roughly eight times as many output points as the body-fitted one, which on a field-wide measure inflates its figure to around <span class="math inline">\(1.4 \times 10^{-6}\)</span> while the excited component stays at <span class="math inline">\(210 \times 10^{-9}\)</span> on both. The field-wide numbers are recorded in the downloadable data for transparency, but nothing is gated on them.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="eigenfrequencies" class="level3" data-number="7.2">
+<h3 data-number="7.2" class="anchored" data-anchor-id="eigenfrequencies"><span class="header-section-number">7.2</span> Eigenfrequencies</h3>
+<div id="tbl-tbl-frequencies" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-tbl-frequencies-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;7: Eigenfrequencies of the two discretizations, with the participation factor in the excitation direction. A mode participates when its factor reaches 1% of the largest.
+</figcaption>
+<div aria-describedby="tbl-tbl-frequencies-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Mode</th>
+<th>Body-fitted (Hz)</th>
+<th>Immersed (Hz)</th>
+<th>Relative difference</th>
+<th><span class="math inline">\(|\Gamma_y|\)</span></th>
+<th>Participating</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(1\)</span></td>
+<td>81.6</td>
+<td>81.8</td>
+<td>2.10 ^{-3}</td>
+<td>0.116</td>
+<td>yes</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(2\)</span></td>
+<td>81.6</td>
+<td>81.8</td>
+<td>2.25 ^{-3}</td>
+<td>6.99</td>
+<td>yes</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(3\)</span></td>
+<td>492</td>
+<td>494</td>
+<td>5.20 ^{-3}</td>
+<td>0.2</td>
+<td>yes</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(4\)</span></td>
+<td>492</td>
+<td>494</td>
+<td>5.50 ^{-3}</td>
+<td>3.89</td>
+<td>yes</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(5\)</span></td>
+<td>722</td>
+<td>822</td>
+<td>0.139</td>
+<td>816 ^{-15}</td>
+<td>no</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(6\)</span></td>
+<td>1.25 ^{3}</td>
+<td>1.25 ^{3}</td>
+<td>292 ^{-6}</td>
+<td>31.4 ^{-15}</td>
+<td>no</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(7\)</span></td>
+<td>1.30 ^{3}</td>
+<td>1.32 ^{3}</td>
+<td>8.46 ^{-3}</td>
+<td>9.96 ^{-3}</td>
+<td>no</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(8\)</span></td>
+<td>1.30 ^{3}</td>
+<td>1.32 ^{3}</td>
+<td>8.75 ^{-3}</td>
+<td>2.29</td>
+<td>yes</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p><a download="eigenfrequencies.csv" href="../../../../../generated-downloads/verification-manual/problems/solid_mechanics/shock_and_vibration/cantilever-shock-vibration/eigenfrequencies.csv" class="small">Download data (CSV)</a></p>
+<div style="display:none" aria-hidden="true">
+<p><span class="math display">\[
+\newcommand{\analyticalFOne}{80.8}
+\newcommand{\nativeFOne}{81.6}
+\newcommand{\immersedFOne}{81.8}
+\]</span></p>
+</div>
+<p>Against the closed form, the body-fitted mesh gives <span class="math inline">\(81\.6\\\\\\\\ Hz\)</span> and the immersed mesh <span class="math inline">\(81\.8\\\\\\\\ Hz\)</span>, where Euler-Bernoulli theory predicts <span class="math inline">\(80\.8\\\\\\\\ Hz\)</span>. Both sit above the beam-theory value, as a shear-flexible solid should.</p>
+</section>
+<section id="response" class="level3" data-number="7.3">
+<h3 data-number="7.3" class="anchored" data-anchor-id="response"><span class="header-section-number">7.3</span> Response</h3>
+<div id="tbl-tbl-response" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-tbl-response-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;8: Peak response in the excitation direction, body-fitted Abaqus against immersed Coreform. Accepted below 50.0 ^{-3}.
+</figcaption>
+<div aria-describedby="tbl-tbl-response-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Quantity</th>
+<th>Body-fitted Abaqus</th>
+<th>Immersed Coreform</th>
+<th>Relative difference</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>RMS displacement, random response</td>
+<td><span class="math inline">\(340 \times 10^{-6}\ m\)</span></td>
+<td><span class="math inline">\(346 \times 10^{-6}\ m\)</span></td>
+<td>17.9 ^{-3}</td>
+</tr>
+<tr class="even">
+<td>Peak displacement, shock spectrum</td>
+<td><span class="math inline">\(965 \times 10^{-6}\ m\)</span></td>
+<td><span class="math inline">\(983 \times 10^{-6}\ m\)</span></td>
+<td>18.3 ^{-3}</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p><a download="response.csv" href="../../../../../generated-downloads/verification-manual/problems/solid_mechanics/shock_and_vibration/cantilever-shock-vibration/response.csv" class="small">Download data (CSV)</a></p>
+</section>
+</section>
+<section id="discussion" class="level2" data-number="8">
+<h2 data-number="8" class="anchored" data-anchor-id="discussion"><span class="header-section-number">8</span> Discussion</h2>
+<p>The two halves of the arrangement behave differently, and separating them is the point of this study.</p>
+<p><strong>The implementation is exact to solver precision.</strong> Given the same modal basis, the Coreform random response and response spectrum reproduce Abaqus to a few parts in ten million, which is the precision at which Abaqus stores its fields. Nothing in the combination introduces error.</p>
+<p><strong>The discretizations differ by the amount two meshes differ.</strong> The participating eigenfrequencies agree to under one percent, and the RMS and peak responses to under two percent, on a comparison between a body-fitted linear hexahedral mesh and a trimmed immersed spline basis.</p>
+<p><strong>Not every mode needs to agree for the response to agree.</strong> The square section puts a torsional mode inside the analysis band, and a linear immersed basis represents torsional warping far less accurately than bending: that mode is stiff by an order of ten percent. It carries no participation in a transverse base motion, so it never reaches the response, and the study gates on the participating modes for that reason. The full spectrum is tabulated above so the departure is visible rather than hidden, and it is a useful reminder that agreement mode by mode is neither necessary nor sufficient for agreement in the response.</p>
+<p><strong>RMS values depend on the frequency sweep.</strong> The random response integrates a spectral density that is sharply peaked at lightly damped resonances, so the reported RMS is only as converged as the sweep beneath it. At the settings used here both codes integrate the same points and agree with each other, but neither is the converged integral. A production run should raise the number of points per interval until the RMS stops moving.</p>
+</section>
+<section id="references" class="level2" data-number="9">
+<h2 data-number="9" class="anchored" data-anchor-id="references"><span class="header-section-number">9</span> References</h2>
+<div id="refs" role="list">
+
+</div>
+</section>
+<section id="appendix" class="level2" data-number="10">
+<h2 data-number="10" class="anchored" data-anchor-id="appendix"><span class="header-section-number">10</span> Appendix</h2>
+<section id="capabilities-exercised" class="level3" data-number="10.1">
+<h3 data-number="10.1" class="anchored" data-anchor-id="capabilities-exercised"><span class="header-section-number">10.1</span> Capabilities exercised</h3>
+<p><em>No qualifying capability evidence was generated for these run artifacts.</em></p>
+</section>
+<section id="supported-abaqus-keywords" class="level3" data-number="10.2">
+<h3 data-number="10.2" class="anchored" data-anchor-id="supported-abaqus-keywords"><span class="header-section-number">10.2</span> Supported Abaqus keywords</h3>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Analysis deck keywords
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>*Heading</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>*Preprint, echo=NO, model=NO, history=NO, contact=NO</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>*Part, name=&lt;part&gt;</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>*Node</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>      1,  0.100000001,  0.100000001,           1.</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>      2,  0.100000001, 0.0500000007,           1.</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>      3,  0.100000001,           0.,           1.</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>      4,  0.100000001,  0.100000001,  0.949999988</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>      5,  0.100000001, 0.0500000007,  0.949999988</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>      6,  0.100000001,           0.,  0.949999988</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>      7,  0.100000001,  0.100000001,  0.899999976</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>      8,  0.100000001, 0.0500000007,  0.899999976</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>      9,  0.100000001,           0.,  0.899999976</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>     10,  0.100000001,  0.100000001,  0.850000024</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>     11,  0.100000001, 0.0500000007,  0.850000024</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>     12,  0.100000001,           0.,  0.850000024</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>     13,  0.100000001,  0.100000001,  0.800000012</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>     14,  0.100000001, 0.0500000007,  0.800000012</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>     15,  0.100000001,           0.,  0.800000012</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>     16,  0.100000001,  0.100000001,         0.75</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>     17,  0.100000001, 0.0500000007,         0.75</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>     18,  0.100000001,           0.,         0.75</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>     19,  0.100000001,  0.100000001,  0.699999988</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>     20,  0.100000001, 0.0500000007,  0.699999988</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>     21,  0.100000001,           0.,  0.699999988</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>     22,  0.100000001,  0.100000001,  0.649999976</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>     23,  0.100000001, 0.0500000007,  0.649999976</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>     24,  0.100000001,           0.,  0.649999976</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>     25,  0.100000001,  0.100000001,  0.600000024</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>     26,  0.100000001, 0.0500000007,  0.600000024</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>     27,  0.100000001,           0.,  0.600000024</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>     28,  0.100000001,  0.100000001,  0.550000012</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>     29,  0.100000001, 0.0500000007,  0.550000012</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>     30,  0.100000001,           0.,  0.550000012</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>     31,  0.100000001,  0.100000001,          0.5</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>     32,  0.100000001, 0.0500000007,          0.5</span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>     33,  0.100000001,           0.,          0.5</span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>     34,  0.100000001,  0.100000001,  0.449999988</span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>     35,  0.100000001, 0.0500000007,  0.449999988</span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>     36,  0.100000001,           0.,  0.449999988</span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>     37,  0.100000001,  0.100000001,  0.400000006</span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>     38,  0.100000001, 0.0500000007,  0.400000006</span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>     39,  0.100000001,           0.,  0.400000006</span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>     40,  0.100000001,  0.100000001,  0.349999994</span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>     41,  0.100000001, 0.0500000007,  0.349999994</span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>     42,  0.100000001,           0.,  0.349999994</span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>     43,  0.100000001,  0.100000001,  0.300000012</span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>     44,  0.100000001, 0.0500000007,  0.300000012</span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a>     45,  0.100000001,           0.,  0.300000012</span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>     46,  0.100000001,  0.100000001,         0.25</span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a>     47,  0.100000001, 0.0500000007,         0.25</span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a>     48,  0.100000001,           0.,         0.25</span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a>     49,  0.100000001,  0.100000001,  0.200000003</span>
+<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a>     50,  0.100000001, 0.0500000007,  0.200000003</span>
+<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a>     51,  0.100000001,           0.,  0.200000003</span>
+<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a>     52,  0.100000001,  0.100000001,  0.150000006</span>
+<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a>     53,  0.100000001, 0.0500000007,  0.150000006</span>
+<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a>     54,  0.100000001,           0.,  0.150000006</span>
+<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a>     55,  0.100000001,  0.100000001,  0.100000001</span>
+<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a>     56,  0.100000001, 0.0500000007,  0.100000001</span>
+<span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a>     57,  0.100000001,           0.,  0.100000001</span>
+<span id="cb1-62"><a href="#cb1-62" aria-hidden="true" tabindex="-1"></a>     58,  0.100000001,  0.100000001, 0.0500000007</span>
+<span id="cb1-63"><a href="#cb1-63" aria-hidden="true" tabindex="-1"></a>     59,  0.100000001, 0.0500000007, 0.0500000007</span>
+<span id="cb1-64"><a href="#cb1-64" aria-hidden="true" tabindex="-1"></a>     60,  0.100000001,           0., 0.0500000007</span>
+<span id="cb1-65"><a href="#cb1-65" aria-hidden="true" tabindex="-1"></a>     61,  0.100000001,  0.100000001,           0.</span>
+<span id="cb1-66"><a href="#cb1-66" aria-hidden="true" tabindex="-1"></a>     62,  0.100000001, 0.0500000007,           0.</span>
+<span id="cb1-67"><a href="#cb1-67" aria-hidden="true" tabindex="-1"></a>     63,  0.100000001,           0.,           0.</span>
+<span id="cb1-68"><a href="#cb1-68" aria-hidden="true" tabindex="-1"></a>     64, 0.0500000007,  0.100000001,           1.</span>
+<span id="cb1-69"><a href="#cb1-69" aria-hidden="true" tabindex="-1"></a>     65, 0.0500000007, 0.0500000007,           1.</span>
+<span id="cb1-70"><a href="#cb1-70" aria-hidden="true" tabindex="-1"></a>     66, 0.0500000007,           0.,           1.</span>
+<span id="cb1-71"><a href="#cb1-71" aria-hidden="true" tabindex="-1"></a>     67, 0.0500000007,  0.100000001,  0.949999988</span>
+<span id="cb1-72"><a href="#cb1-72" aria-hidden="true" tabindex="-1"></a>     68, 0.0500000007, 0.0500000007,  0.949999988</span>
+<span id="cb1-73"><a href="#cb1-73" aria-hidden="true" tabindex="-1"></a>     69, 0.0500000007,           0.,  0.949999988</span>
+<span id="cb1-74"><a href="#cb1-74" aria-hidden="true" tabindex="-1"></a>     70, 0.0500000007,  0.100000001,  0.899999976</span>
+<span id="cb1-75"><a href="#cb1-75" aria-hidden="true" tabindex="-1"></a>     71, 0.0500000007, 0.0500000007,  0.899999976</span>
+<span id="cb1-76"><a href="#cb1-76" aria-hidden="true" tabindex="-1"></a>     72, 0.0500000007,           0.,  0.899999976</span>
+<span id="cb1-77"><a href="#cb1-77" aria-hidden="true" tabindex="-1"></a>     73, 0.0500000007,  0.100000001,  0.850000024</span>
+<span id="cb1-78"><a href="#cb1-78" aria-hidden="true" tabindex="-1"></a>     74, 0.0500000007, 0.0500000007,  0.850000024</span>
+<span id="cb1-79"><a href="#cb1-79" aria-hidden="true" tabindex="-1"></a>     75, 0.0500000007,           0.,  0.850000024</span>
+<span id="cb1-80"><a href="#cb1-80" aria-hidden="true" tabindex="-1"></a>     76, 0.0500000007,  0.100000001,  0.800000012</span>
+<span id="cb1-81"><a href="#cb1-81" aria-hidden="true" tabindex="-1"></a>     77, 0.0500000007, 0.0500000007,  0.800000012</span>
+<span id="cb1-82"><a href="#cb1-82" aria-hidden="true" tabindex="-1"></a>     78, 0.0500000007,           0.,  0.800000012</span>
+<span id="cb1-83"><a href="#cb1-83" aria-hidden="true" tabindex="-1"></a>     79, 0.0500000007,  0.100000001,         0.75</span>
+<span id="cb1-84"><a href="#cb1-84" aria-hidden="true" tabindex="-1"></a>     80, 0.0500000007, 0.0500000007,         0.75</span>
+<span id="cb1-85"><a href="#cb1-85" aria-hidden="true" tabindex="-1"></a>     81, 0.0500000007,           0.,         0.75</span>
+<span id="cb1-86"><a href="#cb1-86" aria-hidden="true" tabindex="-1"></a>     82, 0.0500000007,  0.100000001,  0.699999988</span>
+<span id="cb1-87"><a href="#cb1-87" aria-hidden="true" tabindex="-1"></a>     83, 0.0500000007, 0.0500000007,  0.699999988</span>
+<span id="cb1-88"><a href="#cb1-88" aria-hidden="true" tabindex="-1"></a>     84, 0.0500000007,           0.,  0.699999988</span>
+<span id="cb1-89"><a href="#cb1-89" aria-hidden="true" tabindex="-1"></a>     85, 0.0500000007,  0.100000001,  0.649999976</span>
+<span id="cb1-90"><a href="#cb1-90" aria-hidden="true" tabindex="-1"></a>     86, 0.0500000007, 0.0500000007,  0.649999976</span>
+<span id="cb1-91"><a href="#cb1-91" aria-hidden="true" tabindex="-1"></a>     87, 0.0500000007,           0.,  0.649999976</span>
+<span id="cb1-92"><a href="#cb1-92" aria-hidden="true" tabindex="-1"></a>     88, 0.0500000007,  0.100000001,  0.600000024</span>
+<span id="cb1-93"><a href="#cb1-93" aria-hidden="true" tabindex="-1"></a>     89, 0.0500000007, 0.0500000007,  0.600000024</span>
+<span id="cb1-94"><a href="#cb1-94" aria-hidden="true" tabindex="-1"></a>     90, 0.0500000007,           0.,  0.600000024</span>
+<span id="cb1-95"><a href="#cb1-95" aria-hidden="true" tabindex="-1"></a>     91, 0.0500000007,  0.100000001,  0.550000012</span>
+<span id="cb1-96"><a href="#cb1-96" aria-hidden="true" tabindex="-1"></a>     92, 0.0500000007, 0.0500000007,  0.550000012</span>
+<span id="cb1-97"><a href="#cb1-97" aria-hidden="true" tabindex="-1"></a>     93, 0.0500000007,           0.,  0.550000012</span>
+<span id="cb1-98"><a href="#cb1-98" aria-hidden="true" tabindex="-1"></a>     94, 0.0500000007,  0.100000001,          0.5</span>
+<span id="cb1-99"><a href="#cb1-99" aria-hidden="true" tabindex="-1"></a>     95, 0.0500000007, 0.0500000007,          0.5</span>
+<span id="cb1-100"><a href="#cb1-100" aria-hidden="true" tabindex="-1"></a>     96, 0.0500000007,           0.,          0.5</span>
+<span id="cb1-101"><a href="#cb1-101" aria-hidden="true" tabindex="-1"></a>     97, 0.0500000007,  0.100000001,  0.449999988</span>
+<span id="cb1-102"><a href="#cb1-102" aria-hidden="true" tabindex="-1"></a>     98, 0.0500000007, 0.0500000007,  0.449999988</span>
+<span id="cb1-103"><a href="#cb1-103" aria-hidden="true" tabindex="-1"></a>     99, 0.0500000007,           0.,  0.449999988</span>
+<span id="cb1-104"><a href="#cb1-104" aria-hidden="true" tabindex="-1"></a>    100, 0.0500000007,  0.100000001,  0.400000006</span>
+<span id="cb1-105"><a href="#cb1-105" aria-hidden="true" tabindex="-1"></a>    101, 0.0500000007, 0.0500000007,  0.400000006</span>
+<span id="cb1-106"><a href="#cb1-106" aria-hidden="true" tabindex="-1"></a>    102, 0.0500000007,           0.,  0.400000006</span>
+<span id="cb1-107"><a href="#cb1-107" aria-hidden="true" tabindex="-1"></a>    103, 0.0500000007,  0.100000001,  0.349999994</span>
+<span id="cb1-108"><a href="#cb1-108" aria-hidden="true" tabindex="-1"></a>    104, 0.0500000007, 0.0500000007,  0.349999994</span>
+<span id="cb1-109"><a href="#cb1-109" aria-hidden="true" tabindex="-1"></a>    105, 0.0500000007,           0.,  0.349999994</span>
+<span id="cb1-110"><a href="#cb1-110" aria-hidden="true" tabindex="-1"></a>    106, 0.0500000007,  0.100000001,  0.300000012</span>
+<span id="cb1-111"><a href="#cb1-111" aria-hidden="true" tabindex="-1"></a>    107, 0.0500000007, 0.0500000007,  0.300000012</span>
+<span id="cb1-112"><a href="#cb1-112" aria-hidden="true" tabindex="-1"></a>    108, 0.0500000007,           0.,  0.300000012</span>
+<span id="cb1-113"><a href="#cb1-113" aria-hidden="true" tabindex="-1"></a>    109, 0.0500000007,  0.100000001,         0.25</span>
+<span id="cb1-114"><a href="#cb1-114" aria-hidden="true" tabindex="-1"></a>    110, 0.0500000007, 0.0500000007,         0.25</span>
+<span id="cb1-115"><a href="#cb1-115" aria-hidden="true" tabindex="-1"></a>    111, 0.0500000007,           0.,         0.25</span>
+<span id="cb1-116"><a href="#cb1-116" aria-hidden="true" tabindex="-1"></a>    112, 0.0500000007,  0.100000001,  0.200000003</span>
+<span id="cb1-117"><a href="#cb1-117" aria-hidden="true" tabindex="-1"></a>    113, 0.0500000007, 0.0500000007,  0.200000003</span>
+<span id="cb1-118"><a href="#cb1-118" aria-hidden="true" tabindex="-1"></a>    114, 0.0500000007,           0.,  0.200000003</span>
+<span id="cb1-119"><a href="#cb1-119" aria-hidden="true" tabindex="-1"></a>    115, 0.0500000007,  0.100000001,  0.150000006</span>
+<span id="cb1-120"><a href="#cb1-120" aria-hidden="true" tabindex="-1"></a>    116, 0.0500000007, 0.0500000007,  0.150000006</span>
+<span id="cb1-121"><a href="#cb1-121" aria-hidden="true" tabindex="-1"></a>    117, 0.0500000007,           0.,  0.150000006</span>
+<span id="cb1-122"><a href="#cb1-122" aria-hidden="true" tabindex="-1"></a>    118, 0.0500000007,  0.100000001,  0.100000001</span>
+<span id="cb1-123"><a href="#cb1-123" aria-hidden="true" tabindex="-1"></a>    119, 0.0500000007, 0.0500000007,  0.100000001</span>
+<span id="cb1-124"><a href="#cb1-124" aria-hidden="true" tabindex="-1"></a>    120, 0.0500000007,           0.,  0.100000001</span>
+<span id="cb1-125"><a href="#cb1-125" aria-hidden="true" tabindex="-1"></a>    121, 0.0500000007,  0.100000001, 0.0500000007</span>
+<span id="cb1-126"><a href="#cb1-126" aria-hidden="true" tabindex="-1"></a>    122, 0.0500000007, 0.0500000007, 0.0500000007</span>
+<span id="cb1-127"><a href="#cb1-127" aria-hidden="true" tabindex="-1"></a>    123, 0.0500000007,           0., 0.0500000007</span>
+<span id="cb1-128"><a href="#cb1-128" aria-hidden="true" tabindex="-1"></a>    124, 0.0500000007,  0.100000001,           0.</span>
+<span id="cb1-129"><a href="#cb1-129" aria-hidden="true" tabindex="-1"></a>    125, 0.0500000007, 0.0500000007,           0.</span>
+<span id="cb1-130"><a href="#cb1-130" aria-hidden="true" tabindex="-1"></a>    126, 0.0500000007,           0.,           0.</span>
+<span id="cb1-131"><a href="#cb1-131" aria-hidden="true" tabindex="-1"></a>    127,           0.,  0.100000001,           1.</span>
+<span id="cb1-132"><a href="#cb1-132" aria-hidden="true" tabindex="-1"></a>    128,           0., 0.0500000007,           1.</span>
+<span id="cb1-133"><a href="#cb1-133" aria-hidden="true" tabindex="-1"></a>    129,           0.,           0.,           1.</span>
+<span id="cb1-134"><a href="#cb1-134" aria-hidden="true" tabindex="-1"></a>    130,           0.,  0.100000001,  0.949999988</span>
+<span id="cb1-135"><a href="#cb1-135" aria-hidden="true" tabindex="-1"></a>    131,           0., 0.0500000007,  0.949999988</span>
+<span id="cb1-136"><a href="#cb1-136" aria-hidden="true" tabindex="-1"></a>    132,           0.,           0.,  0.949999988</span>
+<span id="cb1-137"><a href="#cb1-137" aria-hidden="true" tabindex="-1"></a>    133,           0.,  0.100000001,  0.899999976</span>
+<span id="cb1-138"><a href="#cb1-138" aria-hidden="true" tabindex="-1"></a>    134,           0., 0.0500000007,  0.899999976</span>
+<span id="cb1-139"><a href="#cb1-139" aria-hidden="true" tabindex="-1"></a>    135,           0.,           0.,  0.899999976</span>
+<span id="cb1-140"><a href="#cb1-140" aria-hidden="true" tabindex="-1"></a>    136,           0.,  0.100000001,  0.850000024</span>
+<span id="cb1-141"><a href="#cb1-141" aria-hidden="true" tabindex="-1"></a>    137,           0., 0.0500000007,  0.850000024</span>
+<span id="cb1-142"><a href="#cb1-142" aria-hidden="true" tabindex="-1"></a>    138,           0.,           0.,  0.850000024</span>
+<span id="cb1-143"><a href="#cb1-143" aria-hidden="true" tabindex="-1"></a>    139,           0.,  0.100000001,  0.800000012</span>
+<span id="cb1-144"><a href="#cb1-144" aria-hidden="true" tabindex="-1"></a>    140,           0., 0.0500000007,  0.800000012</span>
+<span id="cb1-145"><a href="#cb1-145" aria-hidden="true" tabindex="-1"></a>    141,           0.,           0.,  0.800000012</span>
+<span id="cb1-146"><a href="#cb1-146" aria-hidden="true" tabindex="-1"></a>    142,           0.,  0.100000001,         0.75</span>
+<span id="cb1-147"><a href="#cb1-147" aria-hidden="true" tabindex="-1"></a>    143,           0., 0.0500000007,         0.75</span>
+<span id="cb1-148"><a href="#cb1-148" aria-hidden="true" tabindex="-1"></a>    144,           0.,           0.,         0.75</span>
+<span id="cb1-149"><a href="#cb1-149" aria-hidden="true" tabindex="-1"></a>    145,           0.,  0.100000001,  0.699999988</span>
+<span id="cb1-150"><a href="#cb1-150" aria-hidden="true" tabindex="-1"></a>    146,           0., 0.0500000007,  0.699999988</span>
+<span id="cb1-151"><a href="#cb1-151" aria-hidden="true" tabindex="-1"></a>    147,           0.,           0.,  0.699999988</span>
+<span id="cb1-152"><a href="#cb1-152" aria-hidden="true" tabindex="-1"></a>    148,           0.,  0.100000001,  0.649999976</span>
+<span id="cb1-153"><a href="#cb1-153" aria-hidden="true" tabindex="-1"></a>    149,           0., 0.0500000007,  0.649999976</span>
+<span id="cb1-154"><a href="#cb1-154" aria-hidden="true" tabindex="-1"></a>    150,           0.,           0.,  0.649999976</span>
+<span id="cb1-155"><a href="#cb1-155" aria-hidden="true" tabindex="-1"></a>    151,           0.,  0.100000001,  0.600000024</span>
+<span id="cb1-156"><a href="#cb1-156" aria-hidden="true" tabindex="-1"></a>    152,           0., 0.0500000007,  0.600000024</span>
+<span id="cb1-157"><a href="#cb1-157" aria-hidden="true" tabindex="-1"></a>    153,           0.,           0.,  0.600000024</span>
+<span id="cb1-158"><a href="#cb1-158" aria-hidden="true" tabindex="-1"></a>    154,           0.,  0.100000001,  0.550000012</span>
+<span id="cb1-159"><a href="#cb1-159" aria-hidden="true" tabindex="-1"></a>    155,           0., 0.0500000007,  0.550000012</span>
+<span id="cb1-160"><a href="#cb1-160" aria-hidden="true" tabindex="-1"></a>    156,           0.,           0.,  0.550000012</span>
+<span id="cb1-161"><a href="#cb1-161" aria-hidden="true" tabindex="-1"></a>    157,           0.,  0.100000001,          0.5</span>
+<span id="cb1-162"><a href="#cb1-162" aria-hidden="true" tabindex="-1"></a>    158,           0., 0.0500000007,          0.5</span>
+<span id="cb1-163"><a href="#cb1-163" aria-hidden="true" tabindex="-1"></a>    159,           0.,           0.,          0.5</span>
+<span id="cb1-164"><a href="#cb1-164" aria-hidden="true" tabindex="-1"></a>    160,           0.,  0.100000001,  0.449999988</span>
+<span id="cb1-165"><a href="#cb1-165" aria-hidden="true" tabindex="-1"></a>    161,           0., 0.0500000007,  0.449999988</span>
+<span id="cb1-166"><a href="#cb1-166" aria-hidden="true" tabindex="-1"></a>    162,           0.,           0.,  0.449999988</span>
+<span id="cb1-167"><a href="#cb1-167" aria-hidden="true" tabindex="-1"></a>    163,           0.,  0.100000001,  0.400000006</span>
+<span id="cb1-168"><a href="#cb1-168" aria-hidden="true" tabindex="-1"></a>    164,           0., 0.0500000007,  0.400000006</span>
+<span id="cb1-169"><a href="#cb1-169" aria-hidden="true" tabindex="-1"></a>    165,           0.,           0.,  0.400000006</span>
+<span id="cb1-170"><a href="#cb1-170" aria-hidden="true" tabindex="-1"></a>    166,           0.,  0.100000001,  0.349999994</span>
+<span id="cb1-171"><a href="#cb1-171" aria-hidden="true" tabindex="-1"></a>    167,           0., 0.0500000007,  0.349999994</span>
+<span id="cb1-172"><a href="#cb1-172" aria-hidden="true" tabindex="-1"></a>    168,           0.,           0.,  0.349999994</span>
+<span id="cb1-173"><a href="#cb1-173" aria-hidden="true" tabindex="-1"></a>    169,           0.,  0.100000001,  0.300000012</span>
+<span id="cb1-174"><a href="#cb1-174" aria-hidden="true" tabindex="-1"></a>    170,           0., 0.0500000007,  0.300000012</span>
+<span id="cb1-175"><a href="#cb1-175" aria-hidden="true" tabindex="-1"></a>    171,           0.,           0.,  0.300000012</span>
+<span id="cb1-176"><a href="#cb1-176" aria-hidden="true" tabindex="-1"></a>    172,           0.,  0.100000001,         0.25</span>
+<span id="cb1-177"><a href="#cb1-177" aria-hidden="true" tabindex="-1"></a>    173,           0., 0.0500000007,         0.25</span>
+<span id="cb1-178"><a href="#cb1-178" aria-hidden="true" tabindex="-1"></a>    174,           0.,           0.,         0.25</span>
+<span id="cb1-179"><a href="#cb1-179" aria-hidden="true" tabindex="-1"></a>    175,           0.,  0.100000001,  0.200000003</span>
+<span id="cb1-180"><a href="#cb1-180" aria-hidden="true" tabindex="-1"></a>    176,           0., 0.0500000007,  0.200000003</span>
+<span id="cb1-181"><a href="#cb1-181" aria-hidden="true" tabindex="-1"></a>    177,           0.,           0.,  0.200000003</span>
+<span id="cb1-182"><a href="#cb1-182" aria-hidden="true" tabindex="-1"></a>    178,           0.,  0.100000001,  0.150000006</span>
+<span id="cb1-183"><a href="#cb1-183" aria-hidden="true" tabindex="-1"></a>    179,           0., 0.0500000007,  0.150000006</span>
+<span id="cb1-184"><a href="#cb1-184" aria-hidden="true" tabindex="-1"></a>    180,           0.,           0.,  0.150000006</span>
+<span id="cb1-185"><a href="#cb1-185" aria-hidden="true" tabindex="-1"></a>    181,           0.,  0.100000001,  0.100000001</span>
+<span id="cb1-186"><a href="#cb1-186" aria-hidden="true" tabindex="-1"></a>    182,           0., 0.0500000007,  0.100000001</span>
+<span id="cb1-187"><a href="#cb1-187" aria-hidden="true" tabindex="-1"></a>    183,           0.,           0.,  0.100000001</span>
+<span id="cb1-188"><a href="#cb1-188" aria-hidden="true" tabindex="-1"></a>    184,           0.,  0.100000001, 0.0500000007</span>
+<span id="cb1-189"><a href="#cb1-189" aria-hidden="true" tabindex="-1"></a>    185,           0., 0.0500000007, 0.0500000007</span>
+<span id="cb1-190"><a href="#cb1-190" aria-hidden="true" tabindex="-1"></a>    186,           0.,           0., 0.0500000007</span>
+<span id="cb1-191"><a href="#cb1-191" aria-hidden="true" tabindex="-1"></a>    187,           0.,  0.100000001,           0.</span>
+<span id="cb1-192"><a href="#cb1-192" aria-hidden="true" tabindex="-1"></a>    188,           0., 0.0500000007,           0.</span>
+<span id="cb1-193"><a href="#cb1-193" aria-hidden="true" tabindex="-1"></a>    189,           0.,           0.,           0.</span>
+<span id="cb1-194"><a href="#cb1-194" aria-hidden="true" tabindex="-1"></a>*Element, type=C3D8</span>
+<span id="cb1-195"><a href="#cb1-195" aria-hidden="true" tabindex="-1"></a> 1,  64,  65,  68,  67,   1,   2,   5,   4</span>
+<span id="cb1-196"><a href="#cb1-196" aria-hidden="true" tabindex="-1"></a> 2,  65,  66,  69,  68,   2,   3,   6,   5</span>
+<span id="cb1-197"><a href="#cb1-197" aria-hidden="true" tabindex="-1"></a> 3,  67,  68,  71,  70,   4,   5,   8,   7</span>
+<span id="cb1-198"><a href="#cb1-198" aria-hidden="true" tabindex="-1"></a> 4,  68,  69,  72,  71,   5,   6,   9,   8</span>
+<span id="cb1-199"><a href="#cb1-199" aria-hidden="true" tabindex="-1"></a> 5,  70,  71,  74,  73,   7,   8,  11,  10</span>
+<span id="cb1-200"><a href="#cb1-200" aria-hidden="true" tabindex="-1"></a> 6,  71,  72,  75,  74,   8,   9,  12,  11</span>
+<span id="cb1-201"><a href="#cb1-201" aria-hidden="true" tabindex="-1"></a> 7,  73,  74,  77,  76,  10,  11,  14,  13</span>
+<span id="cb1-202"><a href="#cb1-202" aria-hidden="true" tabindex="-1"></a> 8,  74,  75,  78,  77,  11,  12,  15,  14</span>
+<span id="cb1-203"><a href="#cb1-203" aria-hidden="true" tabindex="-1"></a> 9,  76,  77,  80,  79,  13,  14,  17,  16</span>
+<span id="cb1-204"><a href="#cb1-204" aria-hidden="true" tabindex="-1"></a>10,  77,  78,  81,  80,  14,  15,  18,  17</span>
+<span id="cb1-205"><a href="#cb1-205" aria-hidden="true" tabindex="-1"></a>11,  79,  80,  83,  82,  16,  17,  20,  19</span>
+<span id="cb1-206"><a href="#cb1-206" aria-hidden="true" tabindex="-1"></a>12,  80,  81,  84,  83,  17,  18,  21,  20</span>
+<span id="cb1-207"><a href="#cb1-207" aria-hidden="true" tabindex="-1"></a>13,  82,  83,  86,  85,  19,  20,  23,  22</span>
+<span id="cb1-208"><a href="#cb1-208" aria-hidden="true" tabindex="-1"></a>14,  83,  84,  87,  86,  20,  21,  24,  23</span>
+<span id="cb1-209"><a href="#cb1-209" aria-hidden="true" tabindex="-1"></a>15,  85,  86,  89,  88,  22,  23,  26,  25</span>
+<span id="cb1-210"><a href="#cb1-210" aria-hidden="true" tabindex="-1"></a>16,  86,  87,  90,  89,  23,  24,  27,  26</span>
+<span id="cb1-211"><a href="#cb1-211" aria-hidden="true" tabindex="-1"></a>17,  88,  89,  92,  91,  25,  26,  29,  28</span>
+<span id="cb1-212"><a href="#cb1-212" aria-hidden="true" tabindex="-1"></a>18,  89,  90,  93,  92,  26,  27,  30,  29</span>
+<span id="cb1-213"><a href="#cb1-213" aria-hidden="true" tabindex="-1"></a>19,  91,  92,  95,  94,  28,  29,  32,  31</span>
+<span id="cb1-214"><a href="#cb1-214" aria-hidden="true" tabindex="-1"></a>20,  92,  93,  96,  95,  29,  30,  33,  32</span>
+<span id="cb1-215"><a href="#cb1-215" aria-hidden="true" tabindex="-1"></a>21,  94,  95,  98,  97,  31,  32,  35,  34</span>
+<span id="cb1-216"><a href="#cb1-216" aria-hidden="true" tabindex="-1"></a>22,  95,  96,  99,  98,  32,  33,  36,  35</span>
+<span id="cb1-217"><a href="#cb1-217" aria-hidden="true" tabindex="-1"></a>23,  97,  98, 101, 100,  34,  35,  38,  37</span>
+<span id="cb1-218"><a href="#cb1-218" aria-hidden="true" tabindex="-1"></a>24,  98,  99, 102, 101,  35,  36,  39,  38</span>
+<span id="cb1-219"><a href="#cb1-219" aria-hidden="true" tabindex="-1"></a>25, 100, 101, 104, 103,  37,  38,  41,  40</span>
+<span id="cb1-220"><a href="#cb1-220" aria-hidden="true" tabindex="-1"></a>26, 101, 102, 105, 104,  38,  39,  42,  41</span>
+<span id="cb1-221"><a href="#cb1-221" aria-hidden="true" tabindex="-1"></a>27, 103, 104, 107, 106,  40,  41,  44,  43</span>
+<span id="cb1-222"><a href="#cb1-222" aria-hidden="true" tabindex="-1"></a>28, 104, 105, 108, 107,  41,  42,  45,  44</span>
+<span id="cb1-223"><a href="#cb1-223" aria-hidden="true" tabindex="-1"></a>29, 106, 107, 110, 109,  43,  44,  47,  46</span>
+<span id="cb1-224"><a href="#cb1-224" aria-hidden="true" tabindex="-1"></a>30, 107, 108, 111, 110,  44,  45,  48,  47</span>
+<span id="cb1-225"><a href="#cb1-225" aria-hidden="true" tabindex="-1"></a>31, 109, 110, 113, 112,  46,  47,  50,  49</span>
+<span id="cb1-226"><a href="#cb1-226" aria-hidden="true" tabindex="-1"></a>32, 110, 111, 114, 113,  47,  48,  51,  50</span>
+<span id="cb1-227"><a href="#cb1-227" aria-hidden="true" tabindex="-1"></a>33, 112, 113, 116, 115,  49,  50,  53,  52</span>
+<span id="cb1-228"><a href="#cb1-228" aria-hidden="true" tabindex="-1"></a>34, 113, 114, 117, 116,  50,  51,  54,  53</span>
+<span id="cb1-229"><a href="#cb1-229" aria-hidden="true" tabindex="-1"></a>35, 115, 116, 119, 118,  52,  53,  56,  55</span>
+<span id="cb1-230"><a href="#cb1-230" aria-hidden="true" tabindex="-1"></a>36, 116, 117, 120, 119,  53,  54,  57,  56</span>
+<span id="cb1-231"><a href="#cb1-231" aria-hidden="true" tabindex="-1"></a>37, 118, 119, 122, 121,  55,  56,  59,  58</span>
+<span id="cb1-232"><a href="#cb1-232" aria-hidden="true" tabindex="-1"></a>38, 119, 120, 123, 122,  56,  57,  60,  59</span>
+<span id="cb1-233"><a href="#cb1-233" aria-hidden="true" tabindex="-1"></a>39, 121, 122, 125, 124,  58,  59,  62,  61</span>
+<span id="cb1-234"><a href="#cb1-234" aria-hidden="true" tabindex="-1"></a>40, 122, 123, 126, 125,  59,  60,  63,  62</span>
+<span id="cb1-235"><a href="#cb1-235" aria-hidden="true" tabindex="-1"></a>41, 127, 128, 131, 130,  64,  65,  68,  67</span>
+<span id="cb1-236"><a href="#cb1-236" aria-hidden="true" tabindex="-1"></a>42, 128, 129, 132, 131,  65,  66,  69,  68</span>
+<span id="cb1-237"><a href="#cb1-237" aria-hidden="true" tabindex="-1"></a>43, 130, 131, 134, 133,  67,  68,  71,  70</span>
+<span id="cb1-238"><a href="#cb1-238" aria-hidden="true" tabindex="-1"></a>44, 131, 132, 135, 134,  68,  69,  72,  71</span>
+<span id="cb1-239"><a href="#cb1-239" aria-hidden="true" tabindex="-1"></a>45, 133, 134, 137, 136,  70,  71,  74,  73</span>
+<span id="cb1-240"><a href="#cb1-240" aria-hidden="true" tabindex="-1"></a>46, 134, 135, 138, 137,  71,  72,  75,  74</span>
+<span id="cb1-241"><a href="#cb1-241" aria-hidden="true" tabindex="-1"></a>47, 136, 137, 140, 139,  73,  74,  77,  76</span>
+<span id="cb1-242"><a href="#cb1-242" aria-hidden="true" tabindex="-1"></a>48, 137, 138, 141, 140,  74,  75,  78,  77</span>
+<span id="cb1-243"><a href="#cb1-243" aria-hidden="true" tabindex="-1"></a>49, 139, 140, 143, 142,  76,  77,  80,  79</span>
+<span id="cb1-244"><a href="#cb1-244" aria-hidden="true" tabindex="-1"></a>50, 140, 141, 144, 143,  77,  78,  81,  80</span>
+<span id="cb1-245"><a href="#cb1-245" aria-hidden="true" tabindex="-1"></a>51, 142, 143, 146, 145,  79,  80,  83,  82</span>
+<span id="cb1-246"><a href="#cb1-246" aria-hidden="true" tabindex="-1"></a>52, 143, 144, 147, 146,  80,  81,  84,  83</span>
+<span id="cb1-247"><a href="#cb1-247" aria-hidden="true" tabindex="-1"></a>53, 145, 146, 149, 148,  82,  83,  86,  85</span>
+<span id="cb1-248"><a href="#cb1-248" aria-hidden="true" tabindex="-1"></a>54, 146, 147, 150, 149,  83,  84,  87,  86</span>
+<span id="cb1-249"><a href="#cb1-249" aria-hidden="true" tabindex="-1"></a>55, 148, 149, 152, 151,  85,  86,  89,  88</span>
+<span id="cb1-250"><a href="#cb1-250" aria-hidden="true" tabindex="-1"></a>56, 149, 150, 153, 152,  86,  87,  90,  89</span>
+<span id="cb1-251"><a href="#cb1-251" aria-hidden="true" tabindex="-1"></a>57, 151, 152, 155, 154,  88,  89,  92,  91</span>
+<span id="cb1-252"><a href="#cb1-252" aria-hidden="true" tabindex="-1"></a>58, 152, 153, 156, 155,  89,  90,  93,  92</span>
+<span id="cb1-253"><a href="#cb1-253" aria-hidden="true" tabindex="-1"></a>59, 154, 155, 158, 157,  91,  92,  95,  94</span>
+<span id="cb1-254"><a href="#cb1-254" aria-hidden="true" tabindex="-1"></a>60, 155, 156, 159, 158,  92,  93,  96,  95</span>
+<span id="cb1-255"><a href="#cb1-255" aria-hidden="true" tabindex="-1"></a>61, 157, 158, 161, 160,  94,  95,  98,  97</span>
+<span id="cb1-256"><a href="#cb1-256" aria-hidden="true" tabindex="-1"></a>62, 158, 159, 162, 161,  95,  96,  99,  98</span>
+<span id="cb1-257"><a href="#cb1-257" aria-hidden="true" tabindex="-1"></a>63, 160, 161, 164, 163,  97,  98, 101, 100</span>
+<span id="cb1-258"><a href="#cb1-258" aria-hidden="true" tabindex="-1"></a>64, 161, 162, 165, 164,  98,  99, 102, 101</span>
+<span id="cb1-259"><a href="#cb1-259" aria-hidden="true" tabindex="-1"></a>65, 163, 164, 167, 166, 100, 101, 104, 103</span>
+<span id="cb1-260"><a href="#cb1-260" aria-hidden="true" tabindex="-1"></a>66, 164, 165, 168, 167, 101, 102, 105, 104</span>
+<span id="cb1-261"><a href="#cb1-261" aria-hidden="true" tabindex="-1"></a>67, 166, 167, 170, 169, 103, 104, 107, 106</span>
+<span id="cb1-262"><a href="#cb1-262" aria-hidden="true" tabindex="-1"></a>68, 167, 168, 171, 170, 104, 105, 108, 107</span>
+<span id="cb1-263"><a href="#cb1-263" aria-hidden="true" tabindex="-1"></a>69, 169, 170, 173, 172, 106, 107, 110, 109</span>
+<span id="cb1-264"><a href="#cb1-264" aria-hidden="true" tabindex="-1"></a>70, 170, 171, 174, 173, 107, 108, 111, 110</span>
+<span id="cb1-265"><a href="#cb1-265" aria-hidden="true" tabindex="-1"></a>71, 172, 173, 176, 175, 109, 110, 113, 112</span>
+<span id="cb1-266"><a href="#cb1-266" aria-hidden="true" tabindex="-1"></a>72, 173, 174, 177, 176, 110, 111, 114, 113</span>
+<span id="cb1-267"><a href="#cb1-267" aria-hidden="true" tabindex="-1"></a>73, 175, 176, 179, 178, 112, 113, 116, 115</span>
+<span id="cb1-268"><a href="#cb1-268" aria-hidden="true" tabindex="-1"></a>74, 176, 177, 180, 179, 113, 114, 117, 116</span>
+<span id="cb1-269"><a href="#cb1-269" aria-hidden="true" tabindex="-1"></a>75, 178, 179, 182, 181, 115, 116, 119, 118</span>
+<span id="cb1-270"><a href="#cb1-270" aria-hidden="true" tabindex="-1"></a>76, 179, 180, 183, 182, 116, 117, 120, 119</span>
+<span id="cb1-271"><a href="#cb1-271" aria-hidden="true" tabindex="-1"></a>77, 181, 182, 185, 184, 118, 119, 122, 121</span>
+<span id="cb1-272"><a href="#cb1-272" aria-hidden="true" tabindex="-1"></a>78, 182, 183, 186, 185, 119, 120, 123, 122</span>
+<span id="cb1-273"><a href="#cb1-273" aria-hidden="true" tabindex="-1"></a>79, 184, 185, 188, 187, 121, 122, 125, 124</span>
+<span id="cb1-274"><a href="#cb1-274" aria-hidden="true" tabindex="-1"></a>80, 185, 186, 189, 188, 122, 123, 126, 125</span>
+<span id="cb1-275"><a href="#cb1-275" aria-hidden="true" tabindex="-1"></a>*Nset, nset=&lt;node-set&gt;, generate</span>
+<span id="cb1-276"><a href="#cb1-276" aria-hidden="true" tabindex="-1"></a>   1,  189,    1</span>
+<span id="cb1-277"><a href="#cb1-277" aria-hidden="true" tabindex="-1"></a>*Elset, elset=&lt;element-set&gt;, generate</span>
+<span id="cb1-278"><a href="#cb1-278" aria-hidden="true" tabindex="-1"></a>  1,  80,   1</span>
+<span id="cb1-279"><a href="#cb1-279" aria-hidden="true" tabindex="-1"></a>*Solid Section, elset=&lt;element-set&gt;, material=&lt;material&gt;</span>
+<span id="cb1-280"><a href="#cb1-280" aria-hidden="true" tabindex="-1"></a>,</span>
+<span id="cb1-281"><a href="#cb1-281" aria-hidden="true" tabindex="-1"></a>*End Part</span>
+<span id="cb1-282"><a href="#cb1-282" aria-hidden="true" tabindex="-1"></a>*Assembly, name=&lt;name&gt;</span>
+<span id="cb1-283"><a href="#cb1-283" aria-hidden="true" tabindex="-1"></a>*Instance, name=&lt;instance&gt;, part=&lt;part&gt;</span>
+<span id="cb1-284"><a href="#cb1-284" aria-hidden="true" tabindex="-1"></a>*End Instance</span>
+<span id="cb1-285"><a href="#cb1-285" aria-hidden="true" tabindex="-1"></a>*Nset, nset=&lt;node-set&gt;, instance=&lt;instance&gt;</span>
+<span id="cb1-286"><a href="#cb1-286" aria-hidden="true" tabindex="-1"></a>  61,  62,  63, 124, 125, 126, 187, 188, 189</span>
+<span id="cb1-287"><a href="#cb1-287" aria-hidden="true" tabindex="-1"></a>*Elset, elset=&lt;element-set&gt;, instance=&lt;instance&gt;</span>
+<span id="cb1-288"><a href="#cb1-288" aria-hidden="true" tabindex="-1"></a> 39, 40, 79, 80</span>
+<span id="cb1-289"><a href="#cb1-289" aria-hidden="true" tabindex="-1"></a>*Nset, nset=&lt;node-set&gt;, instance=&lt;instance&gt;</span>
+<span id="cb1-290"><a href="#cb1-290" aria-hidden="true" tabindex="-1"></a> 127,</span>
+<span id="cb1-291"><a href="#cb1-291" aria-hidden="true" tabindex="-1"></a>*End Assembly</span>
+<span id="cb1-292"><a href="#cb1-292" aria-hidden="true" tabindex="-1"></a>*Psd-definition, name=&lt;name&gt;, g=9.81, type=BASE</span>
+<span id="cb1-293"><a href="#cb1-293" aria-hidden="true" tabindex="-1"></a>0.01, 0., 10.</span>
+<span id="cb1-294"><a href="#cb1-294" aria-hidden="true" tabindex="-1"></a>0.01, 0., 2000.</span>
+<span id="cb1-295"><a href="#cb1-295" aria-hidden="true" tabindex="-1"></a>*Spectrum, name=&lt;name&gt;, type=ACCELERATION</span>
+<span id="cb1-296"><a href="#cb1-296" aria-hidden="true" tabindex="-1"></a>20., 10., 0.02</span>
+<span id="cb1-297"><a href="#cb1-297" aria-hidden="true" tabindex="-1"></a>200., 100., 0.02</span>
+<span id="cb1-298"><a href="#cb1-298" aria-hidden="true" tabindex="-1"></a>200., 600., 0.02</span>
+<span id="cb1-299"><a href="#cb1-299" aria-hidden="true" tabindex="-1"></a>60., 2000., 0.02</span>
+<span id="cb1-300"><a href="#cb1-300" aria-hidden="true" tabindex="-1"></a>*Material, name=&lt;material&gt;</span>
+<span id="cb1-301"><a href="#cb1-301" aria-hidden="true" tabindex="-1"></a>*Density</span>
+<span id="cb1-302"><a href="#cb1-302" aria-hidden="true" tabindex="-1"></a>8000.,</span>
+<span id="cb1-303"><a href="#cb1-303" aria-hidden="true" tabindex="-1"></a>*Elastic</span>
+<span id="cb1-304"><a href="#cb1-304" aria-hidden="true" tabindex="-1"></a> 2e+11,0.</span>
+<span id="cb1-305"><a href="#cb1-305" aria-hidden="true" tabindex="-1"></a>*Boundary</span>
+<span id="cb1-306"><a href="#cb1-306" aria-hidden="true" tabindex="-1"></a>&lt;node-set&gt;, ENCASTRE</span>
+<span id="cb1-307"><a href="#cb1-307" aria-hidden="true" tabindex="-1"></a>*Step, name=&lt;step&gt;, nlgeom=NO, perturbation</span>
+<span id="cb1-308"><a href="#cb1-308" aria-hidden="true" tabindex="-1"></a>*Frequency, eigensolver=Lanczos, sim=NO, acoustic coupling=on, normalization=mass</span>
+<span id="cb1-309"><a href="#cb1-309" aria-hidden="true" tabindex="-1"></a>20, , , , ,</span>
+<span id="cb1-310"><a href="#cb1-310" aria-hidden="true" tabindex="-1"></a>*Restart, write, frequency=0</span>
+<span id="cb1-311"><a href="#cb1-311" aria-hidden="true" tabindex="-1"></a>*Output, field</span>
+<span id="cb1-312"><a href="#cb1-312" aria-hidden="true" tabindex="-1"></a>*Node Output, variable=PRESELECT</span>
+<span id="cb1-313"><a href="#cb1-313" aria-hidden="true" tabindex="-1"></a>*Element Output, directions=YES</span>
+<span id="cb1-314"><a href="#cb1-314" aria-hidden="true" tabindex="-1"></a>S,</span>
+<span id="cb1-315"><a href="#cb1-315" aria-hidden="true" tabindex="-1"></a>*End Step</span>
+<span id="cb1-316"><a href="#cb1-316" aria-hidden="true" tabindex="-1"></a>*Step, name=&lt;step&gt;, nlgeom=NO, perturbation</span>
+<span id="cb1-317"><a href="#cb1-317" aria-hidden="true" tabindex="-1"></a>*Random Response</span>
+<span id="cb1-318"><a href="#cb1-318" aria-hidden="true" tabindex="-1"></a>10., 2000., 20, 3.,</span>
+<span id="cb1-319"><a href="#cb1-319" aria-hidden="true" tabindex="-1"></a>*Modal Damping, definition=FREQUENCY RANGE</span>
+<span id="cb1-320"><a href="#cb1-320" aria-hidden="true" tabindex="-1"></a>10., 0.02</span>
+<span id="cb1-321"><a href="#cb1-321" aria-hidden="true" tabindex="-1"></a>2000., 0.02</span>
+<span id="cb1-322"><a href="#cb1-322" aria-hidden="true" tabindex="-1"></a>*Base Motion, type=ACCELERATION, dof=2, scale=1., load case=1</span>
+<span id="cb1-323"><a href="#cb1-323" aria-hidden="true" tabindex="-1"></a>*Correlation, type=CORRELATED, psd=base-psd, complex=NO</span>
+<span id="cb1-324"><a href="#cb1-324" aria-hidden="true" tabindex="-1"></a>1, 1.</span>
+<span id="cb1-325"><a href="#cb1-325" aria-hidden="true" tabindex="-1"></a>*Output, field</span>
+<span id="cb1-326"><a href="#cb1-326" aria-hidden="true" tabindex="-1"></a>*Node Output</span>
+<span id="cb1-327"><a href="#cb1-327" aria-hidden="true" tabindex="-1"></a>RU, U</span>
+<span id="cb1-328"><a href="#cb1-328" aria-hidden="true" tabindex="-1"></a>*Element Output, directions=YES</span>
+<span id="cb1-329"><a href="#cb1-329" aria-hidden="true" tabindex="-1"></a>RMISES, RS</span>
+<span id="cb1-330"><a href="#cb1-330" aria-hidden="true" tabindex="-1"></a>*Output, history, frequency=0</span>
+<span id="cb1-331"><a href="#cb1-331" aria-hidden="true" tabindex="-1"></a>*End Step</span>
+<span id="cb1-332"><a href="#cb1-332" aria-hidden="true" tabindex="-1"></a>*Step, name=&lt;step&gt;, nlgeom=NO, perturbation</span>
+<span id="cb1-333"><a href="#cb1-333" aria-hidden="true" tabindex="-1"></a>*Response Spectrum, sum=SRSS</span>
+<span id="cb1-334"><a href="#cb1-334" aria-hidden="true" tabindex="-1"></a>shock-spectrum,0., 1., 0., 1.</span>
+<span id="cb1-335"><a href="#cb1-335" aria-hidden="true" tabindex="-1"></a>*Modal Damping, definition=FREQUENCY RANGE</span>
+<span id="cb1-336"><a href="#cb1-336" aria-hidden="true" tabindex="-1"></a>10., 0.02</span>
+<span id="cb1-337"><a href="#cb1-337" aria-hidden="true" tabindex="-1"></a>2000., 0.02</span>
+<span id="cb1-338"><a href="#cb1-338" aria-hidden="true" tabindex="-1"></a>*Output, field</span>
+<span id="cb1-339"><a href="#cb1-339" aria-hidden="true" tabindex="-1"></a>*Node Output</span>
+<span id="cb1-340"><a href="#cb1-340" aria-hidden="true" tabindex="-1"></a>U,</span>
+<span id="cb1-341"><a href="#cb1-341" aria-hidden="true" tabindex="-1"></a>*Element Output, directions=YES</span>
+<span id="cb1-342"><a href="#cb1-342" aria-hidden="true" tabindex="-1"></a>S,</span>
+<span id="cb1-343"><a href="#cb1-343" aria-hidden="true" tabindex="-1"></a>*Output, history, frequency=0</span>
+<span id="cb1-344"><a href="#cb1-344" aria-hidden="true" tabindex="-1"></a>*End Step</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</div>
+</section>
+<section id="download-artifacts" class="level3" data-number="10.3">
+<h3 data-number="10.3" class="anchored" data-anchor-id="download-artifacts"><span class="header-section-number">10.3</span> Download artifacts</h3>
+<p>
+<a download="cantilever-shock-vibration-artifacts.zip" href="../../../../../downloads/cantilever-shock-vibration/cantilever-shock-vibration-artifacts.zip">Download all verification artifacts (ZIP)</a>
+</p>
+<section id="geometry-cad-files" class="level4" data-number="10.3.1">
+<h4 data-number="10.3.1" class="anchored" data-anchor-id="geometry-cad-files"><span class="header-section-number">10.3.1</span> Geometry CAD files</h4>
+<p>No separate CAD file is required for this problem; the geometry is fully defined in the Abaqus/CAE journal files.</p>
+</section>
+<section id="abaquscae-journal-files" class="level4" data-number="10.3.2">
+<h4 data-number="10.3.2" class="anchored" data-anchor-id="abaquscae-journal-files"><span class="header-section-number">10.3.2</span> Abaqus/CAE journal files</h4>
+<p>
+2 generated Abaqus/CAE journals are available.
+</p>
+<details>
+<summary>
+Show 2 individual journals
+</summary>
+<ul>
+<li>
+<a download="abaqus_h0p1--cantilever_shock_vibration_model.jnl" href="../../../../../downloads/cantilever-shock-vibration/abaqus_h0p1--cantilever_shock_vibration_model.jnl">abaqus_h0p1–cantilever_shock_vibration_model.jnl</a>
+</li>
+<li>
+<a download="immersed_h0p1--cantilever_shock_vibration_model.jnl" href="../../../../../downloads/cantilever-shock-vibration/immersed_h0p1--cantilever_shock_vibration_model.jnl">immersed_h0p1–cantilever_shock_vibration_model.jnl</a>
+</li>
+</ul>
+</details>
+</section>
+</section>
+<section id="provenance" class="level3" data-number="10.4">
+<h3 data-number="10.4" class="anchored" data-anchor-id="provenance"><span class="header-section-number">10.4</span> Provenance</h3>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Test_abaqus_verification_cantilever_shock_vibration_abaqus_h0p1
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Parameter</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Evidence type</strong></td>
+<td>Numerical verification</td>
+</tr>
+<tr class="even">
+<td><strong>CTest result</strong></td>
+<td>Passed (Release)</td>
+</tr>
+<tr class="odd">
+<td><strong>Verification result</strong></td>
+<td>Passed — 4/4 enforced criteria passed</td>
+</tr>
+<tr class="even">
+<td><strong>Test date</strong></td>
+<td>04-Nov-2026 19:40:38</td>
+</tr>
+<tr class="odd">
+<td><strong>Operating system</strong></td>
+<td>Ubuntu 24.04.5 LTS</td>
+</tr>
+<tr class="even">
+<td><strong>Coreform IGA version</strong></td>
+<td><code>2026.11+72575</code></td>
+</tr>
+<tr class="odd">
+<td><strong>Source revision</strong></td>
+<td><code>e48e5098b2f8</code></td>
+</tr>
+<tr class="even">
+<td><strong>Abaqus version</strong></td>
+<td><code>Abaqus Unofficial Packaging Version</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Test_abaqus_verification_cantilever_shock_vibration_immersed_h0p1
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-4" class="callout-4-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Parameter</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Evidence type</strong></td>
+<td>Numerical verification</td>
+</tr>
+<tr class="even">
+<td><strong>CTest result</strong></td>
+<td>Passed (Release)</td>
+</tr>
+<tr class="odd">
+<td><strong>Verification result</strong></td>
+<td>Passed — 4/4 enforced criteria passed</td>
+</tr>
+<tr class="even">
+<td><strong>Test date</strong></td>
+<td>04-Nov-2026 19:40:57</td>
+</tr>
+<tr class="odd">
+<td><strong>Operating system</strong></td>
+<td>Ubuntu 24.04.5 LTS</td>
+</tr>
+<tr class="even">
+<td><strong>Coreform IGA version</strong></td>
+<td><code>2026.11+72575</code></td>
+</tr>
+<tr class="odd">
+<td><strong>Source revision</strong></td>
+<td><code>e48e5098b2f8</code></td>
+</tr>
+<tr class="even">
+<td><strong>Abaqus version</strong></td>
+<td><code>Abaqus Unofficial Packaging Version</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<!-- Version badge and switcher for versioned CIFA documentation snapshots.
+     version.json (written by write_version_manifest.py) sits at the site root;
+     versions.json (written by ./build docs cifa deploy) sits one level above
+     the snapshot directory and lists every published version. -->
+<script>
+(function () {
+  function siteRoot() {
+    var script = document.querySelector('script[src*="site_libs/quarto-html/"]');
+    if (script) { return script.getAttribute("src").split("site_libs/")[0]; }
+    var logo = document.querySelector('.sidebar-logo, .navbar-logo');
+    if (logo && logo.getAttribute("src")) { return logo.getAttribute("src").split("assets/")[0]; }
+    return "./";
+  }
+  var root = siteRoot();
+  var badge = document.getElementById("cifa-version-badge");
+  if (!badge) { return; }
+  fetch(root + "version.json").then(function (r) { return r.ok ? r.json() : null; }).then(function (manifest) {
+    if (!manifest) { return; }
+    var label = manifest.channel === "release" ? manifest.version
+              : manifest.channel === "development" ? "development (" + manifest.version + ")"
+              : "local render (" + manifest.version + ")";
+    badge.textContent = "Version: " + label;
+    if (manifest.channel === "local") { return; }
+    return fetch(root + "../versions.json").then(function (r) { return r.ok ? r.json() : null; }).then(function (versions) {
+      if (!versions) { return; }
+      var select = document.createElement("select");
+      select.className = "form-select form-select-sm";
+      select.setAttribute("aria-label", "Documentation version");
+      function option(value, text, selected) {
+        var o = document.createElement("option"); o.value = value; o.textContent = text; o.selected = !!selected; select.appendChild(o);
+      }
+      var current = manifest.channel === "release" ? manifest.version : "development";
+      if (versions.development) { option("development", "development", current === "development"); }
+      (versions.releases || []).forEach(function (name) {
+        option(name, name === versions.latest ? name + " (latest)" : name, current === name);
+      });
+      select.addEventListener("change", function () {
+        var here = window.location.pathname;
+        var rootPath = new URL(root, window.location.href).pathname;
+        var relative = here.startsWith(rootPath) ? here.slice(rootPath.length) : "";
+        window.location.href = new URL("../" + select.value + "/" + relative, new URL(root, window.location.href)).href;
+      });
+      badge.appendChild(document.createElement("br"));
+      badge.appendChild(select);
+    });
+  }).catch(function () {});
+})();
+</script>
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

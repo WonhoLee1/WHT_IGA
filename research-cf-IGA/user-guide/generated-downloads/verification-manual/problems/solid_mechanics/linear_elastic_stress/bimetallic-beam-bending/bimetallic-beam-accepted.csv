@@ -1,0 +1,6 @@
+load_case,equivalent_load_symbol,equivalent_load_value,tip_uy_transformed_section
+gravity,w,0.01378305,-0.0011328534246575343
+body_force,w,0.01378305,-0.0011328534246575343
+pressure,w,0.01,-0.0008219178082191779
+traction,P,1.0,-0.002191780821917808
+moment,M_0,5.0,-0.0001643835616438356

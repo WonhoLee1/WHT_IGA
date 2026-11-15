@@ -1,6 +1,6 @@
 # Phase 2 수정 지시 — V02 경계조건 오류 + Phase 1 후처리 결함 (2026-11-14)
 
-근거: `WHT_IGA/docs/REVIEW_P0_P1.md` §2, §3. 기준 문서: `research-coreform-IGA/master-plan_v2.1.md`, 규칙: `research-coreform-IGA/implementation-request_v1.md` §2, §4(K1–K14), `WHT_IGA/AGENTS.md`.
+근거: `WHT_IGA/docs/REVIEW_P0_P1.md` §2, §3. 기준 문서: `WHT_IGA/research-cf-IGA/master-plan_v2.1.md`, 규칙: `WHT_IGA/research-cf-IGA/implementation-request_v1.md` §2, §4(K1–K14), `WHT_IGA/AGENTS.md`.
 
 ## 0. 요약
 

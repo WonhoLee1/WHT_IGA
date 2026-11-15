@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="440" viewBox="0 0 1100 440" role="img"
+     aria-labelledby="title description">
+  <title id="title">NAFEMS P18 T3 geometry and transient thermal boundary conditions</title>
+  <desc id="description">A 0.1 metre rod held at zero degrees Celsius at end A and subjected to a sinusoidal temperature at end B, with probe C located 0.08 metre from A.</desc>
+  <defs>
+    <marker id="arrow-dark" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="8" markerHeight="8"
+            orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#30475c"/>
+    </marker>
+    <style>
+      .body { fill: #e8f0f5; stroke: #20384d; stroke-width: 6; }
+      .label { fill: #20384d; font: 30px Arial, Helvetica, sans-serif; }
+      .cold { fill: #2f7399; font: 29px Arial, Helvetica, sans-serif; }
+      .hot { fill: #b63f34; font: 27px Arial, Helvetica, sans-serif; }
+      .dimension { fill: none; stroke: #30475c; stroke-width: 3; marker-start: url(#arrow-dark); marker-end: url(#arrow-dark); }
+    </style>
+  </defs>
+
+  <rect class="body" x="170" y="115" width="700" height="115"/>
+  <line x1="170" y1="85" x2="170" y2="260" stroke="#4b86a7" stroke-width="10"/>
+  <line x1="870" y1="85" x2="870" y2="260" stroke="#c44b40" stroke-width="10"/>
+  <text class="label" x="140" y="72">A</text>
+  <text class="label" x="860" y="72">B</text>
+  <text class="cold" x="55" y="180">0 °C</text>
+  <text class="hot" x="895" y="175">100 sin(πt/40) °C</text>
+
+  <circle cx="730" cy="172" r="10" fill="#b63f34"/>
+  <text class="label" x="717" y="150">C</text>
+
+  <line class="dimension" x1="175" y1="295" x2="865" y2="295"/>
+  <text class="label" x="520" y="340" text-anchor="middle">0.1 m</text>
+  <line class="dimension" x1="175" y1="375" x2="730" y2="375"/>
+  <text class="label" x="452" y="420" text-anchor="middle">0.08 m</text>
+</svg>

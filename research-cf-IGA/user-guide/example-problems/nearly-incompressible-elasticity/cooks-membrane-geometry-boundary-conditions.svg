@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="150mm"
+   height="92mm"
+   viewBox="0 0 150 92"
+   version="1.1"
+   id="cooks-membrane-sketch"
+   sodipodi:docname="cooks-membrane-geometry-boundary-conditions.svg"
+   inkscape:version="1.3 (0e150ed, 2023-07-21)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview22"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     inkscape:zoom="1.2065"
+     inkscape:cx="283.87899"
+     inkscape:cy="107.33527"
+     inkscape:window-width="1616"
+     inkscape:window-height="808"
+     inkscape:window-x="577"
+     inkscape:window-y="427"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="background-layer" />
+  <title
+     id="title1">Cook's membrane plan-view geometry and boundary conditions</title>
+  <desc
+     id="desc1">&#10;    To-scale x-y plan view of the Cook's membrane. The left edge is clamped,&#10;    out-of-plane displacement is fixed throughout the body, and an upward&#10;    resultant shear load is applied to the right edge. The upper-right corner&#10;    is the displacement-probe point.&#10;  </desc>
+  <defs
+     id="defs2">
+    <marker
+       id="arrow"
+       viewBox="0 0 10 10"
+       refX="8"
+       refY="5"
+       markerWidth="5"
+       markerHeight="5"
+       orient="auto-start-reverse">
+      <path
+         d="M 0,0 L 10,5 L 0,10 L 2.5,5 Z"
+         fill="#27272a"
+         id="path1" />
+    </marker>
+    <marker
+       id="dimension-arrow"
+       viewBox="0 0 10 10"
+       refX="8"
+       refY="5"
+       markerWidth="4"
+       markerHeight="4"
+       orient="auto-start-reverse">
+      <path
+         d="M 0,0 L 10,5 L 0,10 Z"
+         fill="#27272a"
+         id="path2" />
+    </marker>
+    <pattern
+       id="clamp-hatch"
+       width="3"
+       height="3"
+       patternUnits="userSpaceOnUse"
+       patternTransform="rotate(45)">
+      <line
+         x1="0"
+         y1="0"
+         x2="0"
+         y2="3"
+         stroke="#f04562"
+         stroke-width="0.65"
+         id="line2" />
+    </pattern>
+    <style
+       id="style2">&#10;      .body {&#10;        fill: #4380f3;&#10;        fill-opacity: 0.182203;&#10;        stroke: #27272a;&#10;        stroke-width: 0.55;&#10;        stroke-linejoin: bevel;&#10;      }&#10;      .outline {&#10;        fill: none;&#10;        stroke: #27272a;&#10;        stroke-width: 0.55;&#10;      }&#10;      .dimension {&#10;        fill: none;&#10;        stroke: #27272a;&#10;        stroke-width: 0.35;&#10;        marker-start: url(#dimension-arrow);&#10;        marker-end: url(#dimension-arrow);&#10;      }&#10;      .extension {&#10;        fill: none;&#10;        stroke: #27272a;&#10;        stroke-width: 0.25;&#10;      }&#10;      .load {&#10;        fill: none;&#10;        stroke: #27272a;&#10;        stroke-width: 0.65;&#10;        marker-end: url(#arrow);&#10;      }&#10;      .label {&#10;        fill: #27272a;&#10;        font-family: &quot;CMU Serif&quot;, serif;&#10;        font-size: 4.2px;&#10;      }&#10;      .math-label {&#10;        fill: #27272a;&#10;        font-family: &quot;CMU Serif&quot;, serif;&#10;        font-size: 4.2px;&#10;        font-style: italic;&#10;      }&#10;      .small-label {&#10;        fill: #27272a;&#10;        font-family: &quot;CMU Serif&quot;, serif;&#10;        font-size: 3.5px;&#10;      }&#10;      .constraint-label {&#10;        fill: #f04562;&#10;        font-family: &quot;CMU Serif&quot;, serif;&#10;        font-size: 3.8px;&#10;      }&#10;    </style>
+  </defs>
+  <g
+     id="background-layer"
+     inkscape:groupmode="layer"
+     inkscape:label="Background">
+    <rect
+       x="0"
+       y="0"
+       width="150"
+       height="92"
+       fill="#ffffff"
+       id="rect2" />
+  </g>
+  <g
+     id="sketch-layer"
+     inkscape:groupmode="layer"
+     inkscape:label="Plan-view geometry and boundary conditions">
+    <!--
+      One SVG unit represents one model millimeter. Relative to the lower-left
+      corner, the four profile vertices are (0,0), (48,44), (48,60), and
+      (0,44). The displayed profile is therefore dimensionally to scale.
+    -->
+    <path
+       class="body"
+       d="M 52,78 L 100,34 L 100,18 L 52,34 Z"
+       id="path3" />
+    <!-- Clamp on the left edge. -->
+    <rect
+       x="48"
+       y="34"
+       width="4"
+       height="44"
+       fill="url(#clamp-hatch)"
+       id="rect3" />
+    <line
+       x1="52"
+       y1="34"
+       x2="52"
+       y2="78"
+       stroke="#f04562"
+       stroke-width="1.0"
+       id="line3" />
+    <text
+       class="constraint-label"
+       x="4"
+       y="47"
+       id="text3">clamped edge</text>
+    <text
+       class="constraint-label"
+       x="4"
+       y="53"
+       id="text11"><tspan
+         font-style="italic"
+         id="tspan3">u</tspan><tspan
+         baseline-shift="sub"
+         font-size="2.7"
+         id="tspan4">x</tspan><tspan
+         baseline-shift="baseline"
+         id="tspan5"> = </tspan><tspan
+         font-style="italic"
+         id="tspan6">u</tspan><tspan
+         baseline-shift="sub"
+         font-size="2.7"
+         id="tspan7">y</tspan><tspan
+         baseline-shift="baseline"
+         id="tspan8"> = </tspan><tspan
+         font-style="italic"
+         id="tspan9">u</tspan><tspan
+         baseline-shift="sub"
+         font-size="2.7"
+         id="tspan10">z</tspan><tspan
+         baseline-shift="baseline"
+         id="tspan11"> = 0</tspan></text>
+    <line
+       x1="34"
+       y1="49"
+       x2="48"
+       y2="50"
+       stroke="#f04562"
+       stroke-width="0.35"
+       id="line11" />
+    <!-- Upward resultant shear load on the right edge. -->
+    <line
+       class="load"
+       x1="105.23753"
+       y1="32"
+       x2="105.23753"
+       y2="20"
+       id="line12" />
+    <text
+       class="math-label"
+       x="109.35418"
+       y="27.054176"
+       id="text12">P<tspan
+   baseline-shift="sub"
+   font-size="2.9px"
+   id="tspan12">y</tspan></text>
+    <!-- Loaded-corner probe. -->
+    <circle
+       cx="100"
+       cy="18"
+       r="1.45"
+       fill="#f04562"
+       stroke="#ffffff"
+       stroke-width="0.45"
+       id="circle12" />
+    <line
+       x1="99.2"
+       y1="16.7"
+       x2="93"
+       y2="9.5"
+       stroke="#f04562"
+       stroke-width="0.4"
+       stroke-dasharray="1.2,1.2"
+       id="line13" />
+    <text
+       class="constraint-label"
+       x="64"
+       y="7.5"
+       id="text13">loaded-corner probe</text>
+    <!-- Profile dimensions. These share the same unit scale as the profile. -->
+    <line
+       class="extension"
+       x1="52"
+       y1="78"
+       x2="52"
+       y2="88"
+       id="line14" />
+    <line
+       class="extension"
+       x1="100"
+       y1="34"
+       x2="100"
+       y2="88"
+       id="line15" />
+    <line
+       class="dimension"
+       x1="53"
+       y1="86"
+       x2="99"
+       y2="86"
+       id="line16" />
+    <text
+       class="math-label"
+       x="75"
+       y="84.2"
+       id="text16">L</text>
+    <line
+       class="extension"
+       x1="52"
+       y1="78"
+       x2="40"
+       y2="78"
+       id="line17" />
+    <line
+       class="extension"
+       x1="52"
+       y1="34"
+       x2="40"
+       y2="34"
+       id="line18" />
+    <line
+       class="extension"
+       x1="100"
+       y1="18"
+       x2="40"
+       y2="18"
+       id="line18-offset" />
+    <line
+       class="dimension"
+       x1="42"
+       y1="33"
+       x2="42"
+       y2="19"
+       id="line19-offset" />
+    <text
+       class="math-label"
+       x="37.5"
+       y="29"
+       transform="rotate(-90 37.5 29)"
+       id="text19-offset">Δ<tspan
+   font-style="italic"
+   id="tspan19-offset">y</tspan></text>
+    <line
+       class="dimension"
+       x1="42"
+       y1="77"
+       x2="42"
+       y2="35"
+       id="line19" />
+    <text
+       class="math-label"
+       x="37.5"
+       y="59"
+       transform="rotate(-90 37.5 59)"
+       id="text19">H<tspan
+   baseline-shift="sub"
+   font-size="2.9"
+   id="tspan19">L</tspan></text>
+    <line
+       class="extension"
+       x1="100"
+       y1="34"
+       x2="118.50739"
+       y2="34"
+       id="line20" />
+    <line
+       class="extension"
+       x1="100"
+       y1="18"
+       x2="118.50739"
+       y2="18"
+       id="line21" />
+    <line
+       class="dimension"
+       x1="118.50739"
+       y1="33"
+       x2="118.50739"
+       y2="19"
+       id="line22" />
+    <text
+       class="math-label"
+       x="-30"
+       y="124.50739"
+       transform="rotate(-90)"
+       id="text22">H<tspan
+   baseline-shift="sub"
+   font-size="2.9px"
+       id="tspan22">R</tspan></text>
+  </g>
+</svg>

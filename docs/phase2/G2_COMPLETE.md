@@ -11,7 +11,7 @@ STATUS: COMPLETE
 - 작성: 2026-11-15 / 브랜치 `WHTIGA` (작업 트리 변경 상태, 미커밋)
 - 계약: `WHT_IGA/docs/phase2/G2_WORKPLAN.md` §완료 표식. G2 전체 게이트 항목 검증이 완료되었다.
 - 상세 판정·근거: `WHT_IGA/docs/phase2/G2_report.md` (단일 출처). 실행 로그: `WHT_IGA/docs/INTEGRATION_HANDOFF.md`.
-- 계획서: `research-coreform-IGA/master-plan_v2.1.md` (§0.5, §5.11.1, §9 G2).
+- 계획서: `WHT_IGA/research-cf-IGA/master-plan_v2.1.md` (§0.5, §5.11.1, §9 G2).
 
 ## 게이트 판정
 

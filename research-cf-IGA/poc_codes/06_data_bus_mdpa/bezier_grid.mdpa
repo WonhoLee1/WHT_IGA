@@ -1,0 +1,16 @@
+Begin ModelPartData
+DENSITY 7850.0
+YOUNG_MODULUS 2.1e11
+POISSON_RATIO 0.3
+End ModelPartData
+
+Begin Nodes
+ 1 0 0 0.0
+ 2 1 0 0.0
+ 3 1 1 0.0
+ 4 0 1 0.0
+End Nodes
+
+Begin Elements Element3D8N
+ 1 1 1 2 3 4 4 3 2 1
+End Elements

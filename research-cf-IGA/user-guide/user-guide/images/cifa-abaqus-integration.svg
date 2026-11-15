@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="1840"
+  height="768"
+  viewBox="0 0 1840 768"
+  preserveAspectRatio="xMidYMid meet"
+  role="img"
+  aria-labelledby="title description">
+  <title id="title">Coreform IGA integration with Abaqus</title>
+  <desc id="description">
+    Abaqus/CAE supplies a Coreform IGA mesh to the Coreform IGA user element
+    and an Abaqus INP file to Abaqus/Standard. During analysis,
+    Abaqus/Standard supplies material data to the user element, which returns
+    element stiffness.
+  </desc>
+
+  <defs>
+    <style>
+      .box {
+        fill: #ffffff;
+        stroke-width: 2.5;
+      }
+      .abaqus-box {
+        stroke: #A753F5;
+      }
+      .coreform-box {
+        stroke: #34C561;
+      }
+      .abaqus-text {
+        fill: #7D1DCC;
+      }
+      .coreform-text {
+        fill: #20803F;
+      }
+      .box-label {
+        font: 60px Arial, Helvetica, sans-serif;
+        text-anchor: middle;
+      }
+      .flow-label {
+        font: 36px Arial, Helvetica, sans-serif;
+      }
+    </style>
+  </defs>
+
+  <!-- These two outlined arrows are drawn first so their stems appear to
+       originate behind the Abaqus/CAE box, as in the source diagram. -->
+  <path
+    d="M 370 283 V 142 H 1038 V 77 L 1104 165 L 1038 258 V 193 H 423 V 283 Z"
+    fill="#ffffff"
+    stroke="#34C561"
+    stroke-width="2.5"
+    stroke-linejoin="miter" />
+  <text
+    class="flow-label coreform-text"
+    x="730"
+    y="180"
+    text-anchor="middle">Coreform IGA mesh</text>
+
+  <path
+    d="M 370 526 V 666 H 1038 V 731 L 1104 642 L 1038 551 V 615 H 423 V 526 Z"
+    fill="#ffffff"
+    stroke="#A753F5"
+    stroke-width="2.5"
+    stroke-linejoin="miter" />
+  <text
+    class="flow-label abaqus-text"
+    x="730"
+    y="655"
+    text-anchor="middle">Abaqus INP</text>
+
+  <rect class="box abaqus-box" x="30" y="283" width="500" height="243" />
+  <text class="box-label abaqus-text" x="280" y="426">Abaqus/CAE</text>
+
+  <rect class="box coreform-box" x="1104" y="48" width="712" height="242" />
+  <text class="box-label coreform-text" x="1460" y="159">
+    <tspan x="1460" dy="0">Coreform IGA</tspan>
+    <tspan x="1460" dy="68">user element (UELMAT)</tspan>
+  </text>
+
+  <rect class="box abaqus-box" x="1104" y="512" width="712" height="242" />
+  <text class="box-label abaqus-text" x="1460" y="654">Abaqus/Standard</text>
+
+  <!-- Iteration-time exchange between Abaqus/Standard and the user element.
+       These use the same hollow block-arrow treatment as the input flows. -->
+  <path
+    d="M 1360 290 L 1315 345 H 1342 V 512 H 1378 V 345 H 1405 Z"
+    fill="#ffffff"
+    stroke="#A753F5"
+    stroke-width="2.5"
+    stroke-linejoin="miter" />
+  <text
+    class="flow-label abaqus-text"
+    x="1285"
+    y="407"
+    text-anchor="end">Material data</text>
+
+  <path
+    d="M 1542 290 H 1578 V 457 H 1605 L 1560 512 L 1515 457 H 1542 Z"
+    fill="#ffffff"
+    stroke="#34C561"
+    stroke-width="2.5"
+    stroke-linejoin="miter" />
+  <text
+    class="flow-label coreform-text"
+    x="1710"
+    y="391"
+    text-anchor="middle">
+    <tspan x="1710" dy="0">Element</tspan>
+    <tspan x="1710" dy="42">stiffness</tspan>
+  </text>
+</svg>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="150mm" height="34mm" viewBox="0 0 150 34" version="1.1"
+     id="bimetallic-beam-load-traction" xmlns="http://www.w3.org/2000/svg">
+  <title>End-face traction on a bimetallic cantilever beam</title>
+  <desc>Uniform downward end-face traction represented by resultant tip load P.</desc>
+  <defs>
+    <marker id="load-arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+      <path d="M 0,0 10,5 0,10 2.5,5 Z" fill="#27272a" />
+    </marker>
+    <pattern id="clamp-hatch" width="0.9" height="0.9" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <line x1="0" y1="0" x2="0" y2="0.9" stroke="#f04562" stroke-width="0.19" />
+    </pattern>
+    <style>
+      .stiff { fill: #a753f5; fill-opacity: 0.25; }
+      .flexible { fill: #4380f3; fill-opacity: 0.25; }
+      .outline { fill: none; stroke: #27272a; stroke-width: 0.4; }
+      .interface { stroke: #f04562; stroke-width: 0.5; }
+      .load { stroke: #27272a; stroke-width: 0.55; marker-end: url(#load-arrow); }
+      .math { fill: #27272a; font-family: "CMU Serif", serif; font-size: 4.2px; font-style: italic; }
+      .constraint { fill: #27272a; font-family: "CMU Serif", serif; font-size: 2.7px; }
+    </style>
+  </defs>
+  <rect width="150" height="34" fill="#ffffff" />
+  <rect class="stiff" x="22" y="11" width="112" height="6" />
+  <rect class="flexible" x="22" y="17" width="112" height="6" />
+  <rect class="outline" x="22" y="11" width="112" height="12" />
+  <line class="interface" x1="22" y1="17" x2="134" y2="17" />
+  <rect x="17" y="11" width="5" height="12" fill="url(#clamp-hatch)" />
+  <line x1="22" y1="11" x2="22" y2="23" stroke="#f04562" stroke-width="0.8" />
+  <text class="constraint" x="1" y="14.5"><tspan font-style="italic">u</tspan><tspan baseline-shift="sub" font-size="1.9">x</tspan><tspan> = 0</tspan></text>
+  <text class="constraint" x="1" y="18"><tspan font-style="italic">u</tspan><tspan baseline-shift="sub" font-size="1.9">y</tspan><tspan> = 0</tspan></text>
+  <text class="constraint" x="1" y="21.5"><tspan font-style="italic">u</tspan><tspan baseline-shift="sub" font-size="1.9">z</tspan><tspan> = 0</tspan></text>
+  <line class="load" x1="141" y1="11" x2="141" y2="23" />
+  <text class="math" x="141" y="8.3" text-anchor="middle">P</text>
+</svg>

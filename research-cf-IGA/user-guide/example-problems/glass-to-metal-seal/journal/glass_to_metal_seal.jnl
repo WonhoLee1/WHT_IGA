@@ -1,0 +1,686 @@
+# -*- coding: mbcs -*-
+from part import *
+from material import *
+from section import *
+from assembly import *
+from step import *
+from interaction import *
+from load import *
+from mesh import *
+from optimization import *
+from job import *
+from sketch import *
+from visualization import *
+from connectorBehavior import *
+mdb.models.changeKey(fromName='Model-1', toName='Glass-to-Metal-Seal')
+mdb.models['Glass-to-Metal-Seal'].setValues(description=
+    'MMTS units: mm, N, s, tonne, MPa, deg C', noPartsInputFile=ON)
+mdb.openStep('glass_to_metal_seal_connector.stp', scaleFromFile=OFF)
+mdb.models['Glass-to-Metal-Seal'].PartFromGeometryFile(combine=False, 
+    dimensionality=THREE_D, geometryFile=mdb.acis, name=
+    'glass_to_metal_seal_connector-1', type=DEFORMABLE_BODY)
+mdb.models['Glass-to-Metal-Seal'].PartFromGeometryFile(bodyNum=2, combine=False
+    , dimensionality=THREE_D, geometryFile=mdb.acis, name=
+    'glass_to_metal_seal_connector-2', type=DEFORMABLE_BODY)
+mdb.models['Glass-to-Metal-Seal'].PartFromGeometryFile(bodyNum=3, combine=False
+    , dimensionality=THREE_D, geometryFile=mdb.acis, name=
+    'glass_to_metal_seal_connector-3', type=DEFORMABLE_BODY)
+mdb.models['Glass-to-Metal-Seal'].PartFromGeometryFile(bodyNum=4, combine=False
+    , dimensionality=THREE_D, geometryFile=mdb.acis, name=
+    'glass_to_metal_seal_connector-4', type=DEFORMABLE_BODY)
+mdb.models['Glass-to-Metal-Seal'].PartFromGeometryFile(bodyNum=5, combine=False
+    , dimensionality=THREE_D, geometryFile=mdb.acis, name=
+    'glass_to_metal_seal_connector-5', type=DEFORMABLE_BODY)
+mdb.models['Glass-to-Metal-Seal'].PartFromGeometryFile(bodyNum=6, combine=False
+    , dimensionality=THREE_D, geometryFile=mdb.acis, name=
+    'glass_to_metal_seal_connector-6', type=DEFORMABLE_BODY)
+mdb.models['Glass-to-Metal-Seal'].PartFromGeometryFile(bodyNum=7, combine=False
+    , dimensionality=THREE_D, geometryFile=mdb.acis, name=
+    'glass_to_metal_seal_connector-7', type=DEFORMABLE_BODY)
+mdb.models['Glass-to-Metal-Seal'].PartFromGeometryFile(bodyNum=8, combine=False
+    , dimensionality=THREE_D, geometryFile=mdb.acis, name=
+    'glass_to_metal_seal_connector-8', type=DEFORMABLE_BODY)
+mdb.models['Glass-to-Metal-Seal'].PartFromGeometryFile(bodyNum=9, combine=False
+    , dimensionality=THREE_D, geometryFile=mdb.acis, name=
+    'glass_to_metal_seal_connector-9', type=DEFORMABLE_BODY)
+mdb.models['Glass-to-Metal-Seal'].PartFromGeometryFile(bodyNum=10, combine=
+    False, dimensionality=THREE_D, geometryFile=mdb.acis, name=
+    'glass_to_metal_seal_connector-10', type=DEFORMABLE_BODY)
+mdb.models['Glass-to-Metal-Seal'].PartFromGeometryFile(bodyNum=11, combine=
+    False, dimensionality=THREE_D, geometryFile=mdb.acis, name=
+    'glass_to_metal_seal_connector-11', type=DEFORMABLE_BODY)
+mdb.models['Glass-to-Metal-Seal'].PartFromGeometryFile(bodyNum=12, combine=
+    False, dimensionality=THREE_D, geometryFile=mdb.acis, name=
+    'glass_to_metal_seal_connector-12', type=DEFORMABLE_BODY)
+mdb.models['Glass-to-Metal-Seal'].PartFromGeometryFile(bodyNum=13, combine=
+    False, dimensionality=THREE_D, geometryFile=mdb.acis, name=
+    'glass_to_metal_seal_connector-13', type=DEFORMABLE_BODY)
+mdb.models['Glass-to-Metal-Seal'].rootAssembly.DatumCsysByDefault(CARTESIAN)
+mdb.models['Glass-to-Metal-Seal'].rootAssembly.Instance(dependent=ON, name=
+    'glass_to_metal_seal_connector-1-1', part=
+    mdb.models['Glass-to-Metal-Seal'].parts['glass_to_metal_seal_connector-1'])
+mdb.models['Glass-to-Metal-Seal'].rootAssembly.Instance(dependent=ON, name=
+    'glass_to_metal_seal_connector-2-1', part=
+    mdb.models['Glass-to-Metal-Seal'].parts['glass_to_metal_seal_connector-2'])
+mdb.models['Glass-to-Metal-Seal'].rootAssembly.Instance(dependent=ON, name=
+    'glass_to_metal_seal_connector-3-1', part=
+    mdb.models['Glass-to-Metal-Seal'].parts['glass_to_metal_seal_connector-3'])
+mdb.models['Glass-to-Metal-Seal'].rootAssembly.Instance(dependent=ON, name=
+    'glass_to_metal_seal_connector-4-1', part=
+    mdb.models['Glass-to-Metal-Seal'].parts['glass_to_metal_seal_connector-4'])
+mdb.models['Glass-to-Metal-Seal'].rootAssembly.Instance(dependent=ON, name=
+    'glass_to_metal_seal_connector-5-1', part=
+    mdb.models['Glass-to-Metal-Seal'].parts['glass_to_metal_seal_connector-5'])
+mdb.models['Glass-to-Metal-Seal'].rootAssembly.Instance(dependent=ON, name=
+    'glass_to_metal_seal_connector-6-1', part=
+    mdb.models['Glass-to-Metal-Seal'].parts['glass_to_metal_seal_connector-6'])
+mdb.models['Glass-to-Metal-Seal'].rootAssembly.Instance(dependent=ON, name=
+    'glass_to_metal_seal_connector-7-1', part=
+    mdb.models['Glass-to-Metal-Seal'].parts['glass_to_metal_seal_connector-7'])
+mdb.models['Glass-to-Metal-Seal'].rootAssembly.Instance(dependent=ON, name=
+    'glass_to_metal_seal_connector-8-1', part=
+    mdb.models['Glass-to-Metal-Seal'].parts['glass_to_metal_seal_connector-8'])
+mdb.models['Glass-to-Metal-Seal'].rootAssembly.Instance(dependent=ON, name=
+    'glass_to_metal_seal_connector-9-1', part=
+    mdb.models['Glass-to-Metal-Seal'].parts['glass_to_metal_seal_connector-9'])
+mdb.models['Glass-to-Metal-Seal'].rootAssembly.Instance(dependent=ON, name=
+    'glass_to_metal_seal_connector-10-1', part=
+    mdb.models['Glass-to-Metal-Seal'].parts['glass_to_metal_seal_connector-10'])
+mdb.models['Glass-to-Metal-Seal'].rootAssembly.Instance(dependent=ON, name=
+    'glass_to_metal_seal_connector-11-1', part=
+    mdb.models['Glass-to-Metal-Seal'].parts['glass_to_metal_seal_connector-11'])
+mdb.models['Glass-to-Metal-Seal'].rootAssembly.Instance(dependent=ON, name=
+    'glass_to_metal_seal_connector-12-1', part=
+    mdb.models['Glass-to-Metal-Seal'].parts['glass_to_metal_seal_connector-12'])
+mdb.models['Glass-to-Metal-Seal'].rootAssembly.Instance(dependent=ON, name=
+    'glass_to_metal_seal_connector-13-1', part=
+    mdb.models['Glass-to-Metal-Seal'].parts['glass_to_metal_seal_connector-13'])
+mdb.models['Glass-to-Metal-Seal'].rootAssembly.InstanceFromBooleanMerge(domain=
+    GEOMETRY, instances=(
+    mdb.models['Glass-to-Metal-Seal'].rootAssembly.instances['glass_to_metal_seal_connector-1-1'], 
+    mdb.models['Glass-to-Metal-Seal'].rootAssembly.instances['glass_to_metal_seal_connector-2-1'], 
+    mdb.models['Glass-to-Metal-Seal'].rootAssembly.instances['glass_to_metal_seal_connector-3-1'], 
+    mdb.models['Glass-to-Metal-Seal'].rootAssembly.instances['glass_to_metal_seal_connector-4-1'], 
+    mdb.models['Glass-to-Metal-Seal'].rootAssembly.instances['glass_to_metal_seal_connector-5-1'], 
+    mdb.models['Glass-to-Metal-Seal'].rootAssembly.instances['glass_to_metal_seal_connector-6-1'], 
+    mdb.models['Glass-to-Metal-Seal'].rootAssembly.instances['glass_to_metal_seal_connector-7-1'], 
+    mdb.models['Glass-to-Metal-Seal'].rootAssembly.instances['glass_to_metal_seal_connector-8-1'], 
+    mdb.models['Glass-to-Metal-Seal'].rootAssembly.instances['glass_to_metal_seal_connector-9-1'], 
+    mdb.models['Glass-to-Metal-Seal'].rootAssembly.instances['glass_to_metal_seal_connector-10-1'], 
+    mdb.models['Glass-to-Metal-Seal'].rootAssembly.instances['glass_to_metal_seal_connector-11-1'], 
+    mdb.models['Glass-to-Metal-Seal'].rootAssembly.instances['glass_to_metal_seal_connector-12-1'], 
+    mdb.models['Glass-to-Metal-Seal'].rootAssembly.instances['glass_to_metal_seal_connector-13-1'])
+    , keepIntersections=ON, name='g2m_seal_merged', originalInstances=SUPPRESS)
+mdb.models['Glass-to-Metal-Seal'].parts['g2m_seal_merged'].Set(cells=
+    mdb.models['Glass-to-Metal-Seal'].parts['g2m_seal_merged'].cells.getSequenceFromMask(
+    mask=('[#1 ]', ), ), name='SEAL_S8061')
+mdb.models['Glass-to-Metal-Seal'].parts['g2m_seal_merged'].Set(cells=
+    mdb.models['Glass-to-Metal-Seal'].parts['g2m_seal_merged'].cells.getSequenceFromMask(
+    mask=('[#ffe ]', ), ), name='PINS_ALLOY52')
+mdb.models['Glass-to-Metal-Seal'].parts['g2m_seal_merged'].Set(cells=
+    mdb.models['Glass-to-Metal-Seal'].parts['g2m_seal_merged'].cells.getSequenceFromMask(
+    mask=('[#1000 ]', ), ), name='HEADER_SS304L')
+mdb.models['Glass-to-Metal-Seal'].parts['g2m_seal_merged'].Set(cells=
+    mdb.models['Glass-to-Metal-Seal'].parts['g2m_seal_merged'].cells.getSequenceFromMask(
+    mask=('[#1fff ]', ), ), name='WHOLE_PART')
+mdb.models['Glass-to-Metal-Seal'].Material(name='S8061_GLASS')
+mdb.models['Glass-to-Metal-Seal'].materials['S8061_GLASS'].Density(table=((
+    2.6e-09, ), ))
+mdb.models['Glass-to-Metal-Seal'].materials['S8061_GLASS'].Elastic(table=((
+    69166.0, 0.22, -55.0), (69297.0, 0.22, 0.0), (69166.0, 0.22, 20.0), (
+    69000.0, 0.22, 25.0), (68903.0, 0.22, 50.0), (68572.0, 0.22, 100.0), (
+    67330.0, 0.22, 150.0), (65302.0, 0.22, 200.0), (63149.0, 0.22, 250.0), (
+    61251.0, 0.22, 300.0), (59782.0, 0.22, 350.0), (58636.0, 0.22, 400.0), (
+    57719.0, 0.22, 425.0), (56580.0, 0.22, 450.0), (55393.0, 0.22, 460.0), (
+    54641.0, 0.22, 470.0), (53137.0, 0.22, 480.0), (52440.0, 0.22, 490.0), (
+    48300.0, 0.22, 500.0)), temperatureDependency=ON)
+mdb.models['Glass-to-Metal-Seal'].materials['S8061_GLASS'].Expansion(table=((
+    9.3e-06, ), ), zero=20.0)
+mdb.models['Glass-to-Metal-Seal'].Material(name='ALLOY52')
+mdb.models['Glass-to-Metal-Seal'].materials['ALLOY52'].Density(table=((8.3e-09, 
+    ), ))
+mdb.models['Glass-to-Metal-Seal'].materials['ALLOY52'].Elastic(table=((
+    165500.0, 0.29), ))
+mdb.models['Glass-to-Metal-Seal'].materials['ALLOY52'].Expansion(table=((
+    9.95e-06, ), ), zero=20.0)
+mdb.models['Glass-to-Metal-Seal'].materials['ALLOY52'].Plastic(table=((234.4, 
+    0.0), (580.72, 0.18)))
+mdb.models['Glass-to-Metal-Seal'].Material(name='SS304L_VAR')
+mdb.models['Glass-to-Metal-Seal'].materials['SS304L_VAR'].Density(table=((
+    7.9e-09, ), ))
+mdb.models['Glass-to-Metal-Seal'].materials['SS304L_VAR'].Elastic(table=((
+    193000.0, 0.3, 27.0), (192000.0, 0.3, 93.0), (187000.0, 0.3, 149.0), (
+    183000.0, 0.3, 204.0), (179000.0, 0.3, 260.0), (177000.0, 0.3, 316.0), (
+    170000.0, 0.3, 371.0), (166000.0, 0.3, 427.0), (160000.0, 0.3, 482.0), (
+    155000.0, 0.3, 538.0)), temperatureDependency=ON)
+mdb.models['Glass-to-Metal-Seal'].materials['SS304L_VAR'].Expansion(table=((
+    1.72e-05, -55.0), (1.72e-05, 0.0), (1.72e-05, 20.0), (1.72e-05, 25.0), (
+    1.72e-05, 100.0), (1.77697666666667e-05, 200.0), (1.79325571428571e-05, 
+    300.0), (1.79474576271186e-05, 315.0), (1.82066684210526e-05, 400.0), (
+    1.83112744186046e-05, 450.0), (1.83940854166667e-05, 500.0), (
+    1.8446332046332e-05, 538.0)), temperatureDependency=ON, zero=20.0)
+mdb.models['Glass-to-Metal-Seal'].materials['SS304L_VAR'].Plastic(table=((
+    194.4, 0.0, -55.0), (211.44, 0.0001, -55.0), (217.56, 0.00025, -55.0), (
+    222.84, 0.0005, -55.0), (225.12, 0.001, -55.0), (231.96, 0.002, -55.0), (
+    249.6, 0.005, -55.0), (272.4, 0.01, -55.0), (291.6, 0.015, -55.0), (309.12, 
+    0.02, -55.0), (315.24, 0.022, -55.0), (318.24, 0.023, -55.0), (162.0, 0.0, 
+    20.0), (176.2, 0.0001, 20.0), (181.3, 0.00025, 20.0), (185.7, 0.0005, 
+    20.0), (187.6, 0.001, 20.0), (193.3, 0.002, 20.0), (208.0, 0.005, 20.0), (
+    227.0, 0.01, 20.0), (243.0, 0.015, 20.0), (257.6, 0.02, 20.0), (262.7, 
+    0.022, 20.0), (265.2, 0.023, 20.0), (138.7, 0.0, 100.0), (143.7, 0.0001, 
+    100.0), (146.9, 0.00025, 100.0), (151.4, 0.0005, 100.0), (155.2, 0.001, 
+    100.0), (158.4, 0.002, 100.0), (172.4, 0.005, 100.0), (189.5, 0.01, 100.0), 
+    (204.2, 0.015, 100.0), (217.5, 0.02, 100.0), (222.0, 0.022, 100.0), (224.5, 
+    0.023, 100.0), (120.2, 0.0, 200.0), (125.3, 0.0001, 200.0), (129.8, 
+    0.00025, 200.0), (134.8, 0.0005, 200.0), (138.3, 0.001, 200.0), (143.1, 
+    0.002, 200.0), (153.6, 0.005, 200.0), (168.5, 0.01, 200.0), (181.9, 0.015, 
+    200.0), (194.6, 0.02, 200.0), (199.4, 0.022, 200.0), (201.6, 0.023, 200.0), 
+    (112.6, 0.0, 300.0), (118.3, 0.0001, 300.0), (121.5, 0.00025, 300.0), (
+    123.4, 0.0005, 300.0), (124.7, 0.001, 300.0), (127.2, 0.002, 300.0), (
+    135.5, 0.005, 300.0), (148.8, 0.01, 300.0), (162.2, 0.015, 300.0), (175.5, 
+    0.02, 300.0), (180.6, 0.022, 300.0), (182.5, 0.023, 300.0), (96.0, 0.0, 
+    400.0), (100.5, 0.0001, 400.0), (103.7, 0.00025, 400.0), (110.0, 0.0005, 
+    400.0), (112.6, 0.001, 400.0), (116.7, 0.002, 400.0), (127.2, 0.005, 
+    400.0), (141.8, 0.01, 400.0), (154.6, 0.015, 400.0), (167.3, 0.02, 400.0), 
+    (171.7, 0.022, 400.0), (174.3, 0.023, 400.0), (87.8, 0.0, 500.0), (92.9, 
+    0.0001, 500.0), (96.0, 0.00025, 500.0), (101.1, 0.0005, 500.0), (102.4, 
+    0.001, 500.0), (105.6, 0.002, 500.0), (115.8, 0.005, 500.0), (128.5, 0.01, 
+    500.0), (139.3, 0.015, 500.0), (150.7, 0.02, 500.0), (153.9, 0.022, 500.0), 
+    (157.7, 0.023, 500.0)), temperatureDependency=ON)
+mdb.models['Glass-to-Metal-Seal'].HomogeneousSolidSection(material=
+    'S8061_GLASS', name='SECTION_S8061', thickness=None)
+mdb.models['Glass-to-Metal-Seal'].parts['g2m_seal_merged'].SectionAssignment(
+    offset=0.0, offsetField='', offsetType=MIDDLE_SURFACE, region=
+    mdb.models['Glass-to-Metal-Seal'].parts['g2m_seal_merged'].sets['SEAL_S8061']
+    , sectionName='SECTION_S8061', thicknessAssignment=FROM_SECTION)
+mdb.models['Glass-to-Metal-Seal'].HomogeneousSolidSection(material='ALLOY52', 
+    name='SECTION_ALLOY52', thickness=None)
+mdb.models['Glass-to-Metal-Seal'].parts['g2m_seal_merged'].SectionAssignment(
+    offset=0.0, offsetField='', offsetType=MIDDLE_SURFACE, region=
+    mdb.models['Glass-to-Metal-Seal'].parts['g2m_seal_merged'].sets['PINS_ALLOY52']
+    , sectionName='SECTION_ALLOY52', thicknessAssignment=FROM_SECTION)
+mdb.models['Glass-to-Metal-Seal'].HomogeneousSolidSection(material='SS304L_VAR'
+    , name='SECTION_SS304L', thickness=None)
+mdb.models['Glass-to-Metal-Seal'].parts['g2m_seal_merged'].SectionAssignment(
+    offset=0.0, offsetField='', offsetType=MIDDLE_SURFACE, region=
+    mdb.models['Glass-to-Metal-Seal'].parts['g2m_seal_merged'].sets['HEADER_SS304L']
+    , sectionName='SECTION_SS304L', thicknessAssignment=FROM_SECTION)
+mdb.models['Glass-to-Metal-Seal'].rootAssembly.regenerate()
+mdb.models['Glass-to-Metal-Seal'].StaticStep(initialInc=0.01, matrixSolver=
+    DIRECT, matrixStorage=UNSYMMETRIC, maxInc=0.1, maxNumInc=100, minInc=1e-06, 
+    name='cool_to_room', nlgeom=ON, previous='Initial', timePeriod=1.0)
+mdb.models['Glass-to-Metal-Seal'].StaticStep(initialInc=0.01, matrixSolver=
+    DIRECT, matrixStorage=UNSYMMETRIC, maxInc=0.1, maxNumInc=100, minInc=1e-06, 
+    name='cool_to_minus_55', nlgeom=ON, previous='cool_to_room', timePeriod=
+    1.0)
+mdb.models['Glass-to-Metal-Seal'].StaticStep(initialInc=0.01, matrixSolver=
+    DIRECT, matrixStorage=UNSYMMETRIC, maxInc=0.1, maxNumInc=100, minInc=1e-06, 
+    name='heat_to_200', nlgeom=ON, previous='cool_to_minus_55', timePeriod=1.0)
+mdb.models['Glass-to-Metal-Seal'].rootAssembly.Surface(name=
+    'COUPLED_FACE_SURFACE', side1Faces=
+    mdb.models['Glass-to-Metal-Seal'].rootAssembly.instances['g2m_seal_merged-1'].faces.getSequenceFromMask(
+    mask=('[#0:5 #100000 ]', ), ))
+mdb.models['Glass-to-Metal-Seal'].rootAssembly.ReferencePoint(point=(-25.5, 
+    0.0, 0.0))
+mdb.models['Glass-to-Metal-Seal'].rootAssembly.Set(name=
+    'COUPLING_CONTROL_POINT', referencePoints=(
+    mdb.models['Glass-to-Metal-Seal'].rootAssembly.referencePoints[31], ))
+mdb.models['Glass-to-Metal-Seal'].Coupling(controlPoint=
+    mdb.models['Glass-to-Metal-Seal'].rootAssembly.sets['COUPLING_CONTROL_POINT']
+    , couplingType=DISTRIBUTING, influenceRadius=WHOLE_SURFACE, localCsys=None, 
+    name='DISTRIBUTED_COUPLING', rotationalCouplingType=ROTATIONAL_CONTINUUM, 
+    surface=
+    mdb.models['Glass-to-Metal-Seal'].rootAssembly.surfaces['COUPLED_FACE_SURFACE']
+    , u1=ON, u2=ON, u3=ON, ur1=ON, ur2=ON, ur3=ON, weightingMethod=UNIFORM)
+mdb.models['Glass-to-Metal-Seal'].EncastreBC(createStepName='Initial', 
+    localCsys=None, name='COUPLING_CONTROL_POINT_BC', region=
+    mdb.models['Glass-to-Metal-Seal'].rootAssembly.sets['COUPLING_CONTROL_POINT'])
+mdb.models['Glass-to-Metal-Seal'].fieldOutputRequests['F-Output-1'].setValues(
+    frequency=1, position=AVERAGED_AT_NODES, variables=('S', 'U'))
+mdb.models['Glass-to-Metal-Seal'].rootAssembly.Set(cells=
+    mdb.models['Glass-to-Metal-Seal'].rootAssembly.instances['g2m_seal_merged-1'].cells.getSequenceFromMask(
+    mask=('[#1fff ]', ), ), name='WHOLE_ASSEMBLY')
+mdb.models['Glass-to-Metal-Seal'].Temperature(createStepName='Initial', 
+    crossSectionDistribution=CONSTANT_THROUGH_THICKNESS, distributionType=
+    UNIFORM, magnitudes=(450.0, ), name='uniform_temperature', region=
+    mdb.models['Glass-to-Metal-Seal'].rootAssembly.sets['WHOLE_ASSEMBLY'])
+mdb.models['Glass-to-Metal-Seal'].predefinedFields['uniform_temperature'].setValuesInStep(
+    magnitudes=(20.0, ), stepName='cool_to_room')
+mdb.models['Glass-to-Metal-Seal'].predefinedFields['uniform_temperature'].setValuesInStep(
+    magnitudes=(-55.0, ), stepName='cool_to_minus_55')
+mdb.models['Glass-to-Metal-Seal'].predefinedFields['uniform_temperature'].setValuesInStep(
+    magnitudes=(200.0, ), stepName='heat_to_200')
+coreform.abaqus.init_iga_mdb()
+mdb.models['Glass-to-Metal-Seal'].parts['g2m_seal_merged'].customData.CoreformIGA.ImmersedRectilinearMesh(
+    continuity=1, degree=2, elementSize=(0.5, 0.5, 0.5), meshInfo=({
+    'bc_penalty_setting': None, 'continuity_mode': 1, 
+    'frame_orientation_mode': None, 'padding_mode': None}), name='Mesh-1', 
+    padding=(2, 2, 2))
+mdb.customData.CoreformIGA.Job(memory=90, memoryUnits='PERCENTAGE', model=
+    'Glass-to-Metal-Seal', multiprocessingMode='THREADS', name=
+    'glass_to_metal_seal', numCpus=1, numGPUs=0, numIgaCpus=1)
+mdb.models['Glass-to-Metal-Seal'].rootAssembly.regenerate()
+mdb.Job(memory=90, memoryUnits=PERCENTAGE, model='Glass-to-Metal-Seal', 
+    multiprocessingMode=THREADS, name='glass_to_metal_seal', numCpus=1)
+mdb.models['Glass-to-Metal-Seal'].setValues(noPartsInputFile=ON)
+mdb.models['Glass-to-Metal-Seal'].keywordBlock.setValues(edited=False)
+mdb.models['Glass-to-Metal-Seal'].parts['g2m_seal_merged'].sectionAssignments[0].getSet(
+    )
+mdb.models['Glass-to-Metal-Seal'].parts['g2m_seal_merged'].sectionAssignments[1].getSet(
+    )
+mdb.models['Glass-to-Metal-Seal'].parts['g2m_seal_merged'].sectionAssignments[2].getSet(
+    )
+mdb.models['Glass-to-Metal-Seal'].rootAssembly.writeAcisFile(
+    '/home/gitlab-runner/builds/common/0/cf/build_lin64/test_tmp/tmpetetwykg.sat')
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+#* The part does not contain a native mesh.
+mdb.models['Glass-to-Metal-Seal'].parts['g2m_seal_merged'].sectionAssignments[0].getSet(
+    )
+mdb.models['Glass-to-Metal-Seal'].parts['g2m_seal_merged'].sectionAssignments[1].getSet(
+    )
+mdb.models['Glass-to-Metal-Seal'].parts['g2m_seal_merged'].sectionAssignments[2].getSet(
+    )
+# Save by gitlab-runner on 2026_11_03-04.31.09; build Unofficial Packaging Version 2026_06_24-18.44.52 DEVr428 214170

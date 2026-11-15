@@ -1,7 +1,7 @@
 # G2 게이트 보고서 — Phase 2 (small-cell extension · 조건수 · 검증)
 
 - 날짜: 2026-11-15 / 브랜치: WHTIGA / Kratos 10.4.3 (`E:\kratos-build\install`) / 최종 마감 반영
-- 기준: `research-coreform-IGA/master-plan_v2.1.md` §9 G2 (+ G1 V02, 판정 방식은 2026-11-15 사용자 결정으로 Coreform 원문 기준)
+- 기준: `WHT_IGA/research-cf-IGA/master-plan_v2.1.md` §9 G2 (+ G1 V02, 판정 방식은 2026-11-15 사용자 결정으로 Coreform 원문 기준)
 - 판정: **COMPLETE** — G2 전체 게이트 항목 PASS (V01-ext, V02 G1·G2, V02 메쉬 파일 h=0.375, V06 L0–L2 p=1–3, V-COND-split 평탄·기울기, unit/격리 `495 passed` + Phase 2–3 Kratos 스파이크 `36 passed`). 상세 §2–§3.
 
 ## 1. 게이트 항목 판정

@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="2013"
+  height="1036"
+  viewBox="0 0 2013 1036"
+  preserveAspectRatio="xMidYMid meet"
+  role="img"
+  aria-labelledby="workflow-title workflow-description">
+  <title id="workflow-title">Coreform IGA for Abaqus workflow overview</title>
+  <desc id="workflow-description">
+    Model setup in Abaqus/CAE produces Coreform CF and Abaqus INP files.
+    During simulation, Coreform computes the IGA mesh and initializes user
+    element data before Abaqus/Pre and Abaqus/Standard execute. Abaqus and
+    Coreform result databases and probe JSON are then available for
+    postprocessing.
+  </desc>
+
+  <defs>
+    <style>
+      .panel {
+        fill: #ffffff;
+        stroke: #575757;
+        stroke-width: 12;
+      }
+      .panel-title {
+        fill: #09090b;
+        font: 38px Arial, Helvetica, sans-serif;
+        text-anchor: middle;
+      }
+      .process {
+        stroke: #0d2d3c;
+        stroke-width: 3;
+      }
+      .abaqus-process {
+        fill: #9999c5;
+      }
+      .coreform-process {
+        fill: #29b982;
+      }
+      .process-label {
+        fill: #ffffff;
+        font: 36px Arial, Helvetica, sans-serif;
+        text-anchor: middle;
+      }
+      .small-process-label {
+        fill: #ffffff;
+        font: 18px Arial, Helvetica, sans-serif;
+        text-anchor: middle;
+      }
+      .artifact-card {
+        fill: #f1f1f1;
+        stroke: #0d2d3c;
+        stroke-width: 3;
+      }
+      .artifact-label {
+        fill: #09090b;
+        font: 22px Arial, Helvetica, sans-serif;
+        text-anchor: middle;
+      }
+      .legend-label {
+        fill: #09090b;
+        font: 36px Arial, Helvetica, sans-serif;
+      }
+      .connector {
+        fill: none;
+        stroke: #000000;
+        stroke-width: 5;
+        stroke-linecap: square;
+        stroke-linejoin: miter;
+      }
+      .abaqus-file {
+        color: #7777a8;
+      }
+      .coreform-file {
+        color: #159b6d;
+      }
+    </style>
+
+    <linearGradient id="mesh-settings-gradient" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#9999c5" />
+      <stop offset="1" stop-color="#29b982" />
+    </linearGradient>
+    <linearGradient id="abaqus-icon-gradient" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#4f4f9e" />
+      <stop offset="0.18" stop-color="#7777bd" />
+      <stop offset="0.5" stop-color="#a5a5d5" />
+      <stop offset="0.82" stop-color="#7777bd" />
+      <stop offset="1" stop-color="#4f4f9e" />
+    </linearGradient>
+
+    <marker
+      id="arrow-end"
+      viewBox="0 0 12 12"
+      refX="10"
+      refY="6"
+      markerWidth="4"
+      markerHeight="4"
+      orient="auto"
+      markerUnits="strokeWidth">
+      <path d="M 0 0 L 12 6 L 0 12 Z" fill="#000000" />
+    </marker>
+    <marker
+      id="arrow-start"
+      viewBox="0 0 12 12"
+      refX="10"
+      refY="6"
+      markerWidth="4"
+      markerHeight="4"
+      orient="auto-start-reverse"
+      markerUnits="strokeWidth">
+      <path d="M 0 0 L 12 6 L 0 12 Z" fill="#000000" />
+    </marker>
+
+    <!-- Reusable file and database symbols. currentColor distinguishes
+         standard Abaqus artifacts from CIFA-specific artifacts. -->
+    <symbol id="document-icon" viewBox="0 0 52 64">
+      <path
+        d="M 8 2 H 33 L 46 15 V 62 H 8 Z"
+        fill="#ffffff"
+        stroke="currentColor"
+        stroke-width="3" />
+      <path
+        d="M 33 2 V 15 H 46 Z"
+        fill="currentColor"
+        fill-opacity="0.35"
+        stroke="currentColor"
+        stroke-width="3"
+        stroke-linejoin="round" />
+      <path
+        d="M 15 25 H 39 M 15 32 H 39 M 15 39 H 39 M 15 46 H 35 M 15 53 H 35"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.5" />
+    </symbol>
+
+    <symbol id="database-icon" viewBox="0 0 54 64">
+      <ellipse cx="27" cy="10" rx="21" ry="8" fill="currentColor" fill-opacity="0.72" stroke="#0d2d3c" stroke-width="1.5" />
+      <path d="M 6 10 V 48 C 6 53 15 57 27 57 C 39 57 48 53 48 48 V 10" fill="currentColor" fill-opacity="0.72" stroke="#0d2d3c" stroke-width="1.5" />
+      <path d="M 6 23 C 6 28 15 32 27 32 C 39 32 48 28 48 23 M 6 36 C 6 41 15 45 27 45 C 39 45 48 41 48 36" fill="none" stroke="#0d2d3c" stroke-width="1.5" />
+      <circle cx="42" cy="23" r="1.6" fill="#ffffff" />
+      <circle cx="42" cy="36" r="1.6" fill="#ffffff" />
+    </symbol>
+
+    <!-- Vector reconstruction of the application mark in
+         /opt/abaqus2025_win/win_b64/resources/install/cae/abq.ico. -->
+    <symbol id="abaqus-icon" viewBox="0 0 48 48">
+      <path
+        d="M 19 0 H 29 V 11 C 37 13 43 17 45 22 H 3 C 5 17 11 13 19 11 Z"
+        fill="url(#abaqus-icon-gradient)" />
+      <path
+        d="M 3 27 H 45 C 43 32 37 36 29 38 V 48 H 19 V 38 C 11 36 5 32 3 27 Z"
+        fill="url(#abaqus-icon-gradient)" />
+      <path d="M 3 22 H 45 M 3 27 H 45" stroke="#3f3f8d" stroke-width="1" opacity="0.7" />
+    </symbol>
+
+    <!-- Inlined from docs/content/branding/assets/icons/coreform-iga-icon.svg
+         so the published figure has no external image dependencies. -->
+    <symbol id="coreform-iga-icon" viewBox="0 0 67 67">
+      <rect width="67" height="67" rx="33.5" fill="#29B982" />
+      <path fill-rule="evenodd" clip-rule="evenodd" d="M15.195 14.088C15.9082 13.8524 16.6921 14.1008 17.1396 14.7041C19.2437 17.5415 23.0379 21.3579 27.4972 23.5803C31.8603 25.7547 36.6534 26.329 41.2684 23.2694L50.0278 14.5101L52.4901 16.9723L16.9722 52.4899C16.4743 52.9879 15.7254 53.1368 15.0748 52.8674C14.4242 52.5979 14 51.963 14 51.2588L14 15.7412C14 14.99 14.4817 14.3236 15.195 14.088ZM35.7151 28.8227C32.2591 29.0979 28.9142 28.1771 25.944 26.6968C22.6647 25.0625 19.7577 22.7162 17.4821 20.4136L17.4821 47.0555L35.7151 28.8227Z" fill="#ffffff" />
+      <path fill-rule="evenodd" clip-rule="evenodd" d="M51.805 52.912C51.0918 53.1476 50.3079 52.8992 49.8604 52.2959C47.7563 49.4585 43.9621 45.6421 39.5028 43.4197C35.1397 41.2453 30.3466 40.671 25.7316 43.7306L16.9722 52.4899L14.5099 50.0277L50.0278 14.5101C50.5257 14.0121 51.2746 13.8632 51.9252 14.1326C52.5758 14.4021 53 15.037 53 15.7412L53 51.2588C53 52.01 52.5183 52.6764 51.805 52.912ZM31.2849 38.1773C34.7409 37.9021 38.0858 38.8229 41.056 40.3032C44.3353 41.9375 47.2423 44.2838 49.5179 46.5864L49.5179 19.9445L31.2849 38.1773Z" fill="#ffffff" />
+    </symbol>
+  </defs>
+
+  <!-- Phase panels -->
+  <rect class="panel" x="6" y="6" width="646" height="882" />
+  <rect class="panel" x="796" y="6" width="646" height="882" />
+  <rect class="panel" x="1586" y="6" width="421" height="882" />
+
+  <text class="panel-title" x="329" y="49">Model Setup</text>
+  <text class="panel-title" x="1119" y="49">Simulation Execution</text>
+  <text class="panel-title" x="1797" y="49">Postprocess</text>
+
+  <!-- Cross-phase data flow -->
+  <path class="connector" d="M 253 679 H 493 V 181 H 831" marker-end="url(#arrow-end)" />
+  <path class="connector" d="M 253 792 H 581 V 490 H 831" marker-end="url(#arrow-end)" />
+  <path class="connector" d="M 1191 808 H 1510 V 181 H 1659" marker-end="url(#arrow-end)" />
+
+  <!-- Model setup -->
+  <path class="connector" d="M 221 233 V 305" marker-end="url(#arrow-end)" />
+  <path class="connector" d="M 221 408 V 480" marker-end="url(#arrow-end)" />
+  <path class="connector" d="M 221 583 V 623" marker-end="url(#arrow-end)" />
+
+  <rect class="process abaqus-process" x="34" y="130" width="376" height="103" rx="17" />
+  <text class="process-label" x="222" y="170">
+    <tspan x="222">Parameter</tspan>
+    <tspan x="222" dy="46">Assignment</tspan>
+  </text>
+
+  <rect class="process" x="34" y="305" width="376" height="103" rx="17" fill="url(#mesh-settings-gradient)" />
+  <text class="process-label" x="222" y="369">Mesh Settings</text>
+
+  <rect class="process coreform-process" x="34" y="480" width="376" height="103" rx="17" />
+  <text class="process-label" x="222" y="544">Job Creation</text>
+
+  <rect class="artifact-card" x="134" y="623" width="174" height="246" />
+  <use xlink:href="#document-icon" class="coreform-file" x="197" y="649" width="48" height="59" />
+  <text class="artifact-label" x="221" y="735">CF File</text>
+  <use xlink:href="#document-icon" class="abaqus-file" x="197" y="762" width="48" height="59" />
+  <text class="artifact-label" x="221" y="849">INP File</text>
+
+  <!-- Simulation execution -->
+  <path class="connector" d="M 1019 233 V 285" marker-end="url(#arrow-end)" />
+  <path class="connector" d="M 1019 388 V 439" marker-end="url(#arrow-end)" />
+  <path class="connector" d="M 1019 543 V 596" marker-end="url(#arrow-end)" />
+  <path class="connector" d="M 1019 699 V 752" marker-end="url(#arrow-end)" />
+  <path class="connector" d="M 1207 336 H 1246" marker-end="url(#arrow-end)" />
+  <path class="connector" d="M 1329 435 V 596" marker-start="url(#arrow-start)" marker-end="url(#arrow-end)" />
+  <path class="connector" d="M 1207 647 H 1249" marker-start="url(#arrow-start)" marker-end="url(#arrow-end)" />
+
+  <rect class="process coreform-process" x="831" y="130" width="376" height="103" rx="17" />
+  <text class="process-label" x="1019" y="194">Compute IGA Mesh</text>
+
+  <rect class="process coreform-process" x="831" y="285" width="376" height="103" rx="17" />
+  <text class="process-label" x="1019" y="326">
+    <tspan x="1019">Initialize User</tspan>
+    <tspan x="1019" dy="46">Element Data</tspan>
+  </text>
+
+  <rect class="process abaqus-process" x="831" y="439" width="376" height="104" rx="17" />
+  <text class="process-label" x="1019" y="504">Abaqus/Pre</text>
+
+  <rect class="process abaqus-process" x="831" y="596" width="376" height="103" rx="17" />
+  <text class="process-label" x="1019" y="660">Abaqus/Standard</text>
+
+  <rect class="artifact-card" x="1246" y="297" width="167" height="138" />
+  <use xlink:href="#database-icon" class="coreform-file" x="1254" y="305" width="50" height="61" />
+  <text class="artifact-label" x="1279" y="392">Mesh</text>
+  <text class="artifact-label" x="1279" y="420">SQL</text>
+  <use xlink:href="#document-icon" class="coreform-file" x="1340" y="305" width="49" height="61" />
+  <text class="artifact-label" x="1364" y="392">Geometry</text>
+  <text class="artifact-label" x="1364" y="420">INP</text>
+
+  <rect class="process coreform-process" x="1249" y="596" width="159" height="103" rx="17" />
+  <text class="small-process-label" x="1328" y="642">
+    <tspan x="1328">Coreform IGA</tspan>
+    <tspan x="1328" dy="24">User Element</tspan>
+  </text>
+
+  <rect class="artifact-card" x="849" y="752" width="342" height="117" />
+  <use xlink:href="#database-icon" class="abaqus-file" x="864" y="759" width="51" height="62" />
+  <text class="artifact-label" x="889" y="849">ODB</text>
+  <use xlink:href="#database-icon" class="coreform-file" x="968" y="759" width="51" height="62" />
+  <text class="artifact-label" x="993" y="849">IGA ODB</text>
+  <use xlink:href="#document-icon" class="coreform-file" x="1089" y="759" width="49" height="61" />
+  <text class="artifact-label" x="1114" y="849">Probe JSON</text>
+
+  <!-- Postprocessing -->
+  <rect class="process abaqus-process" x="1659" y="130" width="274" height="103" rx="17" />
+  <text class="process-label" x="1796" y="194">Abaqus/CAE</text>
+
+  <!-- Product marks used in the original figure's legend. -->
+  <use xlink:href="#abaqus-icon" x="664" y="950" width="74" height="74" />
+  <text class="legend-label" x="766" y="1002">Abaqus</text>
+  <use xlink:href="#coreform-iga-icon" x="996" y="950" width="76" height="76" />
+  <text class="legend-label" x="1098" y="1002">Coreform IGA</text>
+</svg>

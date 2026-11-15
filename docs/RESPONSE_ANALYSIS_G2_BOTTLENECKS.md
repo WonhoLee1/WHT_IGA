@@ -154,7 +154,7 @@ for ii in idx:
 
 ### 3.1 확인된 팩터
 1. **CSV 허용치 파싱 버그 ([`test_p2mesh_v06.py:278`](file:///D:/PythonCodeStudy/CAD-CAE-COPILOT/WHT_IGA/tests/kratos_spikes/test_p2mesh_v06.py#L278)):**
-   * [`pressurized-sphere-qoi.csv:2-13`](file:///D:/PythonCodeStudy/CAD-CAE-COPILOT/research-coreform-IGA/user-guide/generated-downloads/verification-manual/problems/solid_mechanics/linear_elastic_stress/pressurized-sphere/pressurized-sphere-qoi.csv#L2-L13)에는 `(p=1, level=0, h=0.1)`에 **3개의 서로 다른 실험 설정**이 수록되어 있습니다([`pressurized-sphere.md:600-610`](file:///D:/PythonCodeStudy/CAD-CAE-COPILOT/research-coreform-IGA/user-guide/verification-manual/problems/solid_mechanics/linear_elastic_stress/pressurized-sphere/pressurized-sphere.md#L600-L610)):
+   * [`pressurized-sphere-qoi.csv:2-13`](file:///D:/PythonCodeStudy/CAD-CAE-COPILOT/WHT_IGA/research-cf-IGA/user-guide/generated-downloads/verification-manual/problems/solid_mechanics/linear_elastic_stress/pressurized-sphere/pressurized-sphere-qoi.csv#L2-L13)에는 `(p=1, level=0, h=0.1)`에 **3개의 서로 다른 실험 설정**이 수록되어 있습니다([`pressurized-sphere.md:600-610`](file:///D:/PythonCodeStudy/CAD-CAE-COPILOT/WHT_IGA/research-cf-IGA/user-guide/verification-manual/problems/solid_mechanics/linear_elastic_stress/pressurized-sphere/pressurized-sphere.md#L600-L610)):
      * 기본 `immersed_h0p1`: `u=0.00584`, **`tolerance=0.008`**, `srr tol=0.40`
      * 특수 기법 `regproj_h0p1` / `wt2_h0p1`: `u=0.00421 / 0.00418`, `tolerance=0.006`, `srr tol=0.45`
    * `_csv_tols()`가 `min()`으로 3행을 합치면서 `srr`는 기본 행의 `0.40`을, `u/ur`는 특수 기법 행의 `0.006`을 가져오는 혼선이 발생했습니다(정식 기본 허용치는 **`0.008`**).
@@ -167,7 +167,7 @@ for ii in idx:
    * 즉 `ext` 온/오프 및 `theta` 크기와 무관하게 `u ≈ 1.02e-2`가 고정됩니다.
 
 ### 3.2 대조 확인 필요 가설 (미실험)
-* **대칭면 경계조건 방식 차이 ([`test_p2mesh_v06.py:142-186`](file:///D:/PythonCodeStudy/CAD-CAE-COPILOT/WHT_IGA/tests/kratos_spikes/test_p2mesh_v06.py#L142-L186) vs [`pressurized-sphere.md:641-649`](file:///D:/PythonCodeStudy/CAD-CAE-COPILOT/research-coreform-IGA/user-guide/verification-manual/problems/solid_mechanics/linear_elastic_stress/pressurized-sphere/pressurized-sphere.md#L641-L649)):**
+* **대칭면 경계조건 방식 차이 ([`test_p2mesh_v06.py:142-186`](file:///D:/PythonCodeStudy/CAD-CAE-COPILOT/WHT_IGA/tests/kratos_spikes/test_p2mesh_v06.py#L142-L186) vs [`pressurized-sphere.md:641-649`](file:///D:/PythonCodeStudy/CAD-CAE-COPILOT/WHT_IGA/research-cf-IGA/user-guide/verification-manual/problems/solid_mechanics/linear_elastic_stress/pressurized-sphere/pressurized-sphere.md#L641-L649)):**
   * Coreform 원문은 정합 경계면(`x=0, y=0, z=0`)에 직접 `*Boundary, XSYMM/YSYMM/ZSYMM`(노달 직접 고정)을 사용합니다.
   * 반면 현재 코드는 전체 `[0,1]^2` 박스 면(OUT 셀 포함)에 가상 노드 `vnode` + `BC-B` 페널티 MPC(`vnode -> face_cp`)를 생성한 뒤, `apply_extension_ties`에서 다시 소지지 `face_cp`를 `slave -> interior_cp`로 묶어 **2단 연쇄 MPC 위험**이 있으며, 특히 `p=1`의 거친 1-셀 두께 구각(`a=0.9, b=1.0, h=0.1`)에서는 경계 `r<0.9`에 붙은 가상 노드/페널티 분포 및 `C^0` 선형 B-spline(Coreform trimmed U-spline 대비 자유도 배치 차이)의 영향을 크게 받습니다.
   * **추천 대조 실험:** `p=1, L0`에서 대칭 3면의 활성 제어점에 대해 가상 노드 BC-B 대신 직접 성분 고정(`node.Fix(DISPLACEMENT_{X|Y|Z})`)을 적용해 `u=1.02e-2`가 `0.006~0.008` 수준으로 떨어지는지 4초 실험으로 즉시 판별 가능.

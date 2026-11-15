@@ -71,7 +71,7 @@
     ]
   },
   "provenance": {
-    "reference_doc": "research-coreform-IGA/user-guide/verification-manual/problems/solid_mechanics/linear_elastic_stress/prescribed-displacement-cube/prescribed-displacement-cube.md",
+    "reference_doc": "WHT_IGA/research-cf-IGA/user-guide/verification-manual/problems/solid_mechanics/linear_elastic_stress/prescribed-displacement-cube/prescribed-displacement-cube.md",
     "reference_doc_sections": "§2 Geometry, §3 Material (Table 1), §4 Loading & BC (Table 2), §5 Mesh & discretization (Table 3), §6 Reference & accepted solutions, §7 Results (Table 4)",
     "reference_values_csv": "none (Table 4 values recorded directly from prescribed-displacement-cube.md)"
   },

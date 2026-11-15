@@ -1,0 +1,1274 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Check how Coreform IGA for Abaqus handles Abaqus input-file keywords for Abaqus-native and IGA regions.">
+<title>Abaqus keyword support – Coreform IGA for Abaqus</title>
+<style>
+:root {
+  color-scheme: light;
+  --primary: #34c561;
+  --primary-dark: #20803f;
+  --danger-bg: #fcecef;
+  --info: #264ad5;
+  --info-bg: #eef2ff;
+  --text: #09090b;
+  --muted: #5a6470;
+  --border: #dee2e6;
+  --soft: #f8f9fa;
+  --code-bg: #f1f3f5;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  color: var(--text);
+  background: #fff;
+  font: 400 1rem/1.55 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--primary-dark); text-underline-offset: 0.15em; }
+a:hover { color: #155c2c; }
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, .table-scroll:focus-visible {
+  outline: 3px solid #4380f3;
+  outline-offset: 2px;
+}
+code {
+  padding: 0.08em 0.28em;
+  color: #b3261e;
+  background: var(--code-bg);
+  border-radius: 0.2rem;
+  font: 0.9em/1.35 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+}
+
+.site-header { border-bottom: 1px solid var(--border); background: #fff; }
+.site-header-inner {
+  width: min(100% - 2rem, 82rem);
+  min-height: 4.25rem;
+  margin-inline: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+.brand { color: var(--text); text-decoration: none; letter-spacing: -0.015em; }
+.brand-name { font-size: 1.12rem; font-weight: 700; }
+.brand-product { color: var(--muted); font-size: 0.98rem; }
+.site-link { font-size: 0.92rem; font-weight: 600; }
+
+main {
+  width: min(100% - 2rem, 82rem);
+  margin-inline: auto;
+  padding: 3.25rem 0 4.5rem;
+}
+.page-intro { max-width: 58rem; }
+.eyebrow {
+  margin: 0 0 0.5rem;
+  color: var(--primary-dark);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+h1, h2, h3 { color: var(--text); font-weight: 700; line-height: 1.2; }
+h1 { margin: 0 0 1rem; font-size: clamp(2rem, 4vw, 2.7rem); letter-spacing: -0.025em; }
+h2 {
+  margin: 3rem 0 0.9rem;
+  padding-bottom: 0.45rem;
+  border-bottom: 1px solid var(--border);
+  font-size: 1.55rem;
+}
+h3 { margin: 0; font-size: 1.17rem; }
+h3 code { color: inherit; font-size: 0.94em; }
+.lead { margin: 0; color: #343a40; font-size: 1.18rem; line-height: 1.6; }
+.section-intro { max-width: 62rem; color: #343a40; }
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+  max-width: 44rem;
+  margin: 1.75rem 0 0;
+}
+.summary-item {
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 0.35rem;
+  background: var(--soft);
+}
+.summary-value { display: block; font-size: 1.4rem; font-weight: 700; line-height: 1.15; }
+.summary-label { color: var(--muted); font-size: 0.84rem; }
+
+.callout {
+  max-width: 62rem;
+  margin: 2rem 0;
+  padding: 1rem 1.15rem;
+  border-left: 0.3rem solid var(--info);
+  background: var(--info-bg);
+}
+.callout-title { margin-bottom: 0.25rem; font-weight: 700; }
+.callout p { margin: 0; }
+
+.status-guide {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.8rem;
+  margin: 1.4rem 0 0;
+}
+.status-definition {
+  margin: 0;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 0.35rem;
+}
+.status-definition dt { margin-bottom: 0.65rem; }
+.status-definition dd { margin: 0; color: #3f4852; font-size: 0.92rem; }
+.status-badge {
+  display: inline-flex;
+  justify-self: start;
+  align-items: center;
+  min-height: 1.65rem;
+  padding: 0.18rem 0.55rem;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+.status-positive { color: #155c2c; background: #e8f8ed; border-color: #b8e9c7; }
+.status-negative { color: #8f1634; background: var(--danger-bg); border-color: #f4bdc9; }
+.status-informational { color: #243fa8; background: var(--info-bg); border-color: #c8d3ff; }
+
+.filter-panel {
+  margin: 1.35rem 0 0.85rem;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 0.35rem;
+  background: var(--soft);
+}
+.filters {
+  display: grid;
+  grid-template-columns: minmax(15rem, 2fr) minmax(12rem, 1fr) minmax(12rem, 1fr) auto;
+  gap: 0.85rem;
+  align-items: end;
+}
+.filter-field { display: grid; gap: 0.3rem; }
+.filter-field label { font-size: 0.82rem; font-weight: 700; }
+input, select, button {
+  min-height: 2.55rem;
+  border: 1px solid #adb5bd;
+  border-radius: 0.28rem;
+  background: #fff;
+  color: var(--text);
+  font: inherit;
+}
+input, select { width: 100%; padding: 0.45rem 0.65rem; }
+input::placeholder { color: #5f6871; }
+button {
+  padding: 0.45rem 0.9rem;
+  border-color: #6c757d;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+button:hover { background: #e9ecef; }
+.results-summary { margin: 0.75rem 0 1.5rem; color: var(--muted); font-size: 0.9rem; }
+.results-summary strong { color: var(--text); }
+.no-results {
+  margin: 1rem 0;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 0.35rem;
+  background: var(--soft);
+}
+
+.keyword-group { margin: 2rem 0 2.75rem; scroll-margin-top: 1rem; }
+.keyword-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.65rem;
+}
+.keyword-count { color: var(--muted); font-size: 0.82rem; white-space: nowrap; }
+.table-scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: 0.25rem; }
+table { width: 100%; min-width: 68rem; border-collapse: collapse; table-layout: fixed; }
+col.subject { width: 16%; }
+col.scope { width: 30%; }
+col.status { width: 18%; }
+col.behavior { width: 36%; }
+th, td {
+  padding: 0.72rem 0.8rem;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  vertical-align: top;
+  overflow-wrap: anywhere;
+}
+th { background: var(--soft); color: #343a40; font-size: 0.79rem; font-weight: 700; }
+tbody tr:last-child td { border-bottom: 0; }
+tbody tr:hover td { background: #fcfcfd; }
+tbody + tbody .section-heading-cell { border-top: 1px solid var(--border); }
+.section-heading-cell {
+  padding-block: 0.8rem;
+  background: #f3f5f7;
+}
+.section-title { color: var(--text); font-size: 0.91rem; font-weight: 700; }
+.section-description {
+  max-width: 62rem;
+  margin-top: 0.16rem;
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 400;
+}
+td { font-size: 0.9rem; }
+td.subject-cell { font-weight: 600; }
+td.subject-cell > code { justify-self: start; }
+.scope-primary { color: #252b31; }
+.scope-detail { margin-top: 0.3rem; color: var(--muted); font-size: 0.83rem; }
+.scope-label { font-weight: 700; }
+.scope-conditions { margin: 0.35rem 0 0; padding-left: 1.15rem; color: var(--muted); font-size: 0.83rem; }
+.scope-conditions li + li { margin-top: 0.18rem; }
+.behavior-cell { color: #343a40; }
+.behavior-note { margin-top: 0.45rem; color: var(--muted); font-size: 0.83rem; }
+.matrix-help { max-width: 62rem; margin-top: 2.5rem; }
+.site-footer {
+  margin-top: 4rem;
+  padding-top: 1.2rem;
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 0.84rem;
+}
+.visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+[hidden] { display: none !important; }
+
+@media (max-width: 64rem) {
+  .filters { grid-template-columns: 1fr 1fr; }
+  .filter-search { grid-column: 1 / -1; }
+  .filter-clear { justify-self: start; }
+  .status-guide { grid-template-columns: 1fr; }
+}
+@media (max-width: 44rem) {
+  .site-header-inner, main { width: min(100% - 1.25rem, 82rem); }
+  .site-header-inner { min-height: 3.6rem; }
+  .brand-product, .site-link { font-size: 0.82rem; }
+  main { padding-top: 2.2rem; }
+  .summary-grid, .filters { grid-template-columns: 1fr; }
+  .filter-search { grid-column: auto; }
+  .keyword-heading { align-items: center; }
+  .table-scroll { overflow: visible; border: 0; }
+  table, tbody, tr, td { display: block; width: 100%; min-width: 0; }
+  thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+  tbody { display: grid; gap: 0.75rem; }
+  tbody + tbody { margin-top: 1.25rem; }
+  tr.section-heading-row, .section-heading-cell { display: block; width: 100%; }
+  .section-heading-cell {
+    padding: 0.7rem 0.8rem;
+    border: 1px solid var(--border);
+    border-radius: 0.3rem;
+  }
+  tr[data-matrix-row] { border: 1px solid var(--border); border-radius: 0.3rem; }
+  td {
+    display: grid;
+    grid-template-columns: minmax(7.5rem, 36%) 1fr;
+    gap: 0.7rem;
+    border-bottom: 1px solid var(--border);
+  }
+  td::before { content: attr(data-label); color: var(--muted); font-size: 0.74rem; font-weight: 700; }
+  tr[data-matrix-row] td:last-child { border-bottom: 0; }
+}
+@media print {
+  .site-header, .filter-panel, .results-summary { display: none; }
+  main { width: 100%; padding: 0; }
+  .keyword-group { break-inside: avoid; }
+  .table-scroll { overflow: visible; }
+  table { min-width: 0; font-size: 9pt; }
+}
+</style>
+</head>
+<body>
+<header class="site-header">
+<div class="site-header-inner">
+<a class="brand" href="index.html" aria-label="Coreform IGA for Abaqus documentation home">
+<span class="brand-name">Coreform IGA</span><span class="brand-product"> for Abaqus</span>
+</a>
+<a class="site-link" href="index.html">Documentation home</a>
+</div>
+</header>
+<main>
+<div class="page-intro">
+<p class="eyebrow">User guide</p>
+<h1>Abaqus keyword support</h1>
+<p class="lead">Use this guide to see how Coreform IGA for Abaqus handles the Abaqus keyword families it actively manages in models with IGA regions. It is not a complete catalog of Abaqus keywords.</p>
+<div class="summary-grid" aria-label="Guide summary">
+<div class="summary-item">
+<span class="summary-value">13</span>
+<span class="summary-label">keyword families</span>
+</div>
+<div class="summary-item">
+<span class="summary-value">49</span>
+<span class="summary-label">documented cases</span>
+</div>
+<div class="summary-item">
+<span class="summary-value">27</span>
+<span class="summary-label">supported cases</span>
+</div>
+</div>
+</div>
+<aside class="callout" aria-labelledby="what-this-guide-covers-title">
+<div class="callout-title" id="what-this-guide-covers-title">What this guide covers</div>
+<p>Keyword records from families not listed below remain unchanged in the translated <code>.inp</code> for Abaqus to process. Those keywords may or may not be officially supported or validated by Coreform IGA; pass-through only means that Coreform IGA did not modify them.</p>
+<p>A listed keyword family is actively managed by Coreform IGA. Within a listed family, only the options and combinations shown have the documented behavior; an unlisted option or combination may be rejected and stop input-file translation rather than passing through. Overall Coreform IGA procedure and product limitations still apply.</p>
+</aside>
+<section aria-labelledby="how-to-use-this-page">
+<h2 id="how-to-use-this-page">How to use this page</h2>
+<p class="section-intro">A keyword can appear in several rows because a load type, option, output variable, model scope, or condition can change how Coreform IGA handles it. Related options with the same support and translated-input behavior are combined in one row. Search or filter the table, find the row that matches your model, then read its support status and behavior.</p>
+<p class="section-intro">A supported Abaqus-native-only row means that Coreform IGA leaves that behavior to Abaqus; it does not mean that Coreform IGA implements the native Abaqus feature.</p>
+<div class="status-guide">
+<dl class="status-definition">
+<dt><span class="status-badge status-positive">Supported</span></dt>
+<dd>Coreform IGA supports this case under the scope and conditions shown in the table.</dd>
+</dl>
+<dl class="status-definition">
+<dt><span class="status-badge status-negative">Not supported for IGA</span></dt>
+<dd>Coreform IGA cannot provide this behavior for IGA regions. It may reject or skip the IGA portion, as described in the row.</dd>
+</dl>
+<dl class="status-definition">
+<dt><span class="status-badge status-informational">Recognized</span></dt>
+<dd>Coreform IGA reads this keyword for context or checks. This status does not mean that the keyword itself adds an IGA physics or results capability.</dd>
+</dl>
+</div>
+<aside class="callout" aria-labelledby="output-request-shortcuts-title">
+<div class="callout-title" id="output-request-shortcuts-title">Output-request shortcuts</div>
+<p>Component requests <code>U1</code>–<code>U3</code>, <code>V1</code>–<code>V3</code>, <code>A1</code>–<code>A3</code>, and <code>RF1</code>–<code>RF3</code> use the <code>U</code>, <code>V</code>, <code>A</code>, and <code>RF</code> support rows, respectively. <code>S11</code>, <code>S22</code>, <code>S33</code>, <code>S12</code>, <code>S13</code>, and <code>S23</code> use the <code>S</code> row. Coreform IGA expands <code>ALL</code> and <code>PRESELECT</code> only to the output variables listed in this guide and warns when other Abaqus variables may be implied.</p>
+</aside>
+</section>
+<section id="keyword-matrix" aria-labelledby="keyword-support-table-title">
+<h2 id="keyword-support-table-title">Keyword support table</h2>
+<p class="section-intro">Search descriptions as well as keywords and output variables. Use the filters when you want to compare one keyword family or support status.</p>
+<div class="filter-panel" role="search" aria-label="Filter the keyword support table">
+<div class="filters">
+<div class="filter-field filter-search">
+<label for="matrix-search">Search</label>
+<input id="matrix-search" type="search" placeholder="Try *DLOAD, gravity, or PEEQ" autocomplete="off">
+</div>
+<div class="filter-field">
+<label for="keyword-filter">Keyword</label>
+<select id="keyword-filter">
+<option value="">All keywords</option>
+<option value="*DLOAD">*DLOAD (10)</option>
+<option value="*DSLOAD">*DSLOAD (7)</option>
+<option value="*SFILM">*SFILM (3)</option>
+<option value="*SRADIATE">*SRADIATE (3)</option>
+<option value="*SOLID SECTION">*SOLID SECTION (5)</option>
+<option value="*OUTPUT">*OUTPUT (1)</option>
+<option value="*FIELD OUTPUT">*FIELD OUTPUT (6)</option>
+<option value="*HISTORY OUTPUT">*HISTORY OUTPUT (1)</option>
+<option value="*NODE OUTPUT">*NODE OUTPUT (4)</option>
+<option value="*ELEMENT OUTPUT">*ELEMENT OUTPUT (4)</option>
+<option value="*INCLUDE">*INCLUDE (1)</option>
+<option value="*STEP">*STEP (2)</option>
+<option value="*CONTACT INCLUSIONS">*CONTACT INCLUSIONS (2)</option>
+</select>
+</div>
+<div class="filter-field">
+<label for="status-filter">Support</label>
+<select id="status-filter">
+<option value="">All support statuses</option>
+<option value="supported">Supported (27)</option>
+<option value="unsupported-for-iga">Not supported for IGA (16)</option>
+<option value="recognized">Recognized (6)</option>
+</select>
+</div>
+<button class="filter-clear" id="clear-filters" type="button">Clear filters</button>
+</div>
+</div>
+<p class="results-summary" aria-live="polite">Showing <strong><span id="visible-count">49</span></strong> of <strong>49</strong> cases in <strong><span id="visible-groups">13</span></strong> <span id="visible-groups-label" data-singular="keyword family" data-plural="keyword families">keyword families</span>.</p>
+<div class="no-results" id="no-results" hidden><strong>No matching cases.</strong> Try a broader search or clear one of the filters.</div>
+<section class="keyword-group" data-keyword-group="*DLOAD" aria-labelledby="keyword-dload">
+<div class="keyword-heading">
+<h3 id="keyword-dload"><code>*DLOAD</code></h3>
+<span class="keyword-count" data-group-count data-template-singular="{count} case" data-template-plural="{count} cases">10 cases</span>
+</div>
+<div class="table-scroll" role="region" aria-label="Support cases for *DLOAD" tabindex="0">
+<table>
+<caption class="visually-hidden">Support cases for *DLOAD</caption>
+<colgroup>
+<col class="subject">
+<col class="scope">
+<col class="status">
+<col class="behavior">
+</colgroup>
+<thead>
+<tr>
+<th scope="col">Options, load types, or output variables</th>
+<th scope="col">Applies to</th>
+<th scope="col">Support</th>
+<th scope="col">What Coreform IGA does</th>
+</tr>
+</thead>
+<tbody data-matrix-section="keyword-dload-section-gravity" aria-labelledby="keyword-dload-section-gravity">
+<tr class="section-heading-row">
+<th class="section-heading-cell" id="keyword-dload-section-gravity" scope="rowgroup" colspan="4">
+<div class="section-title">Gravity</div>
+</th>
+</tr>
+<tr data-matrix-row data-keyword="*DLOAD" data-status="supported" data-search-aliases="[&quot;grav&quot;, &quot;gravity&quot;, &quot;u994&quot;, &quot;u995&quot;, &quot;u996&quot;]" data-search="*dload *dload gravity  grav gravity u994 u995 u996 grav iga only when the direction vector is nonzero supported coreform iga replaces the source grav data line in the translated .inp with internal u994, u995, and u996 component-load records. the iga solver applies those components to the targeted iga elements. grav gravity u994 u995 u996">
+<td class="subject-cell" data-label="Options, load types, or output variables"><div class="subject-value"><code>GRAV</code></div></td>
+<td data-label="Applies to"><div class="scope-value"><div class="scope-primary">IGA only</div><ul class="scope-conditions"><li>When the direction vector is nonzero</li></ul></div></td>
+<td data-label="Support"><span class="status-badge status-positive">Supported</span></td>
+<td class="behavior-cell" data-label="What Coreform IGA does"><div class="behavior-value"><div class="behavior-summary">Coreform IGA replaces the source <code>GRAV</code> data line in the translated <code>.inp</code> with internal <code>U994</code>, <code>U995</code>, and <code>U996</code> component-load records. The IGA solver applies those components to the targeted IGA elements.</div></div></td>
+</tr>
+<tr data-matrix-row data-keyword="*DLOAD" data-status="supported" data-search-aliases="[&quot;grav&quot;, &quot;gravity&quot;, &quot;u994&quot;, &quot;u995&quot;, &quot;u996&quot;]" data-search="*dload *dload gravity  grav gravity u994 u995 u996 grav model-wide when the direction vector is nonzero supported coreform iga keeps the model-wide grav record in the translated .inp for abaqus-native elements and adds internal u994, u995, and u996 component-load records for every iga volume element. abaqus applies the original gravity load to native elements, and the iga solver applies the generated components to iga elements. grav gravity u994 u995 u996">
+<td class="subject-cell" data-label="Options, load types, or output variables"><div class="subject-value"><code>GRAV</code></div></td>
+<td data-label="Applies to"><div class="scope-value"><div class="scope-primary">model-wide</div><ul class="scope-conditions"><li>When the direction vector is nonzero</li></ul></div></td>
+<td data-label="Support"><span class="status-badge status-positive">Supported</span></td>
+<td class="behavior-cell" data-label="What Coreform IGA does"><div class="behavior-value"><div class="behavior-summary">Coreform IGA keeps the model-wide <code>GRAV</code> record in the translated <code>.inp</code> for Abaqus-native elements and adds internal <code>U994</code>, <code>U995</code>, and <code>U996</code> component-load records for every IGA volume element. Abaqus applies the original gravity load to native elements, and the IGA solver applies the generated components to IGA elements.</div></div></td>
+</tr>
+<tr data-matrix-row data-keyword="*DLOAD" data-status="supported" data-search-aliases="[&quot;grav&quot;, &quot;gravity&quot;, &quot;u994&quot;, &quot;u995&quot;, &quot;u996&quot;, &quot;mixed target&quot;]" data-search="*dload *dload gravity  grav gravity u994 u995 u996 grav mixed abaqus-native and iga when the direction vector is nonzero when abaqus-native and iga membership can be separated supported coreform iga replaces the mixed source record with separate records on generated native-only and iga-only element sets. the native record retains the original grav data; internal u994, u995, and u996 records apply the gravity components to the iga elements. grav gravity u994 u995 u996 mixed target">
+<td class="subject-cell" data-label="Options, load types, or output variables"><div class="subject-value"><code>GRAV</code></div></td>
+<td data-label="Applies to"><div class="scope-value"><div class="scope-primary">mixed Abaqus-native and IGA</div><ul class="scope-conditions"><li>When the direction vector is nonzero</li><li>When Abaqus-native and IGA membership can be separated</li></ul></div></td>
+<td data-label="Support"><span class="status-badge status-positive">Supported</span></td>
+<td class="behavior-cell" data-label="What Coreform IGA does"><div class="behavior-value"><div class="behavior-summary">Coreform IGA replaces the mixed source record with separate records on generated native-only and IGA-only element sets. The native record retains the original <code>GRAV</code> data; internal <code>U994</code>, <code>U995</code>, and <code>U996</code> records apply the gravity components to the IGA elements.</div></div></td>
+</tr>
+</tbody>
+<tbody data-matrix-section="keyword-dload-section-body-forces" aria-labelledby="keyword-dload-section-body-forces">
+<tr class="section-heading-row">
+<th class="section-heading-cell" id="keyword-dload-section-body-forces" scope="rowgroup" colspan="4">
+<div class="section-title">Body forces</div>
+</th>
+</tr>
+<tr data-matrix-row data-keyword="*DLOAD" data-status="supported" data-search-aliases="[&quot;bx&quot;, &quot;by&quot;, &quot;bz&quot;, &quot;body force&quot;, &quot;u997&quot;, &quot;u998&quot;, &quot;u999&quot;]" data-search="*dload *dload body forces  bx by bz body force u997 u998 u999 bx, by, or bz iga only supported coreform iga replaces the source bx, by, or bz data line in the translated .inp with an internal u997, u998, or u999 load record, respectively. the iga solver applies the corresponding x-, y-, or z-direction body force to the targeted iga elements. bx by bz body force u997 u998 u999">
+<td class="subject-cell" data-label="Options, load types, or output variables"><div class="subject-value"><code>BX</code>, <code>BY</code>, or <code>BZ</code></div></td>
+<td data-label="Applies to"><div class="scope-value"><div class="scope-primary">IGA only</div></div></td>
+<td data-label="Support"><span class="status-badge status-positive">Supported</span></td>
+<td class="behavior-cell" data-label="What Coreform IGA does"><div class="behavior-value"><div class="behavior-summary">Coreform IGA replaces the source <code>BX</code>, <code>BY</code>, or <code>BZ</code> data line in the translated <code>.inp</code> with an internal <code>U997</code>, <code>U998</code>, or <code>U999</code> load record, respectively. The IGA solver applies the corresponding x-, y-, or z-direction body force to the targeted IGA elements.</div></div></td>
+</tr>
+<tr data-matrix-row data-keyword="*DLOAD" data-status="supported" data-search-aliases="[&quot;bx&quot;, &quot;by&quot;, &quot;bz&quot;, &quot;body force&quot;, &quot;u997&quot;, &quot;u998&quot;, &quot;u999&quot;, &quot;mixed target&quot;]" data-search="*dload *dload body forces  bx by bz body force u997 u998 u999 bx, by, or bz mixed abaqus-native and iga when abaqus-native and iga membership can be separated supported coreform iga replaces the mixed source record with separate records on generated native-only and iga-only element sets. the native record retains the original bx, by, or bz data; an internal u997, u998, or u999 record applies the corresponding body force to the iga elements. bx by bz body force u997 u998 u999 mixed target">
+<td class="subject-cell" data-label="Options, load types, or output variables"><div class="subject-value"><code>BX</code>, <code>BY</code>, or <code>BZ</code></div></td>
+<td data-label="Applies to"><div class="scope-value"><div class="scope-primary">mixed Abaqus-native and IGA</div><ul class="scope-conditions"><li>When Abaqus-native and IGA membership can be separated</li></ul></div></td>
+<td data-label="Support"><span class="status-badge status-positive">Supported</span></td>
+<td class="behavior-cell" data-label="What Coreform IGA does"><div class="behavior-value"><div class="behavior-summary">Coreform IGA replaces the mixed source record with separate records on generated native-only and IGA-only element sets. The native record retains the original <code>BX</code>, <code>BY</code>, or <code>BZ</code> data; an internal <code>U997</code>, <code>U998</code>, or <code>U999</code> record applies the corresponding body force to the IGA elements.</div></div></td>
+</tr>
+</tbody>
+<tbody data-matrix-section="keyword-dload-section-reserved-load-types" aria-labelledby="keyword-dload-section-reserved-load-types">
+<tr class="section-heading-row">
+<th class="section-heading-cell" id="keyword-dload-section-reserved-load-types" scope="rowgroup" colspan="4">
+<div class="section-title">Reserved load types</div>
+</th>
+</tr>
+<tr data-matrix-row data-keyword="*DLOAD" data-status="unsupported-for-iga" data-search-aliases="[&quot;u994&quot;, &quot;u995&quot;, &quot;u996&quot;, &quot;grav&quot;, &quot;gravity&quot;, &quot;reserved&quot;]" data-search="*dload *dload reserved load types  u994 u995 u996 u997 u998 u999 reserved u994–u996 iga only not supported for iga source input files must use the standard abaqus grav load type. coreform iga reserves u994, u995, and u996 for the generated x-, y-, and z-components of iga gravity loads. coreform iga stops input-file translation for this case. u994 u995 u996 grav gravity reserved">
+<td class="subject-cell" data-label="Options, load types, or output variables"><div class="subject-value"><code>U994</code>–<code>U996</code></div></td>
+<td data-label="Applies to"><div class="scope-value"><div class="scope-primary">IGA only</div></div></td>
+<td data-label="Support"><span class="status-badge status-negative">Not supported for IGA</span></td>
+<td class="behavior-cell" data-label="What Coreform IGA does"><div class="behavior-value"><div class="behavior-summary">Source input files must use the standard Abaqus <code>GRAV</code> load type. Coreform IGA reserves <code>U994</code>, <code>U995</code>, and <code>U996</code> for the generated x-, y-, and z-components of IGA gravity loads.</div><div class="behavior-note"><span class="scope-label">Result:</span> Coreform IGA stops input-file translation for this case.</div></div></td>
+</tr>
+<tr data-matrix-row data-keyword="*DLOAD" data-status="unsupported-for-iga" data-search-aliases="[&quot;u997&quot;, &quot;u998&quot;, &quot;u999&quot;, &quot;bx&quot;, &quot;by&quot;, &quot;bz&quot;, &quot;body force&quot;, &quot;reserved&quot;]" data-search="*dload *dload reserved load types  u994 u995 u996 u997 u998 u999 reserved u997–u999 iga only not supported for iga source input files must use the standard abaqus bx, by, or bz load type. coreform iga reserves u997, u998, and u999 for the generated x-, y-, and z-components of iga body-force loads. coreform iga stops input-file translation for this case. u997 u998 u999 bx by bz body force reserved">
+<td class="subject-cell" data-label="Options, load types, or output variables"><div class="subject-value"><code>U997</code>–<code>U999</code></div></td>
+<td data-label="Applies to"><div class="scope-value"><div class="scope-primary">IGA only</div></div></td>
+<td data-label="Support"><span class="status-badge status-negative">Not supported for IGA</span></td>
+<td class="behavior-cell" data-label="What Coreform IGA does"><div class="behavior-value"><div class="behavior-summary">Source input files must use the standard Abaqus <code>BX</code>, <code>BY</code>, or <code>BZ</code> load type. Coreform IGA reserves <code>U997</code>, <code>U998</code>, and <code>U999</code> for the generated x-, y-, and z-components of IGA body-force loads.</div><div class="behavior-note"><span class="scope-label">Result:</span> Coreform IGA stops input-file translation for this case.</div></div></td>
+</tr>
+</tbody>
+<tbody data-matrix-section="keyword-dload-section-other-targets" aria-labelledby="keyword-dload-section-other-targets">
+<tr class="section-heading-row">
+<th class="section-heading-cell" id="keyword-dload-section-other-targets" scope="rowgroup" colspan="4">
+<div class="section-title">Other targets</div>
+</th>
+</tr>
+<tr data-matrix-row data-keyword="*DLOAD" data-status="supported" data-search-aliases="[]" data-search="*dload *dload other targets  any load type abaqus-native only supported coreform iga leaves native-only *dload records unchanged in the translated .inp for abaqus to apply.">
+<td class="subject-cell" data-label="Options, load types, or output variables"><div class="subject-value">Any load type</div></td>
+<td data-label="Applies to"><div class="scope-value"><div class="scope-primary">Abaqus-native only</div></div></td>
+<td data-label="Support"><span class="status-badge status-positive">Supported</span></td>
+<td class="behavior-cell" data-label="What Coreform IGA does"><div class="behavior-value"><div class="behavior-summary">Coreform IGA leaves native-only <code>*DLOAD</code> records unchanged in the translated <code>.inp</code> for Abaqus to apply.</div></div></td>
+</tr>
+<tr data-matrix-row data-keyword="*DLOAD" data-status="unsupported-for-iga" data-search-aliases="[&quot;mixed target&quot;, &quot;element set&quot;]" data-search="*dload *dload other targets  any load type mixed abaqus-native and iga when abaqus-native and iga membership cannot be separated not supported for iga coreform iga cannot safely divide this mixed *dload target into native-only and iga-only element sets. coreform iga stops input-file translation for this case. mixed target element set">
+<td class="subject-cell" data-label="Options, load types, or output variables"><div class="subject-value">Any load type</div></td>
+<td data-label="Applies to"><div class="scope-value"><div class="scope-primary">mixed Abaqus-native and IGA</div><ul class="scope-conditions"><li>When Abaqus-native and IGA membership cannot be separated</li></ul></div></td>
+<td data-label="Support"><span class="status-badge status-negative">Not supported for IGA</span></td>
+<td class="behavior-cell" data-label="What Coreform IGA does"><div class="behavior-value"><div class="behavior-summary">Coreform IGA cannot safely divide this mixed <code>*DLOAD</code> target into native-only and IGA-only element sets.</div><div class="behavior-note"><span class="scope-label">Result:</span> Coreform IGA stops input-file translation for this case.</div></div></td>
+</tr>
+<tr data-matrix-row data-keyword="*DLOAD" data-status="unsupported-for-iga" data-search-aliases="[&quot;unknown target&quot;, &quot;unresolved target&quot;]" data-search="*dload *dload other targets  any load type unresolved not supported for iga coreform iga cannot determine which elements an unresolved *dload record would load, so it cannot apply the load to iga elements. coreform iga stops input-file translation for this case. unknown target unresolved target">
+<td class="subject-cell" data-label="Options, load types, or output variables"><div class="subject-value">Any load type</div></td>
+<td data-label="Applies to"><div class="scope-value"><div class="scope-primary">unresolved</div></div></td>
+<td data-label="Support"><span class="status-badge status-negative">Not supported for IGA</span></td>
+<td class="behavior-cell" data-label="What Coreform IGA does"><div class="behavior-value"><div class="behavior-summary">Coreform IGA cannot determine which elements an unresolved <code>*DLOAD</code> record would load, so it cannot apply the load to IGA elements.</div><div class="behavior-note"><span class="scope-label">Result:</span> Coreform IGA stops input-file translation for this case.</div></div></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="keyword-group" data-keyword-group="*DSLOAD" aria-labelledby="keyword-dsload">
+<div class="keyword-heading">
+<h3 id="keyword-dsload"><code>*DSLOAD</code></h3>
+<span class="keyword-count" data-group-count data-template-singular="{count} case" data-template-plural="{count} cases">7 cases</span>
+</div>
+<div class="table-scroll" role="region" aria-label="Support cases for *DSLOAD" tabindex="0">
+<table>
+<caption class="visually-hidden">Support cases for *DSLOAD</caption>
+<colgroup>
+<col class="subject">
+<col class="scope">
+<col class="status">
+<col class="behavior">
+</colgroup>
+<thead>
+<tr>
+<th scope="col">Options, load types, or output variables</th>
+<th scope="col">Applies to</th>
+<th scope="col">Support</th>
+<th scope="col">What Coreform IGA does</th>
+</tr>
+</thead>
+<tbody data-matrix-section="keyword-dsload-section-pressure" aria-labelledby="keyword-dsload-section-pressure">
+<tr class="section-heading-row">
+<th class="section-heading-cell" id="keyword-dsload-section-pressure" scope="rowgroup" colspan="4">
+<div class="section-title">Pressure</div>
+</th>
+</tr>
+<tr data-matrix-row data-keyword="*DSLOAD" data-status="supported" data-search-aliases="[&quot;p&quot;, &quot;pressure&quot;, &quot;amplitude&quot;, &quot;runtime load&quot;]" data-search="*dsload *dsload pressure  p pressure p iga only supported coreform iga removes the iga pressure data line from the translated .inp, stores the pressure and any named amplitude internally, and applies the load to the targeted iga surface at runtime. op=new resets previous surface loads once per step; retained loads must be respecified. removed loads follow the step amplitude variation to zero. supported single-definition replacements retain ramp continuity. modifying additive load groups remains unsupported. p pressure amplitude runtime load">
+<td class="subject-cell" data-label="Options, load types, or output variables"><div class="subject-value"><code>P</code></div></td>
+<td data-label="Applies to"><div class="scope-value"><div class="scope-primary">IGA only</div></div></td>
+<td data-label="Support"><span class="status-badge status-positive">Supported</span></td>
+<td class="behavior-cell" data-label="What Coreform IGA does"><div class="behavior-value"><div class="behavior-summary">Coreform IGA removes the IGA pressure data line from the translated <code>.inp</code>, stores the pressure and any named amplitude internally, and applies the load to the targeted IGA surface at runtime.</div><div class="behavior-note"><span class="scope-label">Result:</span> OP=NEW resets previous surface loads once per step; retained loads must be respecified. Removed loads follow the step amplitude variation to zero. Supported single-definition replacements retain ramp continuity. Modifying additive load groups remains unsupported.</div></div></td>
+</tr>
+<tr data-matrix-row data-keyword="*DSLOAD" data-status="supported" data-search-aliases="[&quot;p&quot;, &quot;pressure&quot;, &quot;amplitude&quot;, &quot;runtime load&quot;, &quot;mixed target&quot;]" data-search="*dsload *dsload pressure  p pressure p mixed abaqus-native and iga when abaqus-native and iga membership can be separated supported coreform iga splits the target into generated native-only and iga-only surfaces. the translated .inp retains an abaqus pressure record for the native surface; coreform iga removes the iga pressure data from the deck, stores it and any named amplitude internally, and applies it to the iga surface at runtime. op=new resets previous surface loads once per step; retained loads must be respecified. removed loads follow the step amplitude variation to zero. supported single-definition replacements retain ramp continuity. modifying additive load groups remains unsupported. p pressure amplitude runtime load mixed target">
+<td class="subject-cell" data-label="Options, load types, or output variables"><div class="subject-value"><code>P</code></div></td>
+<td data-label="Applies to"><div class="scope-value"><div class="scope-primary">mixed Abaqus-native and IGA</div><ul class="scope-conditions"><li>When Abaqus-native and IGA membership can be separated</li></ul></div></td>
+<td data-label="Support"><span class="status-badge status-positive">Supported</span></td>
+<td class="behavior-cell" data-label="What Coreform IGA does"><div class="behavior-value"><div class="behavior-summary">Coreform IGA splits the target into generated native-only and IGA-only surfaces. The translated <code>.inp</code> retains an Abaqus pressure record for the native surface; Coreform IGA removes the IGA pressure data from the deck, stores it and any named amplitude internally, and applies it to the IGA surface at runtime.</div><div class="behavior-note"><span class="scope-label">Result:</span> OP=NEW resets previous surface loads once per step; retained loads must be respecified. Removed loads follow the step amplitude variation to zero. Supported single-definition replacements retain ramp continuity. Modifying additive load groups remains unsupported.</div></div></td>
+</tr>
+</tbody>
+<tbody data-matrix-section="keyword-dsload-section-vector-tractions" aria-labelledby="keyword-dsload-section-vector-tractions">
+<tr class="section-heading-row">
+<th class="section-heading-cell" id="keyword-dsload-section-vector-tractions" scope="rowgroup" colspan="4">
+<div class="section-title">Vector tractions</div>
+</th>
+</tr>
+<tr data-matrix-row data-keyword="*DSLOAD" data-status="supported" data-search-aliases="[&quot;trshr&quot;, &quot;trvec&quot;, &quot;traction&quot;, &quot;vector traction&quot;, &quot;amplitude&quot;, &quot;runtime load&quot;]" data-search="*dsload *dsload vector tractions  trshr trvec traction vector traction trshr or trvec iga only when the traction direction vector is nonzero supported coreform iga removes the iga trshr or trvec traction data line from the translated .inp, stores the traction vector and any named amplitude internally, and applies it to the targeted iga surface at runtime. op=new resets previous surface loads once per step; retained loads must be respecified. removed loads follow the step amplitude variation to zero. supported single-definition replacements retain ramp continuity. modifying additive load groups remains unsupported. trshr trvec traction vector traction amplitude runtime load">
+<td class="subject-cell" data-label="Options, load types, or output variables"><div class="subject-value"><code>TRSHR</code> or <code>TRVEC</code></div></td>
+<td data-label="Applies to"><div class="scope-value"><div class="scope-primary">IGA only</div><ul class="scope-conditions"><li>When the traction direction vector is nonzero</li></ul></div></td>
+<td data-label="Support"><span class="status-badge status-positive">Supported</span></td>
+<td class="behavior-cell" data-label="What Coreform IGA does"><div class="behavior-value"><div class="behavior-summary">Coreform IGA removes the IGA <code>TRSHR</code> or <code>TRVEC</code> traction data line from the translated <code>.inp</code>, stores the traction vector and any named amplitude internally, and applies it to the targeted IGA surface at runtime.</div><div class="behavior-note"><span class="scope-label">Result:</span> OP=NEW resets previous surface loads once per step; retained loads must be respecified. Removed loads follow the step amplitude variation to zero. Supported single-definition replacements retain ramp continuity. Modifying additive load groups remains unsupported.</div></div></td>
+</tr>
+<tr data-matrix-row data-keyword="*DSLOAD" data-status="supported" data-search-aliases="[&quot;trshr&quot;, &quot;trvec&quot;, &quot;traction&quot;, &quot;vector traction&quot;, &quot;amplitude&quot;, &quot;runtime load&quot;, &quot;mixed target&quot;]" data-search="*dsload *dsload vector tractions  trshr trvec traction vector traction trshr or trvec mixed abaqus-native and iga when the traction direction vector is nonzero when abaqus-native and iga membership can be separated supported coreform iga splits the target into generated native-only and iga-only surfaces. the translated .inp retains an abaqus trshr or trvec record for the native surface; coreform iga removes the iga traction data from the deck, stores it and any named amplitude internally, and applies it to the iga surface at runtime. op=new resets previous surface loads once per step; retained loads must be respecified. removed loads follow the step amplitude variation to zero. supported single-definition replacements retain ramp continuity. modifying additive load groups remains unsupported. trshr trvec traction vector traction amplitude runtime load mixed target">
+<td class="subject-cell" data-label="Options, load types, or output variables"><div class="subject-value"><code>TRSHR</code> or <code>TRVEC</code></div></td>
+<td data-label="Applies to"><div class="scope-value"><div class="scope-primary">mixed Abaqus-native and IGA</div><ul class="scope-conditions"><li>When the traction direction vector is nonzero</li><li>When Abaqus-native and IGA membership can be separated</li></ul></div></td>
+<td data-label="Support"><span class="status-badge status-positive">Supported</span></td>
+<td class="behavior-cell" data-label="What Coreform IGA does"><div class="behavior-value"><div class="behavior-summary">Coreform IGA splits the target into generated native-only and IGA-only surfaces. The translated <code>.inp</code> retains an Abaqus <code>TRSHR</code> or <code>TRVEC</code> record for the native surface; Coreform IGA removes the IGA traction data from the deck, stores it and any named amplitude internally, and applies it to the IGA surface at runtime.</div><div class="behavior-note"><span class="scope-label">Result:</span> OP=NEW resets previous surface loads once per step; retained loads must be respecified. Removed loads follow the step amplitude variation to zero. Supported single-definition replacements retain ramp continuity. Modifying additive load groups remains unsupported.</div></div></td>
+</tr>
+</tbody>
+<tbody data-matrix-section="keyword-dsload-section-other-targets" aria-labelledby="keyword-dsload-section-other-targets">
+<tr class="section-heading-row">
+<th class="section-heading-cell" id="keyword-dsload-section-other-targets" scope="rowgroup" colspan="4">
+<div class="section-title">Other targets</div>
+</th>
+</tr>
+<tr data-matrix-row data-keyword="*DSLOAD" data-status="supported" data-search-aliases="[]" data-search="*dsload *dsload other targets  any load type abaqus-native only supported coreform iga leaves native-only *dsload records unchanged in the translated .inp for abaqus to apply.">
+<td class="subject-cell" data-label="Options, load types, or output variables"><div class="subject-value">Any load type</div></td>
+<td data-label="Applies to"><div class="scope-value"><div class="scope-primary">Abaqus-native only</div></div></td>
+<td data-label="Support"><span class="status-badge status-positive">Supported</span></td>
+<td class="behavior-cell" data-label="What Coreform IGA does"><div class="behavior-value"><div class="behavior-summary">Coreform IGA leaves native-only <code>*DSLOAD</code> records unchanged in the translated <code>.inp</code> for Abaqus to apply.</div></div></td>
+</tr>
+<tr data-matrix-row data-keyword="*DSLOAD" data-status="unsupported-for-iga" data-search-aliases="[&quot;mixed target&quot;, &quot;surface&quot;]" data-search="*dsload *dsload other targets  any load type mixed abaqus-native and iga when abaqus-native and iga membership cannot be separated not supported for iga coreform iga cannot safely divide this mixed *dsload target into native-only and iga-only surfaces. coreform iga stops input-file translation for this case. mixed target surface">
+<td class="subject-cell" data-label="Options, load types, or output variables"><div class="subject-value">Any load type</div></td>
+<td data-label="Applies to"><div class="scope-value"><div class="scope-primary">mixed Abaqus-native and IGA</div><ul class="scope-conditions"><li>When Abaqus-native and IGA membership cannot be separated</li></ul></div></td>
+<td data-label="Support"><span class="status-badge status-negative">Not supported for IGA</span></td>
+<td class="behavior-cell" data-label="What Coreform IGA does"><div class="behavior-value"><div class="behavior-summary">Coreform IGA cannot safely divide this mixed <code>*DSLOAD</code> target into native-only and IGA-only surfaces.</div><div class="behavior-note"><span class="scope-label">Result:</span> Coreform IGA stops input-file translation for this case.</div></div></td>
+</tr>
+<tr data-matrix-row data-keyword="*DSLOAD" data-status="unsupported-for-iga" data-search-aliases="[&quot;global target&quot;, &quot;unknown target&quot;, &quot;unresolved target&quot;]" data-search="*dsload *dsload other targets  any load type model-wide or unresolved not supported for iga coreform iga cannot extract an iga surface load when *dsload is model-wide or its target cannot be resolved to a supported surface. coreform iga stops input-file translation for this case. global target unknown target unresolved target">
+<td class="subject-cell" data-label="Options, load types, or output variables"><div class="subject-value">Any load type</div></td>
+<td data-label="Applies to"><div class="scope-value"><div class="scope-primary">model-wide or unresolved</div></div></td>
+<td data-label="Support"><span class="status-badge status-negative">Not supported for IGA</span></td>
+<td class="behavior-cell" data-label="What Coreform IGA does"><div class="behavior-value"><div class="behavior-summary">Coreform IGA cannot extract an IGA surface load when <code>*DSLOAD</code> is model-wide or its target cannot be resolved to a supported surface.</div><div class="behavior-note"><span class="scope-label">Result:</span> Coreform IGA stops input-file translation for this case.</div></div></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="keyword-group" data-keyword-group="*SFILM" aria-labelledby="keyword-sfilm">
+<div class="keyword-heading">
+<h3 id="keyword-sfilm"><code>*SFILM</code></h3>
+<span class="keyword-count" data-group-count data-template-singular="{count} case" data-template-plural="{count} cases">3 cases</span>
+</div>
+<div class="table-scroll" role="region" aria-label="Support cases for *SFILM" tabindex="0">
+<table>
+<caption class="visually-hidden">Support cases for *SFILM</caption>
+<colgroup>
+<col class="subject">
+<col class="scope">
+<col class="status">
+<col class="behavior">
+</colgroup>
+<thead>
+<tr>
+<th scope="col">Options, load types, or output variables</th>
+<th scope="col">Applies to</th>
+<th scope="col">Support</th>
+<th scope="col">What Coreform IGA does</th>
+</tr>
+</thead>
+<tbody data-matrix-section="keyword-sfilm-section-surface-film" aria-labelledby="keyword-sfilm-section-surface-film">
+<tr class="section-heading-row">
+<th class="section-heading-cell" id="keyword-sfilm-section-surface-film" scope="rowgroup" colspan="4">
+<div class="section-title">Surface film condition</div>
+</th>
+</tr>
+<tr data-matrix-row data-keyword="*SFILM" data-status="supported" data-search-aliases="[]" data-search="*sfilm *sfilm film convection heat transfer surface film condition  f iga only during a heat-transfer step without a named amplitude supported coreform iga removes the iga film condition from the translated deck, stores its sink temperature and film coefficient, and integrates it on the tessellated physical boundary at runtime.">
+<td class="subject-cell" data-label="Options, load types, or output variables"><div class="subject-value"><code>F</code></div></td>
+<td data-label="Applies to"><div class="scope-value"><div class="scope-primary">IGA only</div><ul class="scope-conditions"><li>During a heat-transfer step</li><li>Without a named amplitude</li></ul></div></td>
+<td data-label="Support"><span class="status-badge status-positive">Supported</span></td>
+<td class="behavior-cell" data-label="What Coreform IGA does"><div class="behavior-value"><div class="behavior-summary">Coreform IGA removes the IGA film condition from the translated deck, stores its sink temperature and film coefficient, and integrates it on the tessellated physical boundary at runtime.</div></div></td>
+</tr>
+<tr data-matrix-row data-keyword="*SFILM" data-status="supported" data-search-aliases="[]" data-search="*sfilm *sfilm film convection heat transfer surface film condition  any film condition abaqus-native only supported coreform iga leaves native-only *sfilm records unchanged for abaqus to apply.">
+<td class="subject-cell" data-label="Options, load types, or output variables"><div class="subject-value">Any film condition</div></td>
+<td data-label="Applies to"><div class="scope-value"><div class="scope-primary">Abaqus-native only</div></div></td>
+<td data-label="Support"><span class="status-badge status-positive">Supported</span></td>
+<td class="behavior-cell" data-label="What Coreform IGA does"><div class="behavior-value"><div class="behavior-summary">Coreform IGA leaves native-only <code>*SFILM</code> records unchanged for Abaqus to apply.</div></div></td>
+</tr>
+<tr data-matrix-row data-keyword="*SFILM" data-status="unsupported-for-iga" data-search-aliases="[]" data-search="*sfilm *sfilm film convection heat transfer surface film condition  unsupported target or option iga, mixed, or unresolved not supported for iga coreform iga stops translation when it cannot safely own the film condition. input-file translation stops for these cases.">
+<td class="subject-cell" data-label="Options, load types, or output variables"><div class="subject-value">Unsupported target or option</div></td>
+<td data-label="Applies to"><div class="scope-value"><div class="scope-primary">IGA, mixed, or unresolved</div></div></td>
+<td data-label="Support"><span class="status-badge status-negative">Not supported for IGA</span></td>
+<td class="behavior-cell" data-label="What Coreform IGA does"><div class="behavior-value"><div class="behavior-summary">Coreform IGA stops translation when it cannot safely own the film condition.</div><div class="behavior-note"><span class="scope-label">Result:</span> Input-file translation stops for these cases.</div></div></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="keyword-group" data-keyword-group="*SRADIATE" aria-labelledby="keyword-sradiate">
+<div class="keyword-heading">
+<h3 id="keyword-sradiate"><code>*SRADIATE</code></h3>
+<span class="keyword-count" data-group-count data-template-singular="{count} case" data-template-plural="{count} cases">3 cases</span>
+</div>
+<div class="table-scroll" role="region" aria-label="Support cases for *SRADIATE" tabindex="0">
+<table>
+<caption class="visually-hidden">Support cases for *SRADIATE</caption>
+<colgroup>
+<col class="subject">
+<col class="scope">
+<col class="status">
+<col class="behavior">
+</colgroup>
+<thead>
+<tr>
+<th scope="col">Options, load types, or output variables</th>
+<th scope="col">Applies to</th>
+<th scope="col">Support</th>
+<th scope="col">What Coreform IGA does</th>
+</tr>
+</thead>
+<tbody data-matrix-section="keyword-sradiate-section-ambient-radiation" aria-labelledby="keyword-sradiate-section-ambient-radiation">
+<tr class="section-heading-row">
+<th class="section-heading-cell" id="keyword-sradiate-section-ambient-radiation" scope="rowgroup" colspan="4">
+<div class="section-title">Radiation to ambient</div>
+</th>
+</tr>
+<tr data-matrix-row data-keyword="*SRADIATE" data-status="supported" data-search-aliases="[]" data-search="*sradiate *sradiate radiation heat transfer radiation to ambient  r iga only during a heat-transfer step without a named amplitude supported coreform iga removes the iga radiation condition from the translated deck, stores its ambient temperature and emissivity, and integrates it on the tessellated physical boundary at runtime.">
+<td class="subject-cell" data-label="Options, load types, or output variables"><div class="subject-value"><code>R</code></div></td>
+<td data-label="Applies to"><div class="scope-value"><div class="scope-primary">IGA only</div><ul class="scope-conditions"><li>During a heat-transfer step</li><li>Without a named amplitude</li></ul></div></td>
+<td data-label="Support"><span class="status-badge status-positive">Supported</span></td>
+<td class="behavior-cell" data-label="What Coreform IGA does"><div class="behavior-value"><div class="behavior-summary">Coreform IGA removes the IGA radiation condition from the translated deck, stores its ambient temperature and emissivity, and integrates it on the tessellated physical boundary at runtime.</div></div></td>
+</tr>
+<tr data-matrix-row data-keyword="*SRADIATE" data-status="supported" data-search-aliases="[]" data-search="*sradiate *sradiate radiation heat transfer radiation to ambient  any radiation condition abaqus-native only supported coreform iga leaves native-only *sradiate records unchanged for abaqus to apply.">
+<td class="subject-cell" data-label="Options, load types, or output variables"><div class="subject-value">Any radiation condition</div></td>
+<td data-label="Applies to"><div class="scope-value"><div class="scope-primary">Abaqus-native only</div></div></td>
+<td data-label="Support"><span class="status-badge status-positive">Supported</span></td>
+<td class="behavior-cell" data-label="What Coreform IGA does"><div class="behavior-value"><div class="behavior-summary">Coreform IGA leaves native-only <code>*SRADIATE</code> records unchanged for Abaqus to apply.</div></div></td>
+</tr>
+<tr data-matrix-row data-keyword="*SRADIATE" data-status="unsupported-for-iga" data-search-aliases="[]" data-search="*sradiate *sradiate radiation heat transfer radiation to ambient  unsupported target or option iga, mixed, or unresolved not supported for iga coreform iga stops translation when it cannot safely own the radiation condition. input-file translation stops for these cases.">
+<td class="subject-cell" data-label="Options, load types, or output variables"><div class="subject-value">Unsupported target or option</div></td>
+<td data-label="Applies to"><div class="scope-value"><div class="scope-primary">IGA, mixed, or unresolved</div></div></td>
+<td data-label="Support"><span class="status-badge status-negative">Not supported for IGA</span></td>
+<td class="behavior-cell" data-label="What Coreform IGA does"><div class="behavior-value"><div class="behavior-summary">Coreform IGA stops translation when it cannot safely own the radiation condition.</div><div class="behavior-note"><span class="scope-label">Result:</span> Input-file translation stops for these cases.</div></div></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="keyword-group" data-keyword-group="*SOLID SECTION" aria-labelledby="keyword-solid-section">
+<div class="keyword-heading">
+<h3 id="keyword-solid-section"><code>*SOLID SECTION</code></h3>
+<span class="keyword-count" data-group-count data-template-singular="{count} case" data-template-plural="{count} cases">5 cases</span>
+</div>
+<div class="table-scroll" role="region" aria-label="Support cases for *SOLID SECTION" tabindex="0">
+<table>
+<caption class="visually-hidden">Support cases for *SOLID SECTION</caption>
+<colgroup>
+<col class="subject">
+<col class="scope">
+<col class="status">
+<col class="behavior">
+</colgroup>
+<thead>
+<tr>
+<th scope="col">Options, load types, or output variables</th>
+<th scope="col">Applies to</th>
+<th scope="col">Support</th>
+<th scope="col">What Coreform IGA does</th>
+</tr>
+</thead>
+<tbody data-matrix-section="keyword-solid-section-section-iga-sections" aria-labelledby="keyword-solid-section-section-iga-sections">
+<tr class="section-heading-row">
+<th class="section-heading-cell" id="keyword-solid-section-section-iga-sections" scope="rowgroup" colspan="4">
+<div class="section-title">IGA sections</div>
+</th>
+</tr>
+<tr data-matrix-row data-keyword="*SOLID SECTION" data-status="supported" data-search-aliases="[&quot;material&quot;, &quot;uel property&quot;, &quot;iga section&quot;]" data-search="*solid section *solid section iga sections  material uel property iga section with material iga only when material is specified supported coreform iga removes the iga *solid section record from the translated setup .inp and transfers its material assignment to generated *uel property data. material uel property iga section">
+<td class="subject-cell" data-label="Options, load types, or output variables"><div class="subject-value">With <code>MATERIAL</code></div></td>
+<td data-label="Applies to"><div class="scope-value"><div class="scope-primary">IGA only</div><ul class="scope-conditions"><li>When <code>MATERIAL</code> is specified</li></ul></div></td>
+<td data-label="Support"><span class="status-badge status-positive">Supported</span></td>
+<td class="behavior-cell" data-label="What Coreform IGA does"><div class="behavior-value"><div class="behavior-summary">Coreform IGA removes the IGA <code>*SOLID SECTION</code> record from the translated setup <code>.inp</code> and transfers its <code>MATERIAL</code> assignment to generated <code>*UEL PROPERTY</code> data.</div></div></td>
+</tr>
+<tr data-matrix-row data-keyword="*SOLID SECTION" data-status="unsupported-for-iga" data-search-aliases="[&quot;material&quot;, &quot;missing material&quot;, &quot;uel property&quot;]" data-search="*solid section *solid section iga sections  material uel property iga section without material iga only when material is missing not supported for iga coreform iga cannot create the iga *uel property data without a material assignment on the source *solid section record. coreform iga stops input-file translation for this case. material missing material uel property">
+<td class="subject-cell" data-label="Options, load types, or output variables"><div class="subject-value">Without <code>MATERIAL</code></div></td>
+<td data-label="Applies to"><div class="scope-value"><div class="scope-primary">IGA only</div><ul class="scope-conditions"><li>When <code>MATERIAL</code> is missing</li></ul></div></td>
+<td data-label="Support"><span class="status-badge status-negative">Not supported for IGA</span></td>
+<td class="behavior-cell" data-label="What Coreform IGA does"><div class="behavior-value"><div class="behavior-summary">Coreform IGA cannot create the IGA <code>*UEL PROPERTY</code> data without a <code>MATERIAL</code> assignment on the source <code>*SOLID SECTION</code> record.</div><div class="behavior-note"><span class="scope-label">Result:</span> Coreform IGA stops input-file translation for this case.</div></div></td>
+</tr>
+</tbody>
+<tbody data-matrix-section="keyword-solid-section-section-other-targets" aria-labelledby="keyword-solid-section-section-other-targets">
+<tr class="section-heading-row">
+<th class="section-heading-cell" id="keyword-solid-section-section-other-targets" scope="rowgroup" colspan="4">
+<div class="section-title">Other targets</div>
+</th>
+</tr>
+<tr data-matrix-row data-keyword="*SOLID SECTION" data-status="supported" data-search-aliases="[]" data-search="*solid section *solid section other targets  — abaqus-native only supported coreform iga leaves native-only *solid section records unchanged in the translated setup .inp for abaqus to use.">
+<td class="subject-cell" data-label="Options, load types, or output variables"><div class="subject-value">—</div></td>
+<td data-label="Applies to"><div class="scope-value"><div class="scope-primary">Abaqus-native only</div></div></td>
+<td data-label="Support"><span class="status-badge status-positive">Supported</span></td>
+<td class="behavior-cell" data-label="What Coreform IGA does"><div class="behavior-value"><div class="behavior-summary">Coreform IGA leaves native-only <code>*SOLID SECTION</code> records unchanged in the translated setup <code>.inp</code> for Abaqus to use.</div></div></td>
+</tr>
+<tr data-matrix-row data-keyword="*SOLID SECTION" data-status="unsupported-for-iga" data-search-aliases="[&quot;mixed target&quot;, &quot;section assignment&quot;]" data-search="*solid section *solid section other targets  — mixed abaqus-native and iga when the section spans abaqus-native and iga elements not supported for iga coreform iga cannot split one *solid section assignment between abaqus-native and iga elements. coreform iga stops input-file translation for this case. mixed target section assignment">
+<td class="subject-cell" data-label="Options, load types, or output variables"><div class="subject-value">—</div></td>
+<td data-label="Applies to"><div class="scope-value"><div class="scope-primary">mixed Abaqus-native and IGA</div><ul class="scope-conditions"><li>When the section spans Abaqus-native and IGA elements</li></ul></div></td>
+<td data-label="Support"><span class="status-badge status-negative">Not supported for IGA</span></td>
+<td class="behavior-cell" data-label="What Coreform IGA does"><div class="behavior-value"><div class="behavior-summary">Coreform IGA cannot split one <code>*SOLID SECTION</code> assignment between Abaqus-native and IGA elements.</div><div class="behavior-note"><span class="scope-label">Result:</span> Coreform IGA stops input-file translation for this case.</div></div></td>
+</tr>
+<tr data-matrix-row data-keyword="*SOLID SECTION" data-status="supported" data-search-aliases="[&quot;unknown target&quot;, &quot;unresolved target&quot;]" data-search="*solid section *solid section other targets  — model-wide or unresolved supported coreform iga leaves an unresolved *solid section record unchanged in the translated setup .inp; it is not used to create iga properties. unknown target unresolved target">
+<td class="subject-cell" data-label="Options, load types, or output variables"><div class="subject-value">—</div></td>
+<td data-label="Applies to"><div class="scope-value"><div class="scope-primary">model-wide or unresolved</div></div></td>
+<td data-label="Support"><span class="status-badge status-positive">Supported</span></td>
+<td class="behavior-cell" data-label="What Coreform IGA does"><div class="behavior-value"><div class="behavior-summary">Coreform IGA leaves an unresolved <code>*SOLID SECTION</code> record unchanged in the translated setup <code>.inp</code>; it is not used to create IGA properties.</div></div></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="keyword-group" data-keyword-group="*OUTPUT" aria-labelledby="keyword-output">
+<div class="keyword-heading">
+<h3 id="keyword-output"><code>*OUTPUT</code></h3>
+<span class="keyword-count" data-group-count data-template-singular="{count} case" data-template-plural="{count} cases">1 case</span>
+</div>
+<div class="table-scroll" role="region" aria-label="Support cases for *OUTPUT" tabindex="0">
+<table>
+<caption class="visually-hidden">Support cases for *OUTPUT</caption>
+<colgroup>
+<col class="subject">
+<col class="scope">
+<col class="status">
+<col class="behavior">
+</colgroup>
+<thead>
+<tr>
+<th scope="col">Options, load types, or output variables</th>
+<th scope="col">Applies to</th>
+<th scope="col">Support</th>
+<th scope="col">What Coreform IGA does</th>
+</tr>
+</thead>
+<tbody data-matrix-section="keyword-output-section-cases">
+<tr data-matrix-row data-keyword="*OUTPUT" data-status="recognized" data-search-aliases="[&quot;field output&quot;, &quot;history output&quot;, &quot;request context&quot;, &quot;schedule&quot;]" data-search="*output *output   field or history request context not target-specific recognized coreform iga reads *output to apply its scope and schedule to the requests that follow; *output alone does not add an iga result variable. variables specified directly on *output follow the *field output rows. field output history output request context schedule">
+<td class="subject-cell" data-label="Options, load types, or output variables"><div class="subject-value">Field or history request context</div></td>
+<td data-label="Applies to"><div class="scope-value"><div class="scope-primary">Not target-specific</div></div></td>
+<td data-label="Support"><span class="status-badge status-informational">Recognized</span></td>
+<td class="behavior-cell" data-label="What Coreform IGA does"><div class="behavior-value"><div class="behavior-summary">Coreform IGA reads <code>*OUTPUT</code> to apply its scope and schedule to the requests that follow; <code>*OUTPUT</code> alone does not add an IGA result variable. Variables specified directly on <code>*OUTPUT</code> follow the <code>*FIELD OUTPUT</code> rows.</div></div></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="keyword-group" data-keyword-group="*FIELD OUTPUT" aria-labelledby="keyword-field-output">
+<div class="keyword-heading">
+<h3 id="keyword-field-output"><code>*FIELD OUTPUT</code></h3>
+<span class="keyword-count" data-group-count data-template-singular="{count} case" data-template-plural="{count} cases">6 cases</span>
+</div>
+<div class="table-scroll" role="region" aria-label="Support cases for *FIELD OUTPUT" tabindex="0">
+<table>
+<caption class="visually-hidden">Support cases for *FIELD OUTPUT</caption>
+<colgroup>
+<col class="subject">
+<col class="scope">
+<col class="status">
+<col class="behavior">
+</colgroup>
+<thead>
+<tr>
+<th scope="col">Options, load types, or output variables</th>
+<th scope="col">Applies to</th>
+<th scope="col">Support</th>
+<th scope="col">What Coreform IGA does</th>
+</tr>
+</thead>
+<tbody data-matrix-section="keyword-field-output-section-request-context" aria-labelledby="keyword-field-output-section-request-context">
+<tr class="section-heading-row">
+<th class="section-heading-cell" id="keyword-field-output-section-request-context" scope="rowgroup" colspan="4">
+<div class="section-title">Request context</div>
+</th>
+</tr>
+<tr data-matrix-row data-keyword="*FIELD OUTPUT" data-status="recognized" data-search-aliases="[&quot;field output&quot;, &quot;request context&quot;]" data-search="*field output *field output request context  field request context not target-specific recognized coreform iga uses *field output to identify field-output requests; the variable rows below determine what coreform iga writes for iga regions. field output request context">
+<td class="subject-cell" data-label="Options, load types, or output variables"><div class="subject-value">Field request context</div></td>
+<td data-label="Applies to"><div class="scope-value"><div class="scope-primary">Not target-specific</div></div></td>
+<td data-label="Support"><span class="status-badge status-informational">Recognized</span></td>
+<td class="behavior-cell" data-label="What Coreform IGA does"><div class="behavior-value"><div class="behavior-summary">Coreform IGA uses <code>*FIELD OUTPUT</code> to identify field-output requests; the variable rows below determine what Coreform IGA writes for IGA regions.</div></div></td>
+</tr>
+</tbody>
+<tbody data-matrix-section="keyword-field-output-section-supported-results" aria-labelledby="keyword-field-output-section-supported-results">
+<tr class="section-heading-row">
+<th class="section-heading-cell" id="keyword-field-output-section-supported-results" scope="rowgroup" colspan="4">
+<div class="section-title">Displacement, stress, and strain</div>
+</th>
+</tr>
+<tr data-matrix-row data-keyword="*FIELD OUTPUT" data-status="supported" data-search-aliases="[&quot;displacement&quot;, &quot;stress&quot;, &quot;equivalent plastic strain&quot;, &quot;helper output&quot;, &quot;iga results&quot;, &quot;*output&quot;, &quot;all&quot;, &quot;preselect&quot;, &quot;u&quot;, &quot;u1&quot;, &quot;u2&quot;, &quot;u3&quot;, &quot;s&quot;, &quot;s11&quot;, &quot;s12&quot;, &quot;s13&quot;, &quot;s22&quot;, &quot;s23&quot;, &quot;s33&quot;, &quot;peeq&quot;, &quot;ne&quot;, &quot;ne11&quot;, &quot;ne22&quot;, &quot;ne33&quot;, &quot;ne12&quot;, &quot;ne13&quot;, &quot;ne23&quot;, &quot;le&quot;, &quot;le11&quot;, &quot;le22&quot;, &quot;le33&quot;, &quot;le12&quot;, &quot;le13&quot;, &quot;le23&quot;, &quot;nt&quot;, &quot;nt11&quot;, &quot;e&quot;, &quot;e11&quot;, &quot;e22&quot;, &quot;e33&quot;, &quot;e12&quot;, &quot;e13&quot;, &quot;e23&quot;]" data-search="*field output *field output displacement, stress, and strain  u s peeq ne ne11 ne22 ne33 ne12 ne13 ne23 le le11 le22 le33 le12 le13 le23 supported results u, s, peeq, e, ne, le, or nt11 iga only or model-wide supported coreform iga leaves the source output request in the translated .inp, records the iga displacement, stress, equivalent-plastic-strain, total-strain, nominal-strain, logarithmic-strain, or nodal-temperature request internally, and adds any helper output needed. abaqus produces any native-region output, and coreform iga writes the requested iga values to the iga results database. requesting peeq automatically includes the binary ac yield (actively yielding) companion in the iga odb, with the same regions and output schedule. ac yield is not a standalone input variable. for supported general solid analyses, e/ne/le requests resolve to total infinitesimal e in small strain; finite-strain e requests resolve to le while ne remains nominal strain. linear perturbation strain output is not implemented for iga. displacement stress equivalent plastic strain helper output iga results *output all preselect u u1 u2 u3 s s11 s12 s13 s22 s23 s33 peeq ne ne11 ne22 ne33 ne12 ne13 ne23 le le11 le22 le33 le12 le13 le23 nt nt11 e e11 e22 e33 e12 e13 e23">
+<td class="subject-cell" data-label="Options, load types, or output variables"><div class="subject-value"><code>U</code>, <code>S</code>, <code>PEEQ</code>, <code>E</code>, <code>NE</code>, <code>LE</code>, or <code>NT11</code></div></td>
+<td data-label="Applies to"><div class="scope-value"><div class="scope-primary">IGA only or model-wide</div></div></td>
+<td data-label="Support"><span class="status-badge status-positive">Supported</span></td>
+<td class="behavior-cell" data-label="What Coreform IGA does"><div class="behavior-value"><div class="behavior-summary">Coreform IGA leaves the source output request in the translated <code>.inp</code>, records the IGA displacement, stress, equivalent-plastic-strain, total-strain, nominal-strain, logarithmic-strain, or nodal-temperature request internally, and adds any helper output needed. Abaqus produces any native-region output, and Coreform IGA writes the requested IGA values to the IGA results database.</div><div class="behavior-note"><span class="scope-label">Result:</span> Requesting PEEQ automatically includes the binary AC YIELD (actively yielding) companion in the IGA ODB, with the same regions and output schedule. AC YIELD is not a standalone input variable.</div><div class="behavior-note"><span class="scope-label">Result:</span> For supported general solid analyses, E/NE/LE requests resolve to total infinitesimal E in small strain; finite-strain E requests resolve to LE while NE remains nominal strain. Linear perturbation strain output is not implemented for IGA.</div></div></td>
+</tr>
+<tr data-matrix-row data-keyword="*FIELD OUTPUT" data-status="supported" data-search-aliases="[&quot;displacement&quot;, &quot;stress&quot;, &quot;equivalent plastic strain&quot;, &quot;helper output&quot;, &quot;iga results&quot;, &quot;mixed target&quot;, &quot;*output&quot;, &quot;all&quot;, &quot;preselect&quot;, &quot;u&quot;, &quot;u1&quot;, &quot;u2&quot;, &quot;u3&quot;, &quot;s&quot;, &quot;s11&quot;, &quot;s12&quot;, &quot;s13&quot;, &quot;s22&quot;, &quot;s23&quot;, &quot;s33&quot;, &quot;peeq&quot;, &quot;e&quot;, &quot;e11&quot;, &quot;e22&quot;, &quot;e33&quot;, &quot;e12&quot;, &quot;e13&quot;, &quot;e23&quot;]" data-search="*field output *field output displacement, stress, and strain  u s peeq ne ne11 ne22 ne33 ne12 ne13 ne23 le le11 le22 le33 le12 le13 le23 supported results u, s, peeq, e, ne, or le mixed abaqus-native and iga supported coreform iga preserves the abaqus-native output request in the translated .inp and records the iga portion internally. abaqus produces the native-region output; coreform iga adds any needed helper output and writes the requested iga values to the iga results database. requesting peeq automatically includes the binary ac yield (actively yielding) companion in the iga odb, with the same regions and output schedule. ac yield is not a standalone input variable. for supported general solid analyses, e/ne/le requests resolve to total infinitesimal e in small strain; finite-strain e requests resolve to le while ne remains nominal strain. linear perturbation strain output is not implemented for iga. displacement stress equivalent plastic strain helper output iga results mixed target *output all preselect u u1 u2 u3 s s11 s12 s13 s22 s23 s33 peeq e e11 e22 e33 e12 e13 e23">
+<td class="subject-cell" data-label="Options, load types, or output variables"><div class="subject-value"><code>U</code>, <code>S</code>, <code>PEEQ</code>, <code>E</code>, <code>NE</code>, or <code>LE</code></div></td>
+<td data-label="Applies to"><div class="scope-value"><div class="scope-primary">mixed Abaqus-native and IGA</div></div></td>
+<td data-label="Support"><span class="status-badge status-positive">Supported</span></td>
+<td class="behavior-cell" data-label="What Coreform IGA does"><div class="behavior-value"><div class="behavior-summary">Coreform IGA preserves the Abaqus-native output request in the translated <code>.inp</code> and records the IGA portion internally. Abaqus produces the native-region output; Coreform IGA adds any needed helper output and writes the requested IGA values to the IGA results database.</div><div class="behavior-note"><span class="scope-label">Result:</span> Requesting PEEQ automatically includes the binary AC YIELD (actively yielding) companion in the IGA ODB, with the same regions and output schedule. AC YIELD is not a standalone input variable.</div><div class="behavior-note"><span class="scope-label">Result:</span> For supported general solid analyses, E/NE/LE requests resolve to total infinitesimal E in small strain; finite-strain E requests resolve to LE while NE remains nominal strain. Linear perturbation strain output is not implemented for IGA.</div></div></td>
+</tr>
+</tbody>
+<tbody data-matrix-section="keyword-field-output-section-unsupported-results" aria-labelledby="keyword-field-output-section-unsupported-results">
+<tr class="section-heading-row">
+<th class="section-heading-cell" id="keyword-field-output-section-unsupported-results" scope="rowgroup" colspan="4">
+<div class="section-title">Other field variables</div>
+</th>
+</tr>
+<tr data-matrix-row data-keyword="*FIELD OUTPUT" data-status="unsupported-for-iga" data-search-aliases="[&quot;unsupported results&quot;, &quot;*output&quot;, &quot;rmises&quot;, &quot;mises&quot;, &quot;re&quot;, &quot;all&quot;, &quot;pe&quot;, &quot;v&quot;, &quot;v1&quot;, &quot;v2&quot;, &quot;v3&quot;, &quot;a&quot;, &quot;a1&quot;, &quot;a2&quot;, &quot;a3&quot;, &quot;rf&quot;, &quot;rf1&quot;, &quot;rf2&quot;, &quot;rf3&quot;]" data-search="*field output *field output other field variables  rmises mises re pe v a rf unsupported results rmises, mises, re, pe, v, a, or rf includes iga entities not supported for iga coreform iga leaves any abaqus-native portion of the request in the translated .inp for abaqus to produce, but does not write these variables for iga regions. coreform iga reports a warning and omits the requested variable from iga results; translation of the remaining model continues. unsupported results *output rmises mises re all pe v v1 v2 v3 a a1 a2 a3 rf rf1 rf2 rf3">
+<td class="subject-cell" data-label="Options, load types, or output variables"><div class="subject-value"><code>RMISES</code>, <code>MISES</code>, <code>RE</code>, <code>PE</code>, <code>V</code>, <code>A</code>, or <code>RF</code></div></td>
+<td data-label="Applies to"><div class="scope-value"><div class="scope-primary">Includes IGA entities</div></div></td>
+<td data-label="Support"><span class="status-badge status-negative">Not supported for IGA</span></td>
+<td class="behavior-cell" data-label="What Coreform IGA does"><div class="behavior-value"><div class="behavior-summary">Coreform IGA leaves any Abaqus-native portion of the request in the translated <code>.inp</code> for Abaqus to produce, but does not write these variables for IGA regions.</div><div class="behavior-note"><span class="scope-label">Result:</span> Coreform IGA reports a warning and omits the requested variable from IGA results; translation of the remaining model continues.</div></div></td>
+</tr>
+</tbody>
+<tbody data-matrix-section="keyword-field-output-section-native-results" aria-labelledby="keyword-field-output-section-native-results">
+<tr class="section-heading-row">
+<th class="section-heading-cell" id="keyword-field-output-section-native-results" scope="rowgroup" colspan="4">
+<div class="section-title">Abaqus-native results</div>
+</th>
+</tr>
+<tr data-matrix-row data-keyword="*FIELD OUTPUT" data-status="unsupported-for-iga" data-search-aliases="[&quot;native output&quot;, &quot;*output&quot;, &quot;a&quot;, &quot;a1&quot;, &quot;a2&quot;, &quot;a3&quot;, &quot;all&quot;, &quot;e&quot;, &quot;le&quot;, &quot;mises&quot;, &quot;pe&quot;, &quot;peeq&quot;, &quot;preselect&quot;, &quot;re&quot;, &quot;rf&quot;, &quot;rf1&quot;, &quot;rf2&quot;, &quot;rf3&quot;, &quot;rmises&quot;, &quot;s&quot;, &quot;s11&quot;, &quot;s12&quot;, &quot;s13&quot;, &quot;s22&quot;, &quot;s23&quot;, &quot;s33&quot;, &quot;u&quot;, &quot;u1&quot;, &quot;u2&quot;, &quot;u3&quot;, &quot;v&quot;, &quot;v1&quot;, &quot;v2&quot;, &quot;v3&quot;]" data-search="*field output *field output abaqus-native results  any other abaqus output variable all targets not supported for iga coreform iga leaves native-only field-output requests unchanged. for iga regions, every other abaqus output variable is recognized by this fallback row and skipped with a warning when no iga extractor is implemented. no iga result is written for variables matched by this fallback. native output *output a a1 a2 a3 all e le mises pe peeq preselect re rf rf1 rf2 rf3 rmises s s11 s12 s13 s22 s23 s33 u u1 u2 u3 v v1 v2 v3">
+<td class="subject-cell" data-label="Options, load types, or output variables"><div class="subject-value">Any other Abaqus output variable</div></td>
+<td data-label="Applies to"><div class="scope-value"><div class="scope-primary">All targets</div></div></td>
+<td data-label="Support"><span class="status-badge status-negative">Not supported for IGA</span></td>
+<td class="behavior-cell" data-label="What Coreform IGA does"><div class="behavior-value"><div class="behavior-summary">Coreform IGA leaves native-only field-output requests unchanged. For IGA regions, every other Abaqus output variable is recognized by this fallback row and skipped with a warning when no IGA extractor is implemented.</div><div class="behavior-note"><span class="scope-label">Result:</span> No IGA result is written for variables matched by this fallback.</div></div></td>
+</tr>
+<tr data-matrix-row data-keyword="*FIELD OUTPUT" data-status="supported" data-search-aliases="[&quot;native output&quot;]" data-search="*field output *field output abaqus-native results  any output variable abaqus-native only supported coreform iga leaves native-only field-output requests unchanged in the translated .inp for abaqus to produce. native output">
+<td class="subject-cell" data-label="Options, load types, or output variables"><div class="subject-value">Any output variable</div></td>
+<td data-label="Applies to"><div class="scope-value"><div class="scope-primary">Abaqus-native only</div></div></td>
+<td data-label="Support"><span class="status-badge status-positive">Supported</span></td>
+<td class="behavior-cell" data-label="What Coreform IGA does"><div class="behavior-value"><div class="behavior-summary">Coreform IGA leaves native-only field-output requests unchanged in the translated <code>.inp</code> for Abaqus to produce.</div></div></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="keyword-group" data-keyword-group="*HISTORY OUTPUT" aria-labelledby="keyword-history-output">
+<div class="keyword-heading">
+<h3 id="keyword-history-output"><code>*HISTORY OUTPUT</code></h3>
+<span class="keyword-count" data-group-count data-template-singular="{count} case" data-template-plural="{count} cases">1 case</span>
+</div>
+<div class="table-scroll" role="region" aria-label="Support cases for *HISTORY OUTPUT" tabindex="0">
+<table>
+<caption class="visually-hidden">Support cases for *HISTORY OUTPUT</caption>
+<colgroup>
+<col class="subject">
+<col class="scope">
+<col class="status">
+<col class="behavior">
+</colgroup>
+<thead>
+<tr>
+<th scope="col">Options, load types, or output variables</th>
+<th scope="col">Applies to</th>
+<th scope="col">Support</th>
+<th scope="col">What Coreform IGA does</th>
+</tr>
+</thead>
+<tbody data-matrix-section="keyword-history-output-section-cases">
+<tr data-matrix-row data-keyword="*HISTORY OUTPUT" data-status="recognized" data-search-aliases="[&quot;history output&quot;, &quot;request context&quot;, &quot;iga results&quot;]" data-search="*history output *history output   history request context not target-specific recognized coreform iga reads *history output to interpret the requests that follow and leaves them in the translated .inp for abaqus to process, but coreform iga does not write history results for iga regions. history output request context iga results">
+<td class="subject-cell" data-label="Options, load types, or output variables"><div class="subject-value">History request context</div></td>
+<td data-label="Applies to"><div class="scope-value"><div class="scope-primary">Not target-specific</div></div></td>
+<td data-label="Support"><span class="status-badge status-informational">Recognized</span></td>
+<td class="behavior-cell" data-label="What Coreform IGA does"><div class="behavior-value"><div class="behavior-summary">Coreform IGA reads <code>*HISTORY OUTPUT</code> to interpret the requests that follow and leaves them in the translated <code>.inp</code> for Abaqus to process, but Coreform IGA does not write history results for IGA regions.</div></div></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="keyword-group" data-keyword-group="*NODE OUTPUT" aria-labelledby="keyword-node-output">
+<div class="keyword-heading">
+<h3 id="keyword-node-output"><code>*NODE OUTPUT</code></h3>
+<span class="keyword-count" data-group-count data-template-singular="{count} case" data-template-plural="{count} cases">4 cases</span>
+</div>
+<div class="table-scroll" role="region" aria-label="Support cases for *NODE OUTPUT" tabindex="0">
+<table>
+<caption class="visually-hidden">Support cases for *NODE OUTPUT</caption>
+<colgroup>
+<col class="subject">
+<col class="scope">
+<col class="status">
+<col class="behavior">
+</colgroup>
+<thead>
+<tr>
+<th scope="col">Options, load types, or output variables</th>
+<th scope="col">Applies to</th>
+<th scope="col">Support</th>
+<th scope="col">What Coreform IGA does</th>
+</tr>
+</thead>
+<tbody data-matrix-section="keyword-node-output-section-supported" aria-labelledby="keyword-node-output-section-supported">
+<tr class="section-heading-row">
+<th class="section-heading-cell" id="keyword-node-output-section-supported" scope="rowgroup" colspan="4">
+<div class="section-title">Nodal displacement</div>
+</th>
+</tr>
+<tr data-matrix-row data-keyword="*NODE OUTPUT" data-status="supported" data-search-aliases="[&quot;nodal displacement&quot;, &quot;helper output&quot;, &quot;iga results&quot;, &quot;all&quot;, &quot;preselect&quot;, &quot;u&quot;, &quot;u1&quot;, &quot;u2&quot;, &quot;u3&quot;, &quot;nt&quot;, &quot;nt11&quot;]" data-search="*node output *node output nodal displacement  u or nt11 iga only or model-wide supported coreform iga leaves the source nodal-output request in the translated .inp, records the iga nodal-displacement or nodal-temperature request internally, and adds any helper output needed. abaqus produces any native-region output, and coreform iga writes the requested nodal field to the iga results database. nodal displacement helper output iga results all preselect u u1 u2 u3 nt nt11">
+<td class="subject-cell" data-label="Options, load types, or output variables"><div class="subject-value"><code>U</code> or <code>NT11</code></div></td>
+<td data-label="Applies to"><div class="scope-value"><div class="scope-primary">IGA only or model-wide</div></div></td>
+<td data-label="Support"><span class="status-badge status-positive">Supported</span></td>
+<td class="behavior-cell" data-label="What Coreform IGA does"><div class="behavior-value"><div class="behavior-summary">Coreform IGA leaves the source nodal-output request in the translated <code>.inp</code>, records the IGA nodal-displacement or nodal-temperature request internally, and adds any helper output needed. Abaqus produces any native-region output, and Coreform IGA writes the requested nodal field to the IGA results database.</div></div></td>
+</tr>
+</tbody>
+<tbody data-matrix-section="keyword-node-output-section-unsupported" aria-labelledby="keyword-node-output-section-unsupported">
+<tr class="section-heading-row">
+<th class="section-heading-cell" id="keyword-node-output-section-unsupported" scope="rowgroup" colspan="4">
+<div class="section-title">Nodal motion and reaction variables</div>
+</th>
+</tr>
+<tr data-matrix-row data-keyword="*NODE OUTPUT" data-status="unsupported-for-iga" data-search-aliases="[&quot;velocity&quot;, &quot;acceleration&quot;, &quot;reaction force&quot;, &quot;unsupported results&quot;, &quot;all&quot;, &quot;v&quot;, &quot;v1&quot;, &quot;v2&quot;, &quot;v3&quot;, &quot;a&quot;, &quot;a1&quot;, &quot;a2&quot;, &quot;a3&quot;, &quot;rf&quot;, &quot;rf1&quot;, &quot;rf2&quot;, &quot;rf3&quot;]" data-search="*node output *node output nodal motion and reaction variables  v, a, or rf includes iga entities not supported for iga coreform iga leaves any abaqus-native portion of the request in the translated .inp for abaqus to produce, but does not write nodal velocity, acceleration, or reaction-force values for iga regions. coreform iga reports a warning and omits the requested variable from iga results; translation of the remaining model continues. velocity acceleration reaction force unsupported results all v v1 v2 v3 a a1 a2 a3 rf rf1 rf2 rf3">
+<td class="subject-cell" data-label="Options, load types, or output variables"><div class="subject-value"><code>V</code>, <code>A</code>, or <code>RF</code></div></td>
+<td data-label="Applies to"><div class="scope-value"><div class="scope-primary">Includes IGA entities</div></div></td>
+<td data-label="Support"><span class="status-badge status-negative">Not supported for IGA</span></td>
+<td class="behavior-cell" data-label="What Coreform IGA does"><div class="behavior-value"><div class="behavior-summary">Coreform IGA leaves any Abaqus-native portion of the request in the translated <code>.inp</code> for Abaqus to produce, but does not write nodal velocity, acceleration, or reaction-force values for IGA regions.</div><div class="behavior-note"><span class="scope-label">Result:</span> Coreform IGA reports a warning and omits the requested variable from IGA results; translation of the remaining model continues.</div></div></td>
+</tr>
+</tbody>
+<tbody data-matrix-section="keyword-node-output-section-native" aria-labelledby="keyword-node-output-section-native">
+<tr class="section-heading-row">
+<th class="section-heading-cell" id="keyword-node-output-section-native" scope="rowgroup" colspan="4">
+<div class="section-title">Abaqus-native results</div>
+</th>
+</tr>
+<tr data-matrix-row data-keyword="*NODE OUTPUT" data-status="unsupported-for-iga" data-search-aliases="[&quot;native output&quot;, &quot;a&quot;, &quot;a1&quot;, &quot;a2&quot;, &quot;a3&quot;, &quot;all&quot;, &quot;e&quot;, &quot;le&quot;, &quot;mises&quot;, &quot;pe&quot;, &quot;peeq&quot;, &quot;preselect&quot;, &quot;re&quot;, &quot;rf&quot;, &quot;rf1&quot;, &quot;rf2&quot;, &quot;rf3&quot;, &quot;rmises&quot;, &quot;s&quot;, &quot;s11&quot;, &quot;s12&quot;, &quot;s13&quot;, &quot;s22&quot;, &quot;s23&quot;, &quot;s33&quot;, &quot;u&quot;, &quot;u1&quot;, &quot;u2&quot;, &quot;u3&quot;, &quot;v&quot;, &quot;v1&quot;, &quot;v2&quot;, &quot;v3&quot;]" data-search="*node output *node output abaqus-native results  any other abaqus nodal output variable all targets not supported for iga coreform iga leaves native-only *node output requests unchanged. for iga regions, every other abaqus nodal variable—including thermal output such as nt—is recognized and skipped with a warning when no iga extractor is implemented. no iga nodal result is written for variables matched by this fallback. native output a a1 a2 a3 all e le mises pe peeq preselect re rf rf1 rf2 rf3 rmises s s11 s12 s13 s22 s23 s33 u u1 u2 u3 v v1 v2 v3">
+<td class="subject-cell" data-label="Options, load types, or output variables"><div class="subject-value">Any other Abaqus nodal output variable</div></td>
+<td data-label="Applies to"><div class="scope-value"><div class="scope-primary">All targets</div></div></td>
+<td data-label="Support"><span class="status-badge status-negative">Not supported for IGA</span></td>
+<td class="behavior-cell" data-label="What Coreform IGA does"><div class="behavior-value"><div class="behavior-summary">Coreform IGA leaves native-only <code>*NODE OUTPUT</code> requests unchanged. For IGA regions, every other Abaqus nodal variable—including thermal output such as <code>NT</code>—is recognized and skipped with a warning when no IGA extractor is implemented.</div><div class="behavior-note"><span class="scope-label">Result:</span> No IGA nodal result is written for variables matched by this fallback.</div></div></td>
+</tr>
+<tr data-matrix-row data-keyword="*NODE OUTPUT" data-status="supported" data-search-aliases="[&quot;native output&quot;]" data-search="*node output *node output abaqus-native results  any output variable abaqus-native only supported coreform iga leaves native-only *node output requests unchanged in the translated .inp for abaqus to produce. native output">
+<td class="subject-cell" data-label="Options, load types, or output variables"><div class="subject-value">Any output variable</div></td>
+<td data-label="Applies to"><div class="scope-value"><div class="scope-primary">Abaqus-native only</div></div></td>
+<td data-label="Support"><span class="status-badge status-positive">Supported</span></td>
+<td class="behavior-cell" data-label="What Coreform IGA does"><div class="behavior-value"><div class="behavior-summary">Coreform IGA leaves native-only <code>*NODE OUTPUT</code> requests unchanged in the translated <code>.inp</code> for Abaqus to produce.</div></div></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="keyword-group" data-keyword-group="*ELEMENT OUTPUT" aria-labelledby="keyword-element-output">
+<div class="keyword-heading">
+<h3 id="keyword-element-output"><code>*ELEMENT OUTPUT</code></h3>
+<span class="keyword-count" data-group-count data-template-singular="{count} case" data-template-plural="{count} cases">4 cases</span>
+</div>
+<div class="table-scroll" role="region" aria-label="Support cases for *ELEMENT OUTPUT" tabindex="0">
+<table>
+<caption class="visually-hidden">Support cases for *ELEMENT OUTPUT</caption>
+<colgroup>
+<col class="subject">
+<col class="scope">
+<col class="status">
+<col class="behavior">
+</colgroup>
+<thead>
+<tr>
+<th scope="col">Options, load types, or output variables</th>
+<th scope="col">Applies to</th>
+<th scope="col">Support</th>
+<th scope="col">What Coreform IGA does</th>
+</tr>
+</thead>
+<tbody data-matrix-section="keyword-element-output-section-supported" aria-labelledby="keyword-element-output-section-supported">
+<tr class="section-heading-row">
+<th class="section-heading-cell" id="keyword-element-output-section-supported" scope="rowgroup" colspan="4">
+<div class="section-title">Stress and strain</div>
+</th>
+</tr>
+<tr data-matrix-row data-keyword="*ELEMENT OUTPUT" data-status="supported" data-search-aliases="[&quot;element stress&quot;, &quot;equivalent plastic strain&quot;, &quot;helper output&quot;, &quot;iga results&quot;, &quot;all&quot;, &quot;preselect&quot;, &quot;s&quot;, &quot;s11&quot;, &quot;s12&quot;, &quot;s13&quot;, &quot;s22&quot;, &quot;s23&quot;, &quot;s33&quot;, &quot;peeq&quot;, &quot;ne&quot;, &quot;ne11&quot;, &quot;ne22&quot;, &quot;ne33&quot;, &quot;ne12&quot;, &quot;ne13&quot;, &quot;ne23&quot;, &quot;le&quot;, &quot;le11&quot;, &quot;le22&quot;, &quot;le33&quot;, &quot;le12&quot;, &quot;le13&quot;, &quot;le23&quot;, &quot;e&quot;, &quot;e11&quot;, &quot;e22&quot;, &quot;e33&quot;, &quot;e12&quot;, &quot;e13&quot;, &quot;e23&quot;]" data-search="*element output *element output stress and strain  s, peeq, e, ne, or le iga only or model-wide supported coreform iga leaves the source element-output request in the translated .inp, records the iga element-stress, equivalent-plastic-strain, total-strain, nominal-strain, or logarithmic-strain request internally, and adds any helper output needed. abaqus produces any native-region output, and coreform iga writes the requested iga element values to the iga results database. requesting peeq automatically includes the binary ac yield (actively yielding) companion in the iga odb, with the same regions and output schedule. ac yield is not a standalone input variable. for supported general solid analyses, e/ne/le requests resolve to total infinitesimal e in small strain; finite-strain e requests resolve to le while ne remains nominal strain. linear perturbation strain output is not implemented for iga. element stress equivalent plastic strain helper output iga results all preselect s s11 s12 s13 s22 s23 s33 peeq ne ne11 ne22 ne33 ne12 ne13 ne23 le le11 le22 le33 le12 le13 le23 e e11 e22 e33 e12 e13 e23">
+<td class="subject-cell" data-label="Options, load types, or output variables"><div class="subject-value"><code>S</code>, <code>PEEQ</code>, <code>E</code>, <code>NE</code>, or <code>LE</code></div></td>
+<td data-label="Applies to"><div class="scope-value"><div class="scope-primary">IGA only or model-wide</div></div></td>
+<td data-label="Support"><span class="status-badge status-positive">Supported</span></td>
+<td class="behavior-cell" data-label="What Coreform IGA does"><div class="behavior-value"><div class="behavior-summary">Coreform IGA leaves the source element-output request in the translated <code>.inp</code>, records the IGA element-stress, equivalent-plastic-strain, total-strain, nominal-strain, or logarithmic-strain request internally, and adds any helper output needed. Abaqus produces any native-region output, and Coreform IGA writes the requested IGA element values to the IGA results database.</div><div class="behavior-note"><span class="scope-label">Result:</span> Requesting PEEQ automatically includes the binary AC YIELD (actively yielding) companion in the IGA ODB, with the same regions and output schedule. AC YIELD is not a standalone input variable.</div><div class="behavior-note"><span class="scope-label">Result:</span> For supported general solid analyses, E/NE/LE requests resolve to total infinitesimal E in small strain; finite-strain E requests resolve to LE while NE remains nominal strain. Linear perturbation strain output is not implemented for IGA.</div></div></td>
+</tr>
+</tbody>
+<tbody data-matrix-section="keyword-element-output-section-unsupported" aria-labelledby="keyword-element-output-section-unsupported">
+<tr class="section-heading-row">
+<th class="section-heading-cell" id="keyword-element-output-section-unsupported" scope="rowgroup" colspan="4">
+<div class="section-title">Other stress and strain variables</div>
+</th>
+</tr>
+<tr data-matrix-row data-keyword="*ELEMENT OUTPUT" data-status="unsupported-for-iga" data-search-aliases="[&quot;unsupported results&quot;, &quot;rmises&quot;, &quot;mises&quot;, &quot;re&quot;, &quot;all&quot;, &quot;pe&quot;]" data-search="*element output *element output other stress and strain variables  rmises, mises, re, or pe includes iga entities not supported for iga coreform iga leaves any abaqus-native portion of the request in the translated .inp for abaqus to produce, but does not write these element variables for iga regions. coreform iga reports a warning and omits the requested variable from iga results; translation of the remaining model continues. unsupported results rmises mises re all pe">
+<td class="subject-cell" data-label="Options, load types, or output variables"><div class="subject-value"><code>RMISES</code>, <code>MISES</code>, <code>RE</code>, or <code>PE</code></div></td>
+<td data-label="Applies to"><div class="scope-value"><div class="scope-primary">Includes IGA entities</div></div></td>
+<td data-label="Support"><span class="status-badge status-negative">Not supported for IGA</span></td>
+<td class="behavior-cell" data-label="What Coreform IGA does"><div class="behavior-value"><div class="behavior-summary">Coreform IGA leaves any Abaqus-native portion of the request in the translated <code>.inp</code> for Abaqus to produce, but does not write these element variables for IGA regions.</div><div class="behavior-note"><span class="scope-label">Result:</span> Coreform IGA reports a warning and omits the requested variable from IGA results; translation of the remaining model continues.</div></div></td>
+</tr>
+</tbody>
+<tbody data-matrix-section="keyword-element-output-section-native" aria-labelledby="keyword-element-output-section-native">
+<tr class="section-heading-row">
+<th class="section-heading-cell" id="keyword-element-output-section-native" scope="rowgroup" colspan="4">
+<div class="section-title">Abaqus-native results</div>
+</th>
+</tr>
+<tr data-matrix-row data-keyword="*ELEMENT OUTPUT" data-status="unsupported-for-iga" data-search-aliases="[&quot;native output&quot;, &quot;a&quot;, &quot;a1&quot;, &quot;a2&quot;, &quot;a3&quot;, &quot;all&quot;, &quot;e&quot;, &quot;le&quot;, &quot;mises&quot;, &quot;pe&quot;, &quot;peeq&quot;, &quot;preselect&quot;, &quot;re&quot;, &quot;rf&quot;, &quot;rf1&quot;, &quot;rf2&quot;, &quot;rf3&quot;, &quot;rmises&quot;, &quot;s&quot;, &quot;s11&quot;, &quot;s12&quot;, &quot;s13&quot;, &quot;s22&quot;, &quot;s23&quot;, &quot;s33&quot;, &quot;u&quot;, &quot;u1&quot;, &quot;u2&quot;, &quot;u3&quot;, &quot;v&quot;, &quot;v1&quot;, &quot;v2&quot;, &quot;v3&quot;]" data-search="*element output *element output abaqus-native results  any other abaqus element output variable all targets not supported for iga coreform iga leaves native-only *element output requests unchanged. for iga regions, every other abaqus element variable is recognized and skipped with a warning when no iga extractor is implemented. no iga element result is written for variables matched by this fallback. native output a a1 a2 a3 all e le mises pe peeq preselect re rf rf1 rf2 rf3 rmises s s11 s12 s13 s22 s23 s33 u u1 u2 u3 v v1 v2 v3">
+<td class="subject-cell" data-label="Options, load types, or output variables"><div class="subject-value">Any other Abaqus element output variable</div></td>
+<td data-label="Applies to"><div class="scope-value"><div class="scope-primary">All targets</div></div></td>
+<td data-label="Support"><span class="status-badge status-negative">Not supported for IGA</span></td>
+<td class="behavior-cell" data-label="What Coreform IGA does"><div class="behavior-value"><div class="behavior-summary">Coreform IGA leaves native-only <code>*ELEMENT OUTPUT</code> requests unchanged. For IGA regions, every other Abaqus element variable is recognized and skipped with a warning when no IGA extractor is implemented.</div><div class="behavior-note"><span class="scope-label">Result:</span> No IGA element result is written for variables matched by this fallback.</div></div></td>
+</tr>
+<tr data-matrix-row data-keyword="*ELEMENT OUTPUT" data-status="supported" data-search-aliases="[&quot;native output&quot;]" data-search="*element output *element output abaqus-native results  any output variable abaqus-native only supported coreform iga leaves native-only *element output requests unchanged in the translated .inp for abaqus to produce. native output">
+<td class="subject-cell" data-label="Options, load types, or output variables"><div class="subject-value">Any output variable</div></td>
+<td data-label="Applies to"><div class="scope-value"><div class="scope-primary">Abaqus-native only</div></div></td>
+<td data-label="Support"><span class="status-badge status-positive">Supported</span></td>
+<td class="behavior-cell" data-label="What Coreform IGA does"><div class="behavior-value"><div class="behavior-summary">Coreform IGA leaves native-only <code>*ELEMENT OUTPUT</code> requests unchanged in the translated <code>.inp</code> for Abaqus to produce.</div></div></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="keyword-group" data-keyword-group="*INCLUDE" aria-labelledby="keyword-include">
+<div class="keyword-heading">
+<h3 id="keyword-include"><code>*INCLUDE</code></h3>
+<span class="keyword-count" data-group-count data-template-singular="{count} case" data-template-plural="{count} cases">1 case</span>
+</div>
+<div class="table-scroll" role="region" aria-label="Support cases for *INCLUDE" tabindex="0">
+<table>
+<caption class="visually-hidden">Support cases for *INCLUDE</caption>
+<colgroup>
+<col class="subject">
+<col class="scope">
+<col class="status">
+<col class="behavior">
+</colgroup>
+<thead>
+<tr>
+<th scope="col">Options, load types, or output variables</th>
+<th scope="col">Applies to</th>
+<th scope="col">Support</th>
+<th scope="col">What Coreform IGA does</th>
+</tr>
+</thead>
+<tbody data-matrix-section="keyword-include-section-cases">
+<tr data-matrix-row data-keyword="*INCLUDE" data-status="recognized" data-search-aliases="[&quot;include path&quot;, &quot;copy mode&quot;, &quot;iga geometry&quot;]" data-search="*include *include   — not target-specific recognized coreform iga follows input files referenced by *include. in copy mode, it rewrites include paths when needed so translated setup copies and the generated iga geometry file are referenced from their new locations. include path copy mode iga geometry">
+<td class="subject-cell" data-label="Options, load types, or output variables"><div class="subject-value">—</div></td>
+<td data-label="Applies to"><div class="scope-value"><div class="scope-primary">Not target-specific</div></div></td>
+<td data-label="Support"><span class="status-badge status-informational">Recognized</span></td>
+<td class="behavior-cell" data-label="What Coreform IGA does"><div class="behavior-value"><div class="behavior-summary">Coreform IGA follows input files referenced by <code>*INCLUDE</code>. In copy mode, it rewrites include paths when needed so translated setup copies and the generated IGA geometry file are referenced from their new locations.</div></div></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="keyword-group" data-keyword-group="*STEP" aria-labelledby="keyword-step">
+<div class="keyword-heading">
+<h3 id="keyword-step"><code>*STEP</code></h3>
+<span class="keyword-count" data-group-count data-template-singular="{count} case" data-template-plural="{count} cases">2 cases</span>
+</div>
+<div class="table-scroll" role="region" aria-label="Support cases for *STEP" tabindex="0">
+<table>
+<caption class="visually-hidden">Support cases for *STEP</caption>
+<colgroup>
+<col class="subject">
+<col class="scope">
+<col class="status">
+<col class="behavior">
+</colgroup>
+<thead>
+<tr>
+<th scope="col">Options, load types, or output variables</th>
+<th scope="col">Applies to</th>
+<th scope="col">Support</th>
+<th scope="col">What Coreform IGA does</th>
+</tr>
+</thead>
+<tbody data-matrix-section="keyword-step-section-cases">
+<tr data-matrix-row data-keyword="*STEP" data-status="recognized" data-search-aliases="[&quot;unsymm&quot;, &quot;unsymmetric matrix&quot;, &quot;solver settings&quot;]" data-search="*step *step   unsymm not target-specific when unsymm is enabled recognized coreform iga reads unsymm when validating solver settings and otherwise leaves the abaqus step option unchanged. unsymm unsymmetric matrix solver settings">
+<td class="subject-cell" data-label="Options, load types, or output variables"><div class="subject-value"><code>UNSYMM</code></div></td>
+<td data-label="Applies to"><div class="scope-value"><div class="scope-primary">Not target-specific</div><ul class="scope-conditions"><li>When <code>UNSYMM</code> is enabled</li></ul></div></td>
+<td data-label="Support"><span class="status-badge status-informational">Recognized</span></td>
+<td class="behavior-cell" data-label="What Coreform IGA does"><div class="behavior-value"><div class="behavior-summary">Coreform IGA reads <code>UNSYMM</code> when validating solver settings and otherwise leaves the Abaqus step option unchanged.</div></div></td>
+</tr>
+<tr data-matrix-row data-keyword="*STEP" data-status="recognized" data-search-aliases="[&quot;nlgeom&quot;, &quot;unsymm&quot;, &quot;unsymmetric matrix&quot;, &quot;solver warning&quot;]" data-search="*step *step   nlgeom without unsymm not target-specific when nlgeom is enabled without unsymm recognized coreform iga leaves the step unchanged and reports a warning because some nonlinear iga workflows require unsymmetric matrix storage. coreform iga reports a warning and leaves the step unchanged; input-file translation continues. nlgeom unsymm unsymmetric matrix solver warning">
+<td class="subject-cell" data-label="Options, load types, or output variables"><div class="subject-value"><code>NLGEOM</code> without <code>UNSYMM</code></div></td>
+<td data-label="Applies to"><div class="scope-value"><div class="scope-primary">Not target-specific</div><ul class="scope-conditions"><li>When <code>NLGEOM</code> is enabled without <code>UNSYMM</code></li></ul></div></td>
+<td data-label="Support"><span class="status-badge status-informational">Recognized</span></td>
+<td class="behavior-cell" data-label="What Coreform IGA does"><div class="behavior-value"><div class="behavior-summary">Coreform IGA leaves the step unchanged and reports a warning because some nonlinear IGA workflows require unsymmetric matrix storage.</div><div class="behavior-note"><span class="scope-label">Result:</span> Coreform IGA reports a warning and leaves the step unchanged; input-file translation continues.</div></div></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="keyword-group" data-keyword-group="*CONTACT INCLUSIONS" aria-labelledby="keyword-contact-inclusions">
+<div class="keyword-heading">
+<h3 id="keyword-contact-inclusions"><code>*CONTACT INCLUSIONS</code></h3>
+<span class="keyword-count" data-group-count data-template-singular="{count} case" data-template-plural="{count} cases">2 cases</span>
+</div>
+<div class="table-scroll" role="region" aria-label="Support cases for *CONTACT INCLUSIONS" tabindex="0">
+<table>
+<caption class="visually-hidden">Support cases for *CONTACT INCLUSIONS</caption>
+<colgroup>
+<col class="subject">
+<col class="scope">
+<col class="status">
+<col class="behavior">
+</colgroup>
+<thead>
+<tr>
+<th scope="col">Options, load types, or output variables</th>
+<th scope="col">Applies to</th>
+<th scope="col">Support</th>
+<th scope="col">What Coreform IGA does</th>
+</tr>
+</thead>
+<tbody data-matrix-section="keyword-contact-inclusions-section-all-exterior" aria-labelledby="keyword-contact-inclusions-section-all-exterior">
+<tr class="section-heading-row">
+<th class="section-heading-cell" id="keyword-contact-inclusions-section-all-exterior" scope="rowgroup" colspan="4">
+<div class="section-title"><code>ALL EXTERIOR</code></div>
+</th>
+</tr>
+<tr data-matrix-row data-keyword="*CONTACT INCLUSIONS" data-status="supported" data-search-aliases="[&quot;all exterior&quot;, &quot;general contact&quot;, &quot;exterior surface&quot;, &quot;initialization&quot;, &quot;exclusion&quot;]" data-search="*contact inclusions *contact inclusions all exterior  all exterior general contact all exterior model-wide when iga exterior surfaces are available supported after generating iga exterior surfaces, coreform iga inserts exclusion and initialization records for them into the translated .inp. this covers this setup only, not every abaqus general-contact workflow. all exterior general contact exterior surface initialization exclusion">
+<td class="subject-cell" data-label="Options, load types, or output variables"><div class="subject-value"><code>ALL EXTERIOR</code></div></td>
+<td data-label="Applies to"><div class="scope-value"><div class="scope-primary">model-wide</div><ul class="scope-conditions"><li>When IGA exterior surfaces are available</li></ul></div></td>
+<td data-label="Support"><span class="status-badge status-positive">Supported</span></td>
+<td class="behavior-cell" data-label="What Coreform IGA does"><div class="behavior-value"><div class="behavior-summary">After generating IGA exterior surfaces, Coreform IGA inserts exclusion and initialization records for them into the translated <code>.inp</code>. This covers this setup only, not every Abaqus general-contact workflow.</div></div></td>
+</tr>
+<tr data-matrix-row data-keyword="*CONTACT INCLUSIONS" data-status="supported" data-search-aliases="[&quot;all exterior&quot;, &quot;general contact&quot;, &quot;no exterior surface&quot;, &quot;warning&quot;, &quot;exclusion&quot;]" data-search="*contact inclusions *contact inclusions all exterior  all exterior general contact all exterior model-wide when no iga exterior surfaces were generated supported coreform iga inserts no iga exterior-surface initialization records because no iga exterior surfaces were generated. it may still add general-contact exclusion records to the translated .inp. coreform iga reports a warning; translation continues without iga exterior-surface initialization records. all exterior general contact no exterior surface warning exclusion">
+<td class="subject-cell" data-label="Options, load types, or output variables"><div class="subject-value"><code>ALL EXTERIOR</code></div></td>
+<td data-label="Applies to"><div class="scope-value"><div class="scope-primary">model-wide</div><ul class="scope-conditions"><li>When no IGA exterior surfaces were generated</li></ul></div></td>
+<td data-label="Support"><span class="status-badge status-positive">Supported</span></td>
+<td class="behavior-cell" data-label="What Coreform IGA does"><div class="behavior-value"><div class="behavior-summary">Coreform IGA inserts no IGA exterior-surface initialization records because no IGA exterior surfaces were generated. It may still add general-contact exclusion records to the translated <code>.inp</code>.</div><div class="behavior-note"><span class="scope-label">Result:</span> Coreform IGA reports a warning; translation continues without IGA exterior-surface initialization records.</div></div></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<p class="matrix-help">Need help deciding whether a keyword not listed in this guide is compatible with your model? Contact Coreform support with the keyword, options, and target region from your input file.</p>
+</section>
+<footer class="site-footer"><p>Coreform IGA for Abaqus documentation</p></footer>
+</main>
+<script>
+(() => {
+  const search = document.querySelector("#matrix-search");
+  const keyword = document.querySelector("#keyword-filter");
+  const status = document.querySelector("#status-filter");
+  const clear = document.querySelector("#clear-filters");
+  const rows = Array.from(document.querySelectorAll("[data-matrix-row]"));
+  const sections = Array.from(document.querySelectorAll("[data-matrix-section]"));
+  const groups = Array.from(document.querySelectorAll("[data-keyword-group]"));
+  const visibleCount = document.querySelector("#visible-count");
+  const visibleGroups = document.querySelector("#visible-groups");
+  const visibleGroupsLabel = document.querySelector("#visible-groups-label");
+  const noResults = document.querySelector("#no-results");
+  const normalize = (value) => value.trim().toLocaleLowerCase();
+  const matchesQuery = (row, query) => {
+    if (!query) return true;
+    if (query.length <= 2) {
+      return JSON.parse(row.dataset.searchAliases).includes(query);
+    }
+    return row.dataset.search.includes(query);
+  };
+  const countText = (element, count) =>
+    (count === 1 ? element.dataset.templateSingular : element.dataset.templatePlural)
+      .replace("{count}", count);
+
+  const applyFilters = () => {
+    const query = normalize(search.value);
+    let shownRows = 0;
+    let shownGroups = 0;
+    rows.forEach((row) => {
+      const visible = matchesQuery(row, query) &&
+        (!keyword.value || row.dataset.keyword === keyword.value) &&
+        (!status.value || row.dataset.status === status.value);
+      row.hidden = !visible;
+      if (visible) shownRows += 1;
+    });
+    sections.forEach((section) => {
+      section.hidden = !Array.from(section.querySelectorAll("[data-matrix-row]"))
+        .some((row) => !row.hidden);
+    });
+    groups.forEach((group) => {
+      const groupCount = Array.from(group.querySelectorAll("[data-matrix-row]"))
+        .filter((row) => !row.hidden).length;
+      group.hidden = groupCount === 0;
+      if (groupCount > 0) shownGroups += 1;
+      const groupCountElement = group.querySelector("[data-group-count]");
+      groupCountElement.textContent = countText(groupCountElement, groupCount);
+    });
+    visibleCount.textContent = shownRows;
+    visibleGroups.textContent = shownGroups;
+    visibleGroupsLabel.textContent = shownGroups === 1 ?
+      visibleGroupsLabel.dataset.singular : visibleGroupsLabel.dataset.plural;
+    noResults.hidden = shownRows !== 0;
+  };
+
+  search.addEventListener("input", applyFilters);
+  keyword.addEventListener("change", applyFilters);
+  status.addEventListener("change", applyFilters);
+  clear.addEventListener("click", () => {
+    search.value = "";
+    keyword.value = "";
+    status.value = "";
+    applyFilters();
+    search.focus();
+  });
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "/" && !/^(INPUT|SELECT|TEXTAREA)$/.test(document.activeElement.tagName)) {
+      event.preventDefault();
+      search.focus();
+    }
+    if (event.key === "Escape" && document.activeElement === search && search.value) {
+      search.value = "";
+      applyFilters();
+    }
+  });
+  applyFilters();
+})();
+</script>
+</body>
+</html>

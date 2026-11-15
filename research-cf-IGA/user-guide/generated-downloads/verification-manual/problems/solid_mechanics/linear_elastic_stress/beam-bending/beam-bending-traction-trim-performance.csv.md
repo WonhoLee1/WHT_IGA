@@ -1,0 +1,22 @@
+# https://docs.coreform.com/cifa/latest/generated-downloads/verification-manual/problems/solid_mechanics/linear_elastic_stress/beam-bending/beam-bending-traction-trim-performance.csv
+
+Source: https://docs.coreform.com/cifa/latest/generated-downloads/verification-manual/problems/solid_mechanics/linear_elastic_stress/beam-bending/beam-bending-traction-trim-performance.csv
+
+---
+
+load_case,p,level,h_z,background_elements,active_elements,trimmed_elements,num_cpus,wall_s
+traction,1,0,0.25,63,5,2,1,3.3189033940434456
+traction,1,1,0.125,275,81,74,2,3.0169163420796394
+traction,1,2,0.0625,931,425,290,4,8.806902907788754
+traction,1,3,0.03125,4235,2673,1154,8,27.140764072537422
+traction,1,4,0.015625,24187,18785,4610,16,119.49204941093922
+traction,2,0,0.25,225,5,2,1,2.4238656163215637
+traction,2,1,0.125,637,81,74,2,4.137741602957249
+traction,2,2,0.0625,1701,425,290,4,8.518556699156761
+traction,2,3,0.03125,6253,2673,1154,8,34.00686760246754
+traction,2,4,0.015625,30429,18785,4610,16,226.4707361087203
+traction,3,0,0.25,539,5,2,1,20.939460158348083
+traction,3,1,0.125,1215,81,74,2,22.176401801407337
+traction,3,2,0.0625,2783,425,290,4,28.60680389404297
+traction,3,3,0.03125,8775,2673,1154,8,57.77497956901789
+traction,3,4,0.015625,37559,18785,4610,16,181.43074745684862

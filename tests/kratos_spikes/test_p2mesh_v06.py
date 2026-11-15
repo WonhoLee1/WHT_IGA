@@ -286,9 +286,9 @@ def _csv_tols() -> dict[tuple[int, int, str], float]:
     import csv
     import os
 
-    root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
+    root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
     csv_path = os.path.join(
-        root, "research-coreform-IGA", "user-guide", "generated-downloads",
+        root, "research-cf-IGA", "user-guide", "generated-downloads",
         "verification-manual", "problems", "solid_mechanics", "linear_elastic_stress",
         "pressurized-sphere", "pressurized-sphere-qoi.csv")
     tols: dict[tuple[int, int, str], float] = {}

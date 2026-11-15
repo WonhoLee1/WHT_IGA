@@ -1,0 +1,22 @@
+# https://docs.coreform.com/cifa/latest/generated-downloads/verification-manual/problems/solid_mechanics/linear_elastic_stress/beam-bending/beam-bending-pressure-uniform-solve-performance.csv
+
+Source: https://docs.coreform.com/cifa/latest/generated-downloads/verification-manual/problems/solid_mechanics/linear_elastic_stress/beam-bending/beam-bending-pressure-uniform-solve-performance.csv
+
+---
+
+load_case,p,level,h_z,elements,nodes,dofs,threads,domains,cpu_s,wall_s,completed
+pressure_uniform,1,0,0.25,69,76,228,1,,0.53,2.0,True
+pressure_uniform,1,1,0.125,327,321,963,2,1,0.56,2.0,True
+pressure_uniform,1,2,0.0625,1363,1191,3573,4,1,0.86,1.0,True
+pressure_uniform,1,3,0.03125,6339,5379,16137,8,1,2.6,2.0,True
+pressure_uniform,1,4,0.015625,33283,28923,86769,16,1,22.0,4.0,True
+pressure_uniform,2,0,0.25,51,107,321,1,,1.0,1.0,True
+pressure_uniform,2,1,0.125,327,436,1308,2,1,0.62,1.0,True
+pressure_uniform,2,2,0.0625,1363,1474,4422,4,1,1.4,2.0,True
+pressure_uniform,2,3,0.03125,6339,6214,18642,8,1,5.6,2.0,True
+pressure_uniform,2,4,0.015625,33283,31726,95178,16,1,42.0,11.0,True
+pressure_uniform,3,0,0.25,67,184,552,1,,0.63,1.0,True
+pressure_uniform,3,1,0.125,457,667,2001,2,1,1.8,1.0,True
+pressure_uniform,3,2,0.0625,1745,2029,6087,4,1,5.7,3.0,True
+pressure_uniform,3,3,0.03125,7609,7825,23475,8,1,33.0,8.0,True
+pressure_uniform,3,4,0.015625,37865,37081,111243,16,1,247.0,34.0,True
