@@ -40,13 +40,13 @@ def test_large_pool_single_nnls_and_exact(monkeypatch, q):
                       for o in np.ndindex(2, 2, 2)])
 
     calls = []
-    real = Q.nnls
+    real = Q._solve_nnls
 
-    def counting(A, b, **kw):
+    def counting(A, b, *args, **kw):
         calls.append(A.shape)
-        return real(A, b, **kw)
+        return real(A, b, *args, **kw)
 
-    monkeypatch.setattr(Q, "nnls", counting)
+    monkeypatch.setattr(Q, "_solve_nnls", counting)
     w, res, used = Q.fit_moment_rule(moments, cand, blo, h, vol)
     assert len(calls) == 1, calls
     assert res <= Q._NNLS_TOL * vol
@@ -70,8 +70,12 @@ def test_tolerance_miss_returns_without_refits(monkeypatch):
     moments = (Q._design_matrix(gp, blo, h, q) @ gw).reshape(q + 1, q + 1, q + 1)
     cand = np.full((5, 3), 0.5)  # 5 identical points: cannot match 27 moments
     calls = []
-    real = Q.nnls
-    monkeypatch.setattr(Q, "nnls", lambda A, b, **kw: (calls.append(1), real(A, b, **kw))[1])
+    real = Q._solve_nnls
+    monkeypatch.setattr(
+        Q,
+        "_solve_nnls",
+        lambda A, b, *args, **kw: (calls.append(1), real(A, b, *args, **kw))[1],
+    )
     _w, res, _used = Q.fit_moment_rule(moments, cand, blo, h, 1.0)
     assert res > Q._NNLS_TOL
     assert len(calls) == 1

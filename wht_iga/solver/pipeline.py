@@ -154,7 +154,15 @@ def _make_linear_solver(
 def run_linear(spec: JobSpec, geo_issues: list[dict] | None = None,
              qp_table: dict[tuple[int, int, int], np.ndarray] | None = None,
              cell_records: list[dict] | None = None,
-             extension: dict | None = None) -> LinearResult:
+             extension: dict | None = None,
+             hooks: Any = None) -> LinearResult:
+    """Linear static solve (see module docstring).
+
+    ``hooks`` (optional, user API escape hatch, plan v2.1 §8.4): an object with
+    ``before_solve(model, model_part, strategy)`` and/or
+    ``after_solve(model, model_part, strategy)`` methods, called immediately
+    before and after ``strategy.Solve()``. ``None`` (default) changes nothing.
+    """
     from wht_iga.kratos_backend import load_kratos
     from wht_iga.kratos_backend.geometry import cell_gauss_points, make_nurbs_volume
 
@@ -409,7 +417,11 @@ def run_linear(spec: JobSpec, geo_issues: list[dict] | None = None,
         _t1 = _time.perf_counter()
         log(f"run_linear[{spec.name}]: solve start ({solver_name}, {len(mp.Nodes)} nodes, "
             f"{len(mp.MasterSlaveConstraints)} MPC)")
+        if hooks is not None and hasattr(hooks, "before_solve"):
+            hooks.before_solve(model, mp, strategy)
         strategy.Solve()
+        if hooks is not None and hasattr(hooks, "after_solve"):
+            hooks.after_solve(model, mp, strategy)
         _t2 = _time.perf_counter()
         log(f"run_linear[{spec.name}]: solve done in {_t2 - _t1:.1f}s")
         try:

@@ -59,8 +59,10 @@ def test_nonconverged_raises_validation_error(monkeypatch) -> None:  # type: ign
     from wht_iga.solver import pipeline as PL
     from wht_iga.solver.validate import ValidationError
 
-    monkeypatch.setattr(PL, "_make_linear_solver",
-                        lambda KM, name, thr=None: KM.CGSolver(1e-30, 1))
+    monkeypatch.setattr(
+        PL, "_make_linear_solver",
+        lambda KM, name, thr=None, amgcl_params=None: KM.CGSolver(1e-30, 1),
+    )
     spec = _untrimmed()
     spec.bcs = [DirichletBC(face=(0, 0))]  # well-posed: CG alone is the failure cause
     with pytest.warns(RuntimeWarning), pytest.raises(ValidationError) as ei:

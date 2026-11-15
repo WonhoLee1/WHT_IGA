@@ -97,7 +97,7 @@ def _pack_tris_njit(nodes: np.ndarray, tris: np.ndarray):
     return soup, tmin, tmax, area_vec, centroid, area_abs
 
 
-@njit(cache=True)
+@njit(cache=True, nogil=True)
 def _tri_bin_bounds(tmin_val: float, tmax_val: float, glo: float, inv_h: float, g_max: int) -> tuple[int, int]:
     """Compute inclusive integer grid bin range [b0, b1] for a 1D interval."""
     b0 = int(np.floor((tmin_val - glo) * inv_h))
@@ -159,7 +159,7 @@ def _build_grid_csr_njit(tmin: np.ndarray, tmax: np.ndarray, glo: np.ndarray, in
     return offsets, tri_ids
 
 
-@njit(cache=True)
+@njit(cache=True, nogil=True)
 def query_box_candidates_njit(blo: np.ndarray, bhi: np.ndarray,
                               tmin: np.ndarray, tmax: np.ndarray,
                               glo: np.ndarray, inv_h: np.ndarray,
@@ -439,7 +439,7 @@ def _build_bvh_njit(soup: np.ndarray, tmin: np.ndarray, tmax: np.ndarray,
             dipole[:n_nodes], quad[:n_nodes])
 
 
-@njit(cache=True, inline="always")
+@njit(cache=True, inline="always", nogil=True)
 def _winding_bvh_one(px: float, py: float, pz: float,
                      bvh_soup: np.ndarray, left: np.ndarray, right: np.ndarray,
                      tri_start: np.ndarray, tri_count: np.ndarray,
@@ -532,7 +532,7 @@ def _winding_bvh_batch_parallel_njit(
         )
 
 
-@njit(cache=True)
+@njit(cache=True, nogil=True)
 def _winding_bvh_batch_serial_njit(
     pts: np.ndarray,
     bvh_soup: np.ndarray, left: np.ndarray, right: np.ndarray,
@@ -549,7 +549,7 @@ def _winding_bvh_batch_serial_njit(
         )
 
 
-@njit(cache=True)
+@njit(cache=True, nogil=True)
 def _exact_solid_angles_subset_njit(
     pts: np.ndarray, bvh_soup: np.ndarray, out: np.ndarray, indices: np.ndarray
 ) -> None:
@@ -639,37 +639,51 @@ class TriSoupAccel:
                 leaf_size=int(leaf_size),
             )
 
-        # Reusable scratch buffers for single-thread fast box queries
-        self._stamp_buf = np.zeros(self.n_tris, dtype=np.int32)
-        self._stamp_val = 0
-        self._out_buf = np.empty(min(max(256, self.n_tris), 16384), dtype=np.int64)
+        # Thread-local scratch buffers so concurrent workers share TriSoupAccel safely
+        self._thread_local = threading.local()
+
+    def _get_query_state(self) -> list:
+        """Return per-thread [stamp_buf, stamp_val, out_buf] scratch buffers."""
+        state = getattr(self._thread_local, "state", None)
+        if state is None:
+            state = [
+                np.zeros(self.n_tris, dtype=np.int32),
+                0,
+                np.empty(min(max(256, self.n_tris), 16384), dtype=np.int64),
+            ]
+            self._thread_local.state = state
+        return state
 
     def query_box_ids(self, blo: np.ndarray, bhi: np.ndarray) -> np.ndarray:
         """Return deduplicated triangle indices whose AABB overlaps ``[blo, bhi]``."""
         if self.n_tris == 0:
             return np.zeros(0, dtype=np.int64)
-        self._stamp_val += 1
-        if self._stamp_val >= 2_000_000_000:
-            self._stamp_buf.fill(0)
-            self._stamp_val = 1
+        state = self._get_query_state()
+        stamp_buf, stamp_val, out_buf = state
+        stamp_val += 1
+        if stamp_val >= 2_000_000_000:
+            stamp_buf.fill(0)
+            stamp_val = 1
         blo_a = np.asarray(blo, dtype=np.float64)
         bhi_a = np.asarray(bhi, dtype=np.float64)
         n = query_box_candidates_njit(
             blo_a, bhi_a, self.tmin, self.tmax,
             self.glo, self.inv_h, *self.gdims,
             self.offsets, self.tri_ids,
-            self._stamp_buf, self._stamp_val, self._out_buf,
+            stamp_buf, stamp_val, out_buf,
         )
-        if n > self._out_buf.shape[0]:
-            self._out_buf = np.empty(n, dtype=np.int64)
-            self._stamp_val += 1
+        if n > out_buf.shape[0]:
+            out_buf = np.empty(n, dtype=np.int64)
+            state[2] = out_buf
+            stamp_val += 1
             n = query_box_candidates_njit(
                 blo_a, bhi_a, self.tmin, self.tmax,
                 self.glo, self.inv_h, *self.gdims,
                 self.offsets, self.tri_ids,
-                self._stamp_buf, self._stamp_val, self._out_buf,
+                stamp_buf, stamp_val, out_buf,
             )
-        return self._out_buf[:n].copy()
+        state[1] = stamp_val
+        return out_buf[:n].copy()
 
     def has_box_aabb_overlap(self, blo: np.ndarray, bhi: np.ndarray) -> bool:
         """Fast check whether any triangle AABB overlaps ``[blo, bhi]``."""
@@ -699,7 +713,8 @@ class TriSoupAccel:
 
     def winding_values(self, pts: np.ndarray, *, beta: float = 2.6,
                        refine_thresh: float | None = None,
-                       refine_band: float = 0.06) -> np.ndarray:
+                       refine_band: float = 0.06,
+                       parallel: bool = True) -> np.ndarray:
         """Evaluate winding numbers via BVH (with optional exact near-threshold fallback)."""
         pts_a = np.ascontiguousarray(pts, dtype=np.float64).reshape(-1, 3)
         n_pts = pts_a.shape[0]
@@ -711,7 +726,7 @@ class TriSoupAccel:
             idx = np.arange(n_pts, dtype=np.int64)
             _exact_solid_angles_subset_njit(pts_a, self.bvh_soup, out, idx)
             return out
-        if n_pts >= 32:
+        if parallel and n_pts >= 32:
             _winding_bvh_batch_parallel_njit(
                 pts_a, self.bvh_soup, self.bvh_left, self.bvh_right,
                 self.bvh_start, self.bvh_count,
@@ -731,13 +746,17 @@ class TriSoupAccel:
                 _exact_solid_angles_subset_njit(pts_a, self.bvh_soup, out, near)
         return out
 
-    def winding_inside(self, pts: np.ndarray, thresh: float = 0.5) -> np.ndarray:
+    def winding_inside(self, pts: np.ndarray, thresh: float = 0.5, *,
+                       parallel: bool = True) -> np.ndarray:
         """Inside boolean flags using BVH winding + exact refinement near ``thresh``."""
-        vals = self.winding_values(pts, beta=2.6, refine_thresh=thresh, refine_band=0.06)
+        vals = self.winding_values(
+            pts, beta=2.6, refine_thresh=thresh, refine_band=0.06,
+            parallel=parallel,
+        )
         return vals > float(thresh)
 
 
-@njit(cache=True)
+@njit(cache=True, nogil=True)
 def _has_box_aabb_overlap_njit(blo: np.ndarray, bhi: np.ndarray,
                                tmin: np.ndarray, tmax: np.ndarray,
                                glo: np.ndarray, inv_h: np.ndarray,

@@ -1,0 +1,46 @@
+{
+  "task": "WHT_IGA user Python API (master-plan v2.1 section 8, D18)",
+  "status": "COMPLETE_WITH_OPEN_ITEMS",
+  "completed_at": "2026-11-16T03:03:23+09:00",
+  "branch": "WHTIGA",
+  "committed": false,
+  "scope": {
+    "spec": "done",
+    "plan": "done",
+    "ports_backends": "done",
+    "runner": "done",
+    "compat_coreform": "done",
+    "unit_tests": "done"
+  },
+  "tests": [
+    {"command": "D:\\mamba\\envs\\whtiga\\python.exe -m pytest -q -p no:cacheprovider tests/unit/test_user_api.py", "passed": 28, "failed": 0},
+    {"command": "D:\\mamba\\envs\\whtiga\\python.exe -m pytest -q -p no:cacheprovider tests/test_isolation.py tests/unit", "passed": 542, "failed": 0},
+    {"command": "D:\\mamba\\envs\\whtiga\\python.exe -m pytest -q -p no:cacheprovider tests/kratos_spikes/test_user_api_kratos.py", "passed": 2, "failed": 0},
+    {"command": "D:\\mamba\\envs\\whtiga\\python.exe -m pytest -q -p no:cacheprovider tests/kratos_spikes/test_p1_loads.py tests/kratos_spikes/test_p1_outputs.py tests/kratos_spikes/test_p1_pipeline_cube.py tests/kratos_spikes/test_fix_converged.py", "passed": 13, "failed": 1, "note": "pre-existing failure, see open_items[1]"}
+  ],
+  "mutation_tests": {"applied": 5, "killed": 5},
+  "files_added": [
+    "wht_iga/spec/__init__.py", "wht_iga/spec/base.py", "wht_iga/spec/units.py", "wht_iga/spec/mesh.py",
+    "wht_iga/spec/assembly.py", "wht_iga/spec/physics.py", "wht_iga/spec/study.py",
+    "wht_iga/plan/__init__.py", "wht_iga/plan/artifacts.py", "wht_iga/plan/compiler.py",
+    "wht_iga/ports/__init__.py", "wht_iga/ports/contracts.py", "wht_iga/ports/solver_backend.py", "wht_iga/ports/mesh_engine.py",
+    "wht_iga/backends/__init__.py", "wht_iga/backends/mesh_engine.py", "wht_iga/backends/kratos_python.py", "wht_iga/backends/reference_numba.py",
+    "wht_iga/runner/__init__.py", "wht_iga/runner/session.py", "wht_iga/runner/results.py", "wht_iga/runner/post.py",
+    "wht_iga/compat/__init__.py", "wht_iga/compat/coreform.py",
+    "tests/unit/test_user_api.py", "tests/kratos_spikes/test_user_api_kratos.py",
+    "docs/user_api/USER_API.md", "docs/user_api/USER_API_COMPLETE.md", "docs/user_api/user_api_status.json"
+  ],
+  "files_modified": [
+    "wht_iga/__init__.py (PEP 562 lazy exports)",
+    "wht_iga/solver/pipeline.py (run_linear hooks=None parameter, +13 lines)",
+    "pyproject.toml (pydantic>=2.7)"
+  ],
+  "env_changes": ["uv pip install pydantic>=2.7 -> pydantic 2.14.3, pydantic-core 2.50.4, annotated-types 0.8.0, typing-inspection 0.4.5"],
+  "not_touched": ["wht_iga/geometry/*", "wht_iga/solver/trimmed.py", "E:\\kratos-build", "D:\\PythonCodeStudy\\kratos-src"],
+  "open_items": [
+    "uv.lock not regenerated after adding pydantic to pyproject.toml (user decision)",
+    "RESOLVED 2026-11-16T08:35 by another agent (lambda gained amgcl_params=None): tests/kratos_spikes/test_fix_converged.py; recheck test_user_api + test_isolation + test_fix_converged = 35 passed",
+    "by design, reported as plan errors: THB refinement not wired into run_linear, multi-part, CAD-face sets, NT11/RF point probes, Coreform frame/element_layout/probe region",
+    "out of requested scope: ResultStorePort, runner/sweep.py, runner/external.py, KratosCxxBackend, kratos_overrides"
+  ]
+}

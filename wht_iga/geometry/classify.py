@@ -22,7 +22,7 @@ from .accel import TriSoupAccel, get_accel
 OUT, IN, CUT = 0, 1, 2
 
 
-@njit(cache=True)
+@njit(cache=True, nogil=True)
 def _tri_box_overlap(t0: np.ndarray, t1: np.ndarray, t2: np.ndarray,
                      blo: np.ndarray, bhi: np.ndarray) -> bool:
     """Akenine-Moller triangle/AABB SAT: 1 face + 9 edge-cross + 3 axis tests."""
@@ -97,7 +97,7 @@ def _sat_candidates(tris: np.ndarray, tri_idx: np.ndarray,
             out[k] = True
 
 
-@njit(cache=True)
+@njit(cache=True, nogil=True)
 def _clip_poly_to_box_njit(poly: np.ndarray, n_in: int,
                            blo: np.ndarray, bhi: np.ndarray,
                            out_buf: np.ndarray) -> int:
@@ -565,7 +565,7 @@ def _axis_votes(verts: np.ndarray, soup: np.ndarray, axis: int) -> np.ndarray:
     return votes
 
 
-@njit(cache=True, inline="always")
+@njit(cache=True, inline="always", nogil=True)
 def _solid_angle_one(px: float, py: float, pz: float, tris: np.ndarray) -> float:
     """Winding number of one point (Van Oosterom-Strackee), allocation-free."""
     s = 0.0
@@ -601,7 +601,7 @@ def _solid_angles(pts: np.ndarray, tris: np.ndarray, out: np.ndarray) -> None:
         out[k] = _solid_angle_one(pts[k, 0], pts[k, 1], pts[k, 2], tris)
 
 
-@njit(cache=True)
+@njit(cache=True, nogil=True)
 def _solid_angles_serial(pts: np.ndarray, tris: np.ndarray, out: np.ndarray) -> None:
     for k in range(pts.shape[0]):
         out[k] = _solid_angle_one(pts[k, 0], pts[k, 1], pts[k, 2], tris)
@@ -612,13 +612,14 @@ _PARALLEL_MIN_PTS = 16
 
 def winding_inside(pts: np.ndarray, nodes: np.ndarray, tris: np.ndarray,
                    thresh: float = 0.5, *,
-                   accel: TriSoupAccel | None = None) -> np.ndarray:
+                   accel: TriSoupAccel | None = None,
+                   parallel: bool = True) -> np.ndarray:
     """Inside test via generalized winding number (Jacobson 2013 / BVH fast winding)."""
     pts_a = np.ascontiguousarray(pts, dtype=np.float64)
     if pts_a.shape[0] == 0 or len(tris) == 0:
         return np.zeros(pts_a.shape[0], dtype=bool)
     acc = get_accel(nodes, tris) if accel is None else accel
-    return acc.winding_inside(pts_a, thresh=thresh)
+    return acc.winding_inside(pts_a, thresh=thresh, parallel=parallel)
 
 
 def classify_vertices(nodes: np.ndarray, tris: np.ndarray,

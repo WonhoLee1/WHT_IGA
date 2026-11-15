@@ -23,6 +23,11 @@ from numpy.polynomial.legendre import leggauss
 from scipy.optimize import nnls
 
 from .accel import TriSoupAccel, get_accel
+from ._nnls_njit import (
+    _EMPTY_I64 as _NNLS_EMPTY_I64,
+    get_nnls_workspace as _get_nnls_workspace,
+    nnls_qr_ws as _nnls_qr_ws,
+)
 from .classify import (
     _clip_poly_to_box_njit,
     _solid_angles_serial,
@@ -123,7 +128,7 @@ class CellQuadrature:
     relaxed: bool = False  # accepted at _NNLS_RELAXED, not _NNLS_TOL
 
 
-@njit(cache=True, inline="always")
+@njit(cache=True, inline="always", nogil=True)
 def _horner_vec(W: np.ndarray, x: float, out: np.ndarray) -> None:
     """Evaluate all rows W[j] at scalar x using Horner's method into ``out``."""
     r = W.shape[0]
@@ -135,7 +140,7 @@ def _horner_vec(W: np.ndarray, x: float, out: np.ndarray) -> None:
         out[j] = val
 
 
-@njit(cache=True)
+@njit(cache=True, nogil=True)
 def _cell_moments_part_a_njit(tris: np.ndarray, blo: np.ndarray, h: np.ndarray,
                               Ax: np.ndarray, Py: np.ndarray, Pz: np.ndarray,
                               DP: np.ndarray, DW: np.ndarray, q: int,
@@ -224,7 +229,7 @@ def _cell_moments_part_a_njit(tris: np.ndarray, blo: np.ndarray, h: np.ndarray,
     return M
 
 
-@njit(cache=True, inline="always")
+@njit(cache=True, inline="always", nogil=True)
 def _clip_seg_rect_njit(ax: float, ay: float, bx: float, by: float,
                         y0: float, y1: float, z0: float, z1: float) -> tuple[bool, float, float, float, float]:
     """Liang–Barsky clip of a 2D segment to [y0, y1] x [z0, z1]."""
@@ -255,7 +260,7 @@ def _clip_seg_rect_njit(ax: float, ay: float, bx: float, by: float,
     return True, ax + t0 * dx, ay + t0 * dy, ax + t1 * dx, ay + t1 * dy
 
 
-@njit(cache=True, inline="always")
+@njit(cache=True, inline="always", nogil=True)
 def _emit_2d_seg_njit(a2x: float, a2y: float, b2x: float, b2y: float,
                       mx: float, my: float, from_tri: bool,
                       y0: float, y1: float, z0: float, z1: float, tol: float,
@@ -317,7 +322,7 @@ def _emit_2d_seg_njit(a2x: float, a2y: float, b2x: float, b2y: float,
     return n_seen
 
 
-@njit(cache=True)
+@njit(cache=True, nogil=True)
 def _cross_section_step1_njit(tris: np.ndarray, bx: float, by: float, bz: float,
                               hx: float, hy: float, hz: float, q: int,
                               GZ: np.ndarray, GW: np.ndarray, Hy: np.ndarray, Pz: np.ndarray,
@@ -506,7 +511,7 @@ def _cross_section_step1_njit(tris: np.ndarray, bx: float, by: float, bz: float,
             probes[:4 * n_pieces], tol)
 
 
-@njit(cache=True)
+@njit(cache=True, nogil=True)
 def _cross_section_step2_njit(Njk: np.ndarray, seen_keys: np.ndarray, n_seen: int,
                               piece_e: np.ndarray, piece_a: np.ndarray, piece_b: np.ndarray,
                               flags4: np.ndarray, hy: float, hz: float, tol: float,
@@ -528,7 +533,8 @@ def _cross_section_step2_njit(Njk: np.ndarray, seen_keys: np.ndarray, n_seen: in
 
 def _cell_moments(tris: np.ndarray, blo: np.ndarray, h: np.ndarray,
                   q: int, whole: np.ndarray | None = None, *,
-                  accel: TriSoupAccel | None = None) -> np.ndarray:
+                  accel: TriSoupAccel | None = None,
+                  winding_parallel: bool = True) -> np.ndarray:
     """Exact moments via recursive divergence theorem (tessellation-exact)."""
     blo_a = np.ascontiguousarray(blo, dtype=np.float64)
     h_a = np.ascontiguousarray(h, dtype=np.float64)
@@ -552,7 +558,7 @@ def _cell_moments(tris: np.ndarray, blo: np.ndarray, h: np.ndarray,
     )
     if pe.shape[0] > 0:
         if accel is not None:
-            ins = accel.winding_inside(probes).reshape(-1, 4)
+            ins = accel.winding_inside(probes, parallel=winding_parallel).reshape(-1, 4)
         else:
             whole_a = tris_a if whole is None else np.ascontiguousarray(whole, dtype=np.float64)
             if whole_a.shape[0] <= 2000:
@@ -562,7 +568,7 @@ def _cell_moments(tris: np.ndarray, blo: np.ndarray, h: np.ndarray,
             else:
                 SN = whole_a.reshape(-1, 3)
                 ST = np.arange(len(whole_a) * 3, dtype=np.int64).reshape(-1, 3)
-                ins = winding_inside(probes, SN, ST).reshape(-1, 4)
+                ins = winding_inside(probes, SN, ST, parallel=winding_parallel).reshape(-1, 4)
         _cross_section_step2_njit(Njk, seen_keys, n_seen, pe, pa, pb, ins,
                                   hy, hz, tol, GZ, GW, Hy, Pz)
 
@@ -573,7 +579,8 @@ def _cell_moments(tris: np.ndarray, blo: np.ndarray, h: np.ndarray,
 def _cross_section_moments(tris: np.ndarray, blo: np.ndarray, h: np.ndarray,
                            q: int, Pz: np.ndarray, Hy: np.ndarray,
                            whole: np.ndarray | None = None, *,
-                           accel: TriSoupAccel | None = None) -> np.ndarray:
+                           accel: TriSoupAccel | None = None,
+                           winding_parallel: bool = True) -> np.ndarray:
     """Njk = ∫_{Ω∩{x=x1}} P_j(y)P_k(z) dydz via 1D-exact boundary pieces."""
     blo_a = np.ascontiguousarray(blo, dtype=np.float64)
     h_a = np.ascontiguousarray(h, dtype=np.float64)
@@ -593,12 +600,12 @@ def _cross_section_moments(tris: np.ndarray, blo: np.ndarray, h: np.ndarray,
     )
     if pe.shape[0] > 0:
         if accel is not None:
-            ins = accel.winding_inside(probes).reshape(-1, 4)
+            ins = accel.winding_inside(probes, parallel=winding_parallel).reshape(-1, 4)
         else:
             whole_a = np.ascontiguousarray(tris if whole is None else whole, dtype=np.float64)
             SN = whole_a.reshape(-1, 3)
             ST = np.arange(len(whole_a) * 3, dtype=np.int64).reshape(-1, 3)
-            ins = winding_inside(probes, SN, ST).reshape(-1, 4)
+            ins = winding_inside(probes, SN, ST, parallel=winding_parallel).reshape(-1, 4)
         _cross_section_step2_njit(
             Njk, seen_keys, n_seen, pe, pa, pb, ins,
             float(h_a[1]), float(h_a[2]), tol, GZ, GW,
@@ -608,7 +615,7 @@ def _cross_section_moments(tris: np.ndarray, blo: np.ndarray, h: np.ndarray,
     return Njk
 
 
-@njit(cache=True)
+@njit(cache=True, nogil=True)
 def _design_matrix_njit(pts: np.ndarray, blo: np.ndarray, h: np.ndarray, q: int) -> np.ndarray:
     """Legendre tensor-product Vandermonde matrix ((q+1)^3, N) compiled in Numba."""
     n_pts = pts.shape[0]
@@ -666,20 +673,66 @@ def _design_matrix(pts: np.ndarray, blo: np.ndarray, h: np.ndarray,
     )
 
 
+def _solve_nnls(
+    A: np.ndarray,
+    b: np.ndarray,
+    maxiter: int,
+    warm_active: np.ndarray | None = None,
+    prefix_len: int = 0,
+) -> tuple[np.ndarray, float]:
+    """Solve NNLS via thread-local Numba QR solver with deterministic SciPy fallback."""
+    m, n = A.shape
+    if m == 0 or n == 0:
+        return np.zeros(n, dtype=np.float64), float(np.linalg.norm(b))
+    A_c = np.ascontiguousarray(A, dtype=np.float64)
+    b_c = np.ascontiguousarray(b, dtype=np.float64)
+    ws = _get_nnls_workspace(m, n)
+    wa = _NNLS_EMPTY_I64 if warm_active is None else warm_active
+    w, rnorm, ok = _nnls_qr_ws(A_c, b_c, int(maxiter), wa, int(prefix_len), *ws)
+    if ok:
+        return w, float(rnorm)
+    return nnls(A_c, b_c, maxiter=maxiter)
+
+
 def fit_moment_rule(moments: np.ndarray, cand: np.ndarray,
                     blo: np.ndarray, h: np.ndarray,
-                    cell_vol: float) -> tuple[np.ndarray, float, np.ndarray]:
+                    cell_vol: float, *,
+                    _warm_state: dict | None = None) -> tuple[np.ndarray, float, np.ndarray]:
     """NNLS fit + backtracking prune (residual ≤ tol, target ≤ (q+1)^3 pts)."""
-    if len(cand) > _NNLS_MAX_CANDIDATES:  # time budget: deterministic stride
-        cand = cand[:: (len(cand) + _NNLS_MAX_CANDIDATES - 1)
+    raw_len = len(cand)
+    was_strided = raw_len > _NNLS_MAX_CANDIDATES
+    if was_strided:  # time budget: deterministic stride
+        cand = cand[:: (raw_len + _NNLS_MAX_CANDIDATES - 1)
                     // _NNLS_MAX_CANDIDATES]
     max_pts = moments.shape[0] ** 3
     A, b = _design_matrix(cand, blo, h, moments.shape[0] - 1), moments.ravel()
+    warm_active = None
+    prefix_len = 0
+    if (
+        _warm_state is not None
+        and not was_strided
+        and not _warm_state.get("strided", False)
+        and _warm_state.get("prefix_len", 0) > 0
+    ):
+        warm_active = _warm_state.get("active")
+        prefix_len = int(_warm_state["prefix_len"])
     try:
-        w, rnorm = nnls(A, b, maxiter=10 * A.shape[1])
+        w, rnorm = _solve_nnls(
+            A, b, 10 * A.shape[1], warm_active=warm_active, prefix_len=prefix_len
+        )
     except RuntimeError:
+        if _warm_state is not None:
+            _warm_state.update(
+                active=_NNLS_EMPTY_I64, prefix_len=0, strided=was_strided
+            )
         return (np.zeros(len(cand)), float("inf"),
                 np.ascontiguousarray(cand))
+    if _warm_state is not None:
+        _warm_state.update(
+            active=np.nonzero(w > 0.0)[0].astype(np.int64),
+            prefix_len=len(cand),
+            strided=was_strided,
+        )
     keep = w > 0
     if rnorm > _NNLS_TOL * cell_vol or int(keep.sum()) <= max_pts:
         return w * keep, float(rnorm), np.ascontiguousarray(cand)
@@ -689,7 +742,8 @@ def fit_moment_rule(moments: np.ndarray, cand: np.ndarray,
     for ii in idx:
         dropped[ii] = True
         try:
-            ww, rr = nnls(A[:, ~dropped], b)
+            active_cols = int((~dropped).sum())
+            ww, rr = _solve_nnls(A[:, ~dropped], b, max(1, 3 * active_cols))
         except RuntimeError:
             dropped[ii] = False
             break
@@ -704,7 +758,7 @@ def fit_moment_rule(moments: np.ndarray, cand: np.ndarray,
     return best_w * (best_w > 0), best_r, np.ascontiguousarray(cand)
 
 
-@njit(cache=True)
+@njit(cache=True, nogil=True)
 def _octree_cut_flags_njit(tris: np.ndarray, tmin: np.ndarray, tmax: np.ndarray,
                            leaf_blos: np.ndarray, leaf_hs: np.ndarray) -> np.ndarray:
     """Compiled AABB-prefiltered SAT test across all octree leaves."""
@@ -734,7 +788,8 @@ def _octree_cut_flags_njit(tris: np.ndarray, tmin: np.ndarray, tmax: np.ndarray,
 def octree_fallback(tris: np.ndarray, blo: np.ndarray, h: np.ndarray,
                     q: int, p: int, depth: int,
                     log: IssueLog, whole: np.ndarray | None = None, *,
-                    accel: TriSoupAccel | None = None) -> CellQuadrature:
+                    accel: TriSoupAccel | None = None,
+                    winding_parallel: bool = True) -> CellQuadrature:
     """Depth-`depth` octree fallback (interior leaves get Gauss (p+1)^3, cut leaves 2^3)."""
     log.add("warning", "QUAD_FALLBACK", f"octree depth {depth} in cell {blo}",
             "quadrature")
@@ -770,11 +825,11 @@ def octree_fallback(tris: np.ndarray, blo: np.ndarray, h: np.ndarray,
     if queries:
         Q_all = np.vstack(queries)
         if accel is not None:
-            flags = accel.winding_inside(Q_all)
+            flags = accel.winding_inside(Q_all, parallel=winding_parallel)
         else:
             whole_a = tris_a if whole is None else np.ascontiguousarray(whole, dtype=np.float64)
             SN, ST = whole_a.reshape(-1, 3), np.arange(len(whole_a) * 3, dtype=np.int64).reshape(-1, 3)
-            flags = winding_inside(Q_all, SN, ST)
+            flags = winding_inside(Q_all, SN, ST, parallel=winding_parallel)
     else:
         flags = np.zeros(0, dtype=bool)
 
@@ -791,8 +846,14 @@ def octree_fallback(tris: np.ndarray, blo: np.ndarray, h: np.ndarray,
             ws.append(np.full(len(Xo), sub_vol / len(Xo)))
     X = np.vstack(xs) if xs else np.zeros((0, 3))
     W = np.concatenate(ws) if ws else np.zeros(0)
-    M = (_cell_moments(tris_a, blo_a, h_a, q, whole=whole, accel=accel) if len(X)
-         else np.zeros((q + 1,) * 3))
+    M = (
+        _cell_moments(
+            tris_a, blo_a, h_a, q, whole=whole, accel=accel,
+            winding_parallel=winding_parallel,
+        )
+        if len(X)
+        else np.zeros((q + 1,) * 3)
+    )
     return CellQuadrature(x=X, w=W, moments=M, n_candidates=len(X),
                           fallback=True, volume=float(W.sum()),
                           residual=abs(float(M.ravel()[0]) - float(W.sum())))
@@ -800,14 +861,15 @@ def octree_fallback(tris: np.ndarray, blo: np.ndarray, h: np.ndarray,
 
 def _local_inside(nodes: np.ndarray, tris: np.ndarray, blo: np.ndarray, h: np.ndarray,
                   margin_cells: float = 2.0, *,
-                  accel: TriSoupAccel | None = None):
+                  accel: TriSoupAccel | None = None,
+                  winding_parallel: bool = True):
     """Fast inside test for candidate filtering using ``TriSoupAccel`` BVH."""
     del blo, h, margin_cells
     acc = get_accel(nodes, tris) if accel is None else accel
-    return acc.winding_inside
+    return lambda pts: acc.winding_inside(pts, parallel=winding_parallel)
 
 
-@njit(cache=True)
+@njit(cache=True, nogil=True)
 def _filter_cell_candidates_njit(soup: np.ndarray, cand_ids: np.ndarray,
                                  blo: np.ndarray, h: np.ndarray, tiny: np.ndarray):
     """Exact SAT test on spatial-grid candidates for cell and shrunken interior box."""
@@ -836,7 +898,7 @@ def _filter_cell_candidates_njit(soup: np.ndarray, cand_ids: np.ndarray,
     return T, short_any
 
 
-@njit(cache=True)
+@njit(cache=True, nogil=True)
 def _subbox_cand_pts_njit(T: np.ndarray, Tmin: np.ndarray, Tmax: np.ndarray,
                           blo: np.ndarray, h: np.ndarray,
                           depth: int, Xo: np.ndarray) -> np.ndarray:
@@ -898,7 +960,8 @@ def _subbox_cand_pts_njit(T: np.ndarray, Tmin: np.ndarray, Tmax: np.ndarray,
 def cell_quadrature(nodes: np.ndarray, tris: np.ndarray, blo: np.ndarray,
                     h: np.ndarray, q: int = 2, p: int = 2,
                     log: IssueLog | None = None, *,
-                    accel: TriSoupAccel | None = None) -> CellQuadrature:
+                    accel: TriSoupAccel | None = None,
+                    winding_parallel: bool = True) -> CellQuadrature:
     """Volume rule for one cell: exact moments → NNLS fit → prune/fallback."""
     log = log or IssueLog()
     blo_a = np.ascontiguousarray(blo, dtype=np.float64)
@@ -911,7 +974,9 @@ def cell_quadrature(nodes: np.ndarray, tris: np.ndarray, blo: np.ndarray,
     T, short_any = _filter_cell_candidates_njit(acc.soup, cand_ids, blo_a, h_a, tiny)
 
     if not short_any:  # cell interior sees no surface: center decides
-        inside = acc.winding_inside((blo_a + 0.5 * h_a)[None, :])[0]
+        inside = acc.winding_inside(
+            (blo_a + 0.5 * h_a)[None, :], parallel=winding_parallel
+        )[0]
         if not inside:
             return CellQuadrature(np.zeros((0, 3)), np.zeros(0),
                                   np.zeros((q + 1,) * 3))
@@ -921,9 +986,16 @@ def cell_quadrature(nodes: np.ndarray, tris: np.ndarray, blo: np.ndarray,
         return CellQuadrature(blo_a + Xg * h_a, Wg * cell_vol, M,
                               n_candidates=len(Xg), volume=cell_vol)
 
-    win = _local_inside(nodes, tris, blo_a, h_a, accel=acc)
-    M = _cell_moments(T, blo_a, h_a, q, accel=acc)
-    fb = lambda: octree_fallback(T, blo_a, h_a, q, p, 3, log, accel=acc)
+    win = _local_inside(
+        nodes, tris, blo_a, h_a, accel=acc, winding_parallel=winding_parallel
+    )
+    M = _cell_moments(
+        T, blo_a, h_a, q, accel=acc, winding_parallel=winding_parallel
+    )
+    fb = lambda: octree_fallback(
+        T, blo_a, h_a, q, p, 3, log, accel=acc,
+        winding_parallel=winding_parallel,
+    )
     if float(M[0, 0, 0]) <= 0:
         return fb()
 
@@ -932,11 +1004,17 @@ def cell_quadrature(nodes: np.ndarray, tris: np.ndarray, blo: np.ndarray,
     base = (blo_a + Xg * h_a)[win(blo_a + Xg * h_a)]
     surf: list[np.ndarray] = []
     best = {"rel": float("inf"), "w": None, "cand": None}
+    warm_state = {
+        "active": _NNLS_EMPTY_I64,
+        "prefix_len": 0,
+        "strided": False,
+    }
     Tmin = T.min(axis=1)
     Tmax = T.max(axis=1)
 
-    def _fit(Mx, cand_x, b_x, h_x, vol_x):
-        wx, rx, cx = fit_moment_rule(Mx, cand_x, b_x, h_x, vol_x)
+    def _fit(Mx, cand_x, b_x, h_x, vol_x, *, use_warm: bool = True):
+        ws = warm_state if use_warm else None
+        wx, rx, cx = fit_moment_rule(Mx, cand_x, b_x, h_x, vol_x, _warm_state=ws)
         if rx / vol_x < best["rel"]:
             best.update(rel=rx / vol_x, w=wx.copy(), cand=np.asarray(cx).copy())
         return wx, rx, cx
@@ -955,8 +1033,10 @@ def cell_quadrature(nodes: np.ndarray, tris: np.ndarray, blo: np.ndarray,
                     pts.append(poly_buf[:n_p].copy())
             corners = blo_a + np.array([[a, b, c] for c in (0, 1) for b in (0, 1)
                                         for a in (0, 1)], float) * h_a
-            cin = corners[acc.winding_inside(blo_a + h_a / 2 + (corners - blo_a - h_a / 2)
-                                             * (1 - 1e-9))]
+            cin = corners[acc.winding_inside(
+                blo_a + h_a / 2 + (corners - blo_a - h_a / 2) * (1 - 1e-9),
+                parallel=winding_parallel,
+            )]
             if len(cin):
                 pts.append(cin)
             if not pts:
@@ -972,14 +1052,16 @@ def cell_quadrature(nodes: np.ndarray, tris: np.ndarray, blo: np.ndarray,
                 sub.append(cs[win(cs)])
             if any(len(x) for x in sub):
                 cand = np.vstack([x for x in sub if len(x)])
-                w, rnorm, cand_i = _fit(M, cand, blo_a, h_a, cell_vol)
+                w, rnorm, cand_i = _fit(M, cand, blo_a, h_a, cell_vol, use_warm=False)
                 if rnorm <= _NNLS_TOL * cell_vol:
                     cand = cand_i
                     break
-                Ms = _cell_moments(T, alo, ext, q, accel=acc)
+                Ms = _cell_moments(
+                    T, alo, ext, q, accel=acc, winding_parallel=winding_parallel
+                )
                 if abs(float(Ms[0, 0, 0]) - float(M[0, 0, 0])) > 1e-9 * cell_vol:
                     continue
-                w, rnorm_s, cand = _fit(Ms, cand, alo, ext, sub_vol)
+                w, rnorm_s, cand = _fit(Ms, cand, alo, ext, sub_vol, use_warm=False)
                 if rnorm_s <= _NNLS_TOL * sub_vol:
                     rnorm = rnorm_s * cell_vol / sub_vol
                     break
@@ -1006,7 +1088,7 @@ def cell_quadrature(nodes: np.ndarray, tris: np.ndarray, blo: np.ndarray,
                           False, float(M[0, 0, 0]))
 
 
-@njit(cache=True)
+@njit(cache=True, nogil=True)
 def _surface_quadrature_njit(soup: np.ndarray, face_ids: np.ndarray,
                              blo: np.ndarray, bhi: np.ndarray,
                              DP: np.ndarray, DW: np.ndarray):
