@@ -190,7 +190,8 @@ class Plan:
             ghost_alpha=float(mesh.ghost_alpha) if isinstance(mesh, ImmersedGridSpec) else 1e-8,
             out_mode=mesh.out_mode if isinstance(mesh, ImmersedGridSpec) else "drop",
             probes=[], assumed=list(self.report.assumed), output_dir=out_dir,
-            linear_solver=step.linear_solver, num_threads_mkl=step.num_threads_mkl,
+            linear_solver=step.linear_solver, locking_mitigation=step.locking_mitigation,
+            num_threads_mkl=step.num_threads_mkl,
             enable_solver_log=enable_solver_log, solver_log_file=str(arts.solver_log),
             solver_log_stdout=solver_log_stdout, solver_log_level=solver_log_level,  # type: ignore[arg-type]
             memory_budget_ratio=float(step.memory_budget_ratio),

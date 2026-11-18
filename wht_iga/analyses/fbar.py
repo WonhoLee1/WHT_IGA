@@ -11,7 +11,7 @@ cell-averaged ``Jbar``::
 Uniform deformation => Jbar = J pointwise => identical to stock NH
 (unit-cube test must match the S19 analytic to machine precision).
 
-Residual per node I (3-vector) and consistent tangent (dense, small models)::
+Residual per node I (3-vector) and consistent tangent::
 
     R_I = sum_q w_q * mu * F_q @ G_qI + U'(Jbar) * V_I
     V_I = sum_r w_r * J_r * (FinvT_r @ G_rI)
@@ -21,7 +21,14 @@ with ``dJbar/du_J = (1/Wcell) sum_s w_s J_s (FinvT_s G_sJ)`` and the
 ``d[J FinvT G]/du`` terms in explicit 3x3 algebra (verified against
 finite differences in ``tests/unit/test_fbar_mean_dilatation.py``).
 
-Scope: untrimmed single-patch boxes (E04 precursor). No Kratos dependency.
+Assembly: ``residual_tangent_sparse`` scatters the cell blocks into a CSR
+pattern precomputed in ``build_model`` (one Numba pass over all cells);
+``solve_static`` factorises it with Pardiso / SuperLU. The dense
+``residual_tangent`` is kept as the test oracle (S40).
+
+Scope: untrimmed single-patch boxes (E04 precursor), clamped knots with any
+uniform continuity C^0..C^(p-1) (Coreform E04 uses C^(p-2)). No Kratos
+dependency.
 """
 
 from __future__ import annotations
@@ -85,21 +92,24 @@ def _cell_residual_tangent(G: np.ndarray, W: np.ndarray, u_cell: np.ndarray,
     Jbar /= Wcell
     pbar = (lam * np.log(Jbar) - mu) / Jbar
     ppbar = (lam - lam * np.log(Jbar) + mu) / (Jbar * Jbar)
-    # V_I and dJbar/du per node
+    # H[q, I] = F^{-T} G_qI, reused by V, dJbar and the dV/du term
+    H = np.zeros((nq, nen, 3), dtype=np.float64)
+    for q in range(nq):
+        FinvT = _inv3(F[q]).T
+        for I in range(nen):
+            for a in range(3):
+                h = 0.0
+                for m in range(3):
+                    h += FinvT[a, m] * G[q, I, m]
+                H[q, I, a] = h
     V = np.zeros((nen, 3), dtype=np.float64)
     dJbar = np.zeros((nen, 3), dtype=np.float64)
-    FinvT = np.zeros((nq, 3, 3), dtype=np.float64)
-    for q in range(nq):
-        FinvT[q] = _inv3(F[q]).T.copy()
     for I in range(nen):
         for q in range(nq):
             wJ = W[q] * detJ[q]
             for a in range(3):
-                h = 0.0
-                for m in range(3):
-                    h += FinvT[q, a, m] * G[q, I, m]
-                V[I, a] += wJ * h
-                dJbar[I, a] += wJ * h
+                V[I, a] += wJ * H[q, I, a]
+                dJbar[I, a] += wJ * H[q, I, a]
         for a in range(3):
             dJbar[I, a] /= Wcell
     # residual: deviatoric + volumetric
@@ -112,9 +122,10 @@ def _cell_residual_tangent(G: np.ndarray, W: np.ndarray, u_cell: np.ndarray,
                     fa += F[q, a, m] * G[q, I, m]
                 val += W[q] * mu * fa
             R[3 * I + a] = val
-    # tangent part 1: deviatoric (constant)
+    # tangent part 1: deviatoric (constant). s_IJ == s_JI bit for bit
+    # (products commute exactly, same summation order) -> J >= I only.
     for I in range(nen):
-        for J in range(nen):
+        for J in range(I, nen):
             s = 0.0
             for q in range(nq):
                 g = 0.0
@@ -123,27 +134,44 @@ def _cell_residual_tangent(G: np.ndarray, W: np.ndarray, u_cell: np.ndarray,
                 s += W[q] * mu * g
             for a in range(3):
                 K[3 * I + a, 3 * J + a] += s
+                if J != I:
+                    K[3 * J + a, 3 * I + a] += s
     # tangent part 2: U'' * dJbar (x) V  +  pbar * dV/du
     for I in range(nen):
         for J in range(nen):
             for a in range(3):
                 for b in range(3):
                     K[3 * I + a, 3 * J + b] += ppbar * V[I, a] * dJbar[J, b]
+    # dV term: J*(outer(H_I,H_J) - outer(H_J,H_I)) -- verified vs FD.
+    # Each 3x3 block is antisymmetric with an exactly zero diagonal, block
+    # (J,I) is the transpose of block (I,J), and block (I,I) is exactly zero
+    # (IEEE: x*y - z*w == -(z*w - x*y), products commute). So only J > I and
+    # (a,b) = (0,1), (0,2), (1,2) are formed; the result is bit-identical to
+    # the full I, J, a, b loop.
     for I in range(nen):
-        for J in range(nen):
+        r0, r1, r2 = 3 * I, 3 * I + 1, 3 * I + 2
+        for J in range(I + 1, nen):
+            c0, c1, c2 = 3 * J, 3 * J + 1, 3 * J + 2
             for q in range(nq):
                 wJ = W[q] * detJ[q]
-                # H_I, H_J at this qp (F^{-T} G); dV term is
-                # J*(outer(H_I,H_J) - outer(H_J,H_I)) -- verified vs FD
-                HI = np.zeros(3, dtype=np.float64)
-                HJ = np.zeros(3, dtype=np.float64)
-                for a in range(3):
-                    for m in range(3):
-                        HI[a] += FinvT[q, a, m] * G[q, I, m]
-                        HJ[a] += FinvT[q, a, m] * G[q, J, m]
-                for a in range(3):
-                    for b in range(3):
-                        K[3 * I + a, 3 * J + b] += pbar * wJ * (HI[a] * HJ[b] - HJ[a] * HI[b])
+                cq = pbar * wJ
+                hi0, hi1, hi2 = H[q, I, 0], H[q, I, 1], H[q, I, 2]
+                hj0, hj1, hj2 = H[q, J, 0], H[q, J, 1], H[q, J, 2]
+                v01 = cq * (hi0 * hj1 - hj0 * hi1)
+                v02 = cq * (hi0 * hj2 - hj0 * hi2)
+                v12 = cq * (hi1 * hj2 - hj1 * hi2)
+                K[r0, c1] += v01
+                K[r1, c0] -= v01
+                K[r0, c2] += v02
+                K[r2, c0] -= v02
+                K[r1, c2] += v12
+                K[r2, c1] -= v12
+                K[c1, r0] += v01
+                K[c0, r1] -= v01
+                K[c2, r0] += v02
+                K[c0, r2] -= v02
+                K[c2, r1] += v12
+                K[c1, r2] -= v12
     return R, K, Jbar
 
 
@@ -169,87 +197,116 @@ def _lagrange_1d(xi: float, nodes: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     return N, dN
 
 
+@njit(cache=True)
+def _assemble_csr(G_all: np.ndarray, W_all: np.ndarray, conn: np.ndarray, u: np.ndarray,
+                  mu: float, lam: float, coo2csr: np.ndarray, nnz: int):
+    """Global R and CSR data of K. Cell blocks are scattered through the
+    precomputed ``coo2csr`` map (cell c, local (i, j) -> c*nd*nd + i*nd + j),
+    adding cells in the same order as the dense oracle ``residual_tangent``."""
+    nc, nen = conn.shape
+    nd = 3 * nen
+    R = np.zeros(u.shape[0], dtype=np.float64)
+    data = np.zeros(nnz, dtype=np.float64)
+    uc = np.empty((nen, 3), dtype=np.float64)
+    for c in range(nc):
+        for I in range(nen):
+            n = conn[c, I]
+            for a in range(3):
+                uc[I, a] = u[3 * n + a]
+        Rc, Kc, _ = _cell_residual_tangent(G_all[c], W_all[c], uc, mu, lam)
+        for i in range(nd):
+            R[3 * conn[c, i // 3] + i % 3] += Rc[i]
+        base = c * nd * nd
+        for i in range(nd):
+            row = base + i * nd
+            for j in range(nd):
+                data[coo2csr[row + j]] += Kc[i, j]
+    return R, data
+
+
+def _axis_cells(knots: np.ndarray, p: int, xg: np.ndarray) -> list:
+    """Per-cell 1D data along one axis for any clamped knot vector.
+
+    Returns ``[(lo, hi, first_cp, N(ng, p+1), dN(ng, p+1)), ...]``. The span
+    comes from ``find_span`` at the cell midpoint, so interior knot
+    multiplicity m (continuity C^(p-m)) is handled: first_cp = span - p.
+    """
+    n_cp = len(knots) - p - 1
+    br = np.unique(knots)
+    out = []
+    for c in range(len(br) - 1):
+        lo, hi = float(br[c]), float(br[c + 1])
+        span = int(find_span(n_cp, p, 0.5 * (lo + hi), knots))
+        if knots[span] != lo or knots[span + 1] != hi:
+            raise ValueError(f"cell {c}: span {span} does not cover [{lo}, {hi}]")
+        ng = len(xg)
+        N = np.empty((ng, p + 1))
+        dN = np.empty((ng, p + 1))
+        for g in range(ng):
+            d = ders_basis_funs(span, lo + 0.5 * (xg[g] + 1.0) * (hi - lo), p, 1, knots)
+            N[g] = d[0]
+            dN[g] = d[1]
+        out.append((lo, hi, span - p, N, dN))
+    return out
+
+
 def build_model(box, degree: int, E: float, nu: float,
                 n_gauss: int | None = None) -> dict:
-    """Precompute per-cell QP data. *box*: BoxSpline-like (pure Python ok)."""
-    import numpy as np
+    """Precompute per-cell QP data and the CSR pattern.
 
+    *box*: BoxSpline-like (``knots``, ``n_cp``, ``control_points()``), clamped
+    knots with any uniform interior multiplicity (``continuity`` 0..p-1).
+    """
     p = int(degree)
     ng = p + 1 if n_gauss is None else int(n_gauss)
     xg, wg = np.polynomial.legendre.leggauss(ng)
-    ku, kv, kw = (np.asarray(k, dtype=float) for k in box.knots)
+    knots = [np.ascontiguousarray(k, dtype=np.float64) for k in box.knots]
     nu_, nv_, nw_ = (int(v) for v in box.n_cp)
+    for k, n in zip(knots, (nu_, nv_, nw_)):
+        if len(k) - p - 1 != n:
+            raise ValueError("box.n_cp does not match its knots for this degree")
     cp = np.asarray(box.control_points(), dtype=float)
     n_ctrl = cp.shape[0]
     mu = E / (2.0 * (1.0 + nu))
     lam = E * nu / ((1.0 + nu) * (1.0 - 2.0 * nu))
-    br = [np.unique(k) for k in (ku, kv, kw)]
+    tx, ty, tz = (_axis_cells(k, p, xg) for k in knots)
+    nq, ncn = ng ** 3, (p + 1) ** 3
+    wq = np.einsum("z,y,x->zyx", wg, wg, wg).reshape(nq)
+    ax = np.arange(p + 1)
     cells: list = []
-    for ck in range(box.n_cells[2]):
-        for cj in range(box.n_cells[1]):
-            for ci in range(box.n_cells[0]):
-                los = [br[0][ci], br[1][cj], br[2][ck]]
-                his = [br[0][ci + 1], br[1][cj + 1], br[2][ck + 1]]
-                # NOTE: uniform clamped knots assumed (BoxSpline/CookSpline).
-                # cell (ci,cj,ck) spans knot intervals [ci+p, ci+p+1] etc.,
-                # i.e. control points [ci:ci+p+1] per axis.
-                first = [ci, cj, ck]
-                sx, sy, sz = ci + p, cj + p, ck + p
-                idx = []
-                for ck2 in range(p + 1):
-                    for cj2 in range(p + 1):
-                        for ci2 in range(p + 1):
-                            I = ((first[0] + ci2)
-                                 + nu_ * ((first[1] + cj2) + nv_ * (first[2] + ck2)))
-                            idx.append(int(I))
-                ncn = len(idx)
-                nq = ng ** 3
-                G = np.zeros((nq, ncn, 3))
-                W = np.zeros(nq)
-                q = 0
-                for gz, wz in zip(xg, wg):
-                    uz = los[2] + 0.5 * (gz + 1.0) * (his[2] - los[2])
-                    dz = ders_basis_funs(sz, uz, p, 1, kw)
-                    for gy, wy in zip(xg, wg):
-                        uy = los[1] + 0.5 * (gy + 1.0) * (his[1] - los[1])
-                        dy = ders_basis_funs(sy, uy, p, 1, kv)
-                        for gx, wx in zip(xg, wg):
-                            ux = los[0] + 0.5 * (gx + 1.0) * (his[0] - los[0])
-                            dx = ders_basis_funs(sx, ux, p, 1, ku)
-                            Nu, dNu = np.asarray(dx[0]), np.asarray(dx[1])
-                            Nv, dNv = np.asarray(dy[0]), np.asarray(dy[1])
-                            Nw, dNw = np.asarray(dz[0]), np.asarray(dz[1])
-                            # geometry Jacobian dX/dxi (cols = dX/dxi,dX/deta,dX/dzeta)
-                            Jg = np.zeros((3, 3))
-                            N3 = np.zeros((ncn,))
-                            d3 = np.zeros((ncn, 3))
-                            ii = 0
-                            for ak in range(p + 1):
-                                for aj in range(p + 1):
-                                    for ai in range(p + 1):
-                                        X = cp[idx[ii]]
-                                        Jg[:, 0] += X * (dNu[ai] * Nv[aj] * Nw[ak])
-                                        Jg[:, 1] += X * (Nu[ai] * dNv[aj] * Nw[ak])
-                                        Jg[:, 2] += X * (Nu[ai] * Nv[aj] * dNw[ak])
-                                        N3[ii] = Nu[ai] * Nv[aj] * Nw[ak]
-                                        d3[ii, 0] = dNu[ai] * Nv[aj] * Nw[ak]
-                                        d3[ii, 1] = Nu[ai] * dNv[aj] * Nw[ak]
-                                        d3[ii, 2] = Nu[ai] * Nv[aj] * dNw[ak]
-                                        ii += 1
-                            detJ = float(np.linalg.det(Jg))
-                            invJg = np.linalg.inv(Jg)
-                            G[q] = (invJg.T @ d3.T).T
-                            W[q] = float(wx * wy * wz * 0.125
-                                         * (his[0] - los[0]) * (his[1] - los[1]) * (his[2] - los[2])
-                                         * abs(detJ))
-                            q += 1
-                cells.append({"nodes": np.asarray(idx, dtype=np.int64), "G": G, "W": W})
-    return {"cells": cells, "n_ctrl": n_ctrl, "n_dof": 3 * n_ctrl,
-            "mu": float(mu), "lam": float(lam), "degree": p}
+    for zl, zh, fz, Nw, dNw in tz:
+        for yl, yh, fy, Nv, dNv in ty:
+            for xl, xh, fx, Nu, dNu in tx:
+                # local node ii = ai + (p+1)*(aj + (p+1)*ak); q = gx + ng*(gy + ng*gz)
+                idx = ((fx + ax)[None, None, :]
+                       + nu_ * ((fy + ax)[None, :, None] + nv_ * (fz + ax)[:, None, None])).reshape(ncn)
+                d3 = np.empty((nq, ncn, 3))
+                d3[:, :, 0] = np.einsum("zk,yj,xi->zyxkji", Nw, Nv, dNu).reshape(nq, ncn)
+                d3[:, :, 1] = np.einsum("zk,yj,xi->zyxkji", Nw, dNv, Nu).reshape(nq, ncn)
+                d3[:, :, 2] = np.einsum("zk,yj,xi->zyxkji", dNw, Nv, Nu).reshape(nq, ncn)
+                Jg = np.einsum("qnc,ni->qic", d3, cp[idx])  # dX_i/dxi_c
+                G = np.einsum("qnc,qcd->qnd", d3, np.linalg.inv(Jg))
+                W = wq * (0.125 * (xh - xl) * (yh - yl) * (zh - zl)) * np.abs(np.linalg.det(Jg))
+                cells.append({"nodes": idx.astype(np.int64), "G": G, "W": W})
+    conn = np.stack([c["nodes"] for c in cells])
+    nc, nd, ndof = conn.shape[0], 3 * ncn, 3 * n_ctrl
+    dofs = (3 * conn[:, :, None] + np.arange(3)[None, None, :]).reshape(nc, nd)
+    key = (np.repeat(dofs, nd, axis=1).astype(np.int64) * ndof
+           + np.tile(dofs, (1, nd)).astype(np.int64)).ravel()
+    uniq, coo2csr = np.unique(key, return_inverse=True)
+    indptr = np.zeros(ndof + 1, dtype=np.int64)
+    np.cumsum(np.bincount(uniq // ndof, minlength=ndof), out=indptr[1:])
+    csr = {"indptr": indptr, "indices": (uniq % ndof).astype(np.int64),
+           "coo2csr": coo2csr.astype(np.int64).ravel(), "nnz": int(uniq.size)}
+    return {"cells": cells, "n_ctrl": n_ctrl, "n_dof": ndof,
+            "mu": float(mu), "lam": float(lam), "degree": p,
+            "G_all": np.ascontiguousarray(np.stack([c["G"] for c in cells])),
+            "W_all": np.ascontiguousarray(np.stack([c["W"] for c in cells])),
+            "conn": np.ascontiguousarray(conn), "csr": csr}
 
 
 def residual_tangent(model: dict, u: np.ndarray):
-    """Assemble global R, K (dense)."""
+    """Assemble global R, K (dense). Oracle for the sparse path; small models only."""
     ndof = int(model["n_dof"])
     R = np.zeros(ndof)
     K = np.zeros((ndof, ndof))
@@ -262,6 +319,20 @@ def residual_tangent(model: dict, u: np.ndarray):
         dofs = np.repeat(3 * nodes, 3) + np.tile([0, 1, 2], len(nodes))
         R[dofs] += Rc
         K[np.ix_(dofs, dofs)] += Kc
+    return R, K
+
+
+def residual_tangent_sparse(model: dict, u: np.ndarray):
+    """Assemble global R (ndarray) and K (scipy CSR, sorted indices)."""
+    import scipy.sparse as sp
+
+    ndof = int(model["n_dof"])
+    s = model["csr"]
+    R, data = _assemble_csr(model["G_all"], model["W_all"], model["conn"],
+                            np.ascontiguousarray(u, dtype=np.float64).reshape(ndof),
+                            float(model["mu"]), float(model["lam"]), s["coo2csr"], s["nnz"])
+    K = sp.csr_matrix((data, s["indices"], s["indptr"]), shape=(ndof, ndof))
+    K.has_sorted_indices = True
     return R, K
 
 
@@ -295,7 +366,8 @@ def solve_static(model: dict, f_ext: np.ndarray, fixed: np.ndarray,
                  n_steps: int = 1, rtol: float = 1e-6, atol: float = 1e-9,
                  max_it: int = 25, prescribed: dict | None = None,
                  dtol: float = 1e-10, min_frac: float = 1e-4,
-                 history: list | None = None) -> np.ndarray:
+                 history: list | None = None,
+                 linear_solver: str = "auto") -> np.ndarray:
     """Adaptive load-stepped Newton with Dirichlet fixing. Returns full u.
 
     ``prescribed`` maps DOF -> final value (ramped with the load factor);
@@ -323,6 +395,12 @@ def solve_static(model: dict, f_ext: np.ndarray, fixed: np.ndarray,
 
     ``history`` (optional list) receives ``(load_factor, iterations)`` for
     each converged increment.
+
+    ``linear_solver``: ``"pardiso"`` (pypardiso, own handle, freed on exit),
+    ``"superlu"`` (scipy), ``"auto"`` (pardiso if importable, else superlu;
+    both are direct solvers) on the CSR tangent of ``residual_tangent_sparse``,
+    or ``"dense"`` (dense oracle ``residual_tangent`` + ``np.linalg.solve``,
+    the pre-2026-11-19 path; small models only).
     """
     ndof = int(model["n_dof"])
     u = np.zeros(ndof)
@@ -335,6 +413,32 @@ def solve_static(model: dict, f_ext: np.ndarray, fixed: np.ndarray,
             raise ValueError(f"prescribed dof {k} out of range")
         free[k] = False
     f = np.asarray(f_ext, dtype=float)
+    kind = str(linear_solver).lower()
+    pardiso = None
+    if kind == "dense":
+        assemble = residual_tangent
+
+        def lin_solve(K, b):
+            return np.linalg.solve(K[np.ix_(free, free)], b)
+    elif kind in ("auto", "pardiso", "superlu"):
+        assemble = residual_tangent_sparse
+        free_idx = np.flatnonzero(free)
+        if kind != "superlu":
+            try:
+                import pypardiso
+                pardiso = pypardiso.PyPardisoSolver()
+            except ImportError:
+                if kind == "pardiso":
+                    raise
+
+        def lin_solve(K, b):
+            A = K[free_idx][:, free_idx]
+            if pardiso is not None:
+                return np.asarray(pypardiso.spsolve(A, b, solver=pardiso), dtype=np.float64)
+            import scipy.sparse.linalg as spla
+            return np.asarray(spla.spsolve(A.tocsc(), b), dtype=np.float64)
+    else:
+        raise ValueError(f"unknown linear_solver {linear_solver!r}")
     d_nom = 1.0 / max(1, int(n_steps))
     lam, dlam = 0.0, d_nom
 
@@ -342,7 +446,7 @@ def solve_static(model: dict, f_ext: np.ndarray, fixed: np.ndarray,
         target = f * lam_new
         for k, v in prescribed.items():
             u[k] = v * lam_new
-        R, K = residual_tangent(model, u)
+        R, K = assemble(model, u)
         rr = R[free] - target[free]
         if not np.all(np.isfinite(rr)):
             return False, 0
@@ -351,12 +455,12 @@ def solve_static(model: dict, f_ext: np.ndarray, fixed: np.ndarray,
         for it in range(1, max_it + 1):
             if float(np.max(np.abs(rr))) < gate:
                 return True, it - 1
-            du = np.linalg.solve(K[np.ix_(free, free)], -rr)
+            du = lin_solve(K, -rr)
             step = 1.0
             while True:
                 u_try = u.copy()
                 u_try[free] += step * du
-                R, K = residual_tangent(model, u_try)
+                R, K = assemble(model, u_try)
                 if np.all(np.isfinite(R[free])):
                     break
                 step *= 0.5
@@ -368,19 +472,23 @@ def solve_static(model: dict, f_ext: np.ndarray, fixed: np.ndarray,
                 return True, it
         return float(np.max(np.abs(rr))) < gate, max_it
 
-    while lam < 1.0 - 1e-14:
-        lam_new = min(1.0, lam + dlam)
-        u_save = u.copy()
-        ok, its = _increment(lam_new)
-        if ok:
-            lam = lam_new
-            if history is not None:
-                history.append((lam, its))
-            if its <= 6:
-                dlam = min(d_nom, 1.5 * dlam)
-        else:
-            u[:] = u_save
-            dlam *= 0.5
-            if dlam < min_frac:
-                raise RuntimeError(f"fbar Newton failed: increment below {min_frac} at load factor {lam:.6g}")
+    try:
+        while lam < 1.0 - 1e-14:
+            lam_new = min(1.0, lam + dlam)
+            u_save = u.copy()
+            ok, its = _increment(lam_new)
+            if ok:
+                lam = lam_new
+                if history is not None:
+                    history.append((lam, its))
+                if its <= 6:
+                    dlam = min(d_nom, 1.5 * dlam)
+            else:
+                u[:] = u_save
+                dlam *= 0.5
+                if dlam < min_frac:
+                    raise RuntimeError(f"fbar Newton failed: increment below {min_frac} at load factor {lam:.6g}")
+    finally:
+        if pardiso is not None:
+            pardiso.free_memory(everything=True)
     return u

@@ -19,6 +19,7 @@ MethodId = Literal[
 
 FeElementType = Literal["hex8", "hex20", "tet4", "tet10", "wedge6"]
 HybridCouplingKind = Literal["auto", "penalty_spring", "mortar_l2", "barycentric"]
+LockingMitigation = Literal["auto", "none", "fbar"]
 Degree = Annotated[int, Field(ge=1, le=3)]
 CellCounts = tuple[
     Annotated[int, Field(ge=1)],
@@ -134,6 +135,10 @@ class FullIgaOption(SpecBase):
         Optional explicit Dirichlet penalty parameter ``beta``.
     trim_deflection:
         Optional CAD tessellation chord deflection for immersed trimming.
+    locking_mitigation:
+        Volumetric locking mitigation for near-incompressible materials:
+        ``"none"`` (default linear elasticity), ``"fbar"`` (F-bar mean-dilatation
+        for body-fit boxes), or ``"auto"`` (uses F-bar when ``nu >= 0.49``).
     """
 
     kind: Literal["full_iga_body_fit", "full_iga_immersed"] = "full_iga_body_fit"
@@ -145,12 +150,17 @@ class FullIgaOption(SpecBase):
     ghost_alpha: Annotated[float, Field(gt=0.0, le=1.0)] = 1e-8
     bc_penalty: PositiveFinite | None = None
     trim_deflection: PositiveFinite | None = None
+    locking_mitigation: LockingMitigation = "none"
 
     @model_validator(mode="after")
     def _validate_continuity(self) -> Self:
         if self.continuity is not None and self.continuity >= self.degree:
             raise ValueError(
                 f"continuity must be < degree, got continuity={self.continuity}, degree={self.degree}"
+            )
+        if self.locking_mitigation == "fbar" and self.kind != "full_iga_body_fit":
+            raise ValueError(
+                "locking_mitigation='fbar' is only supported for kind='full_iga_body_fit'"
             )
         return self
 

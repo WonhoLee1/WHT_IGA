@@ -626,12 +626,224 @@ def _fix_node_all_disp(KM: Any, node: Any) -> None:
 # Per-Method Solver Routing
 # ---------------------------------------------------------------------------
 
+def _assemble_fbar_face_traction(
+    box: Any,
+    axis: int,
+    side: int,
+    traction: tuple[float, float, float] | np.ndarray,
+    n_gauss: int | None = None,
+) -> np.ndarray:
+    """Consistent surface traction vector using the exact physical surface Jacobian.
+
+    Works for both axis-aligned :class:`BoxSpline` and mapped splines such as
+    :class:`CookSpline`.
+    """
+    p = int(box.degree)
+    ng = p + 1 if n_gauss is None else int(n_gauss)
+    xg, wg = np.polynomial.legendre.leggauss(ng)
+    others = [d for d in range(3) if d != axis]
+    t1 = box.axis_tables(others[0], xg)
+    t2 = box.axis_tables(others[1], xg)
+    fixed_cp = 0 if side == 0 else int(box.n_cp[axis]) - 1
+    nu_, nv_, _ = (int(v) for v in box.n_cp)
+    cp = np.asarray(box.control_points(), dtype=np.float64)
+    f = np.zeros(int(box.n_dofs), dtype=np.float64)
+    trac = np.asarray(traction, dtype=np.float64)
+
+    for c1 in range(len(t1[4])):
+        for c2 in range(len(t2[4])):
+            jac_param = float(t1[4][c1]) * float(t2[4][c2])
+            for g1 in range(ng):
+                for g2 in range(ng):
+                    dx_d1 = np.zeros(3, dtype=np.float64)
+                    dx_d2 = np.zeros(3, dtype=np.float64)
+                    ids: list[int] = []
+                    vals: list[float] = []
+                    for a1 in range(p + 1):
+                        n1 = float(t1[1][c1, g1, a1])
+                        dn1 = float(t1[2][c1, g1, a1])
+                        for a2 in range(p + 1):
+                            n2 = float(t2[1][c2, g2, a2])
+                            dn2 = float(t2[2][c2, g2, a2])
+                            idx = [0, 0, 0]
+                            idx[axis] = fixed_cp
+                            idx[others[0]] = int(t1[0][c1]) + a1
+                            idx[others[1]] = int(t2[0][c2]) + a2
+                            ctrl_id = idx[0] + nu_ * (idx[1] + nv_ * idx[2])
+                            dx_d1 += (dn1 * n2) * cp[ctrl_id]
+                            dx_d2 += (n1 * dn2) * cp[ctrl_id]
+                            ids.append(ctrl_id)
+                            vals.append(n1 * n2)
+                    area_jac = float(np.linalg.norm(np.cross(dx_d1, dx_d2)))
+                    w = float(wg[g1]) * float(wg[g2]) * jac_param * area_jac
+                    for ctrl_id, shape_val in zip(ids, vals):
+                        f[3 * ctrl_id : 3 * ctrl_id + 3] += w * shape_val * trac
+    return f
+
+
+def solve_fbar_box(
+    problem: BoxMethodProblem,
+    *,
+    degree: int = 2,
+    continuity: int | None = None,
+    n_cells: tuple[int, int, int] = (4, 2, 2),
+    n_gauss: int | None = None,
+    n_steps: int = 1,
+    linear_solver: str = "auto",
+    use_pardiso: bool = True,
+    box: Any | None = None,
+    fixed_axes: tuple[int, ...] = (),
+) -> MethodSolution:
+    """Solve a near-incompressible body-fit box problem with F-bar mean dilatation.
+
+    Wires :mod:`wht_iga.analyses.fbar` (Simo-Taylor-Pister mean-dilatation
+    Total-Lagrangian Neo-Hookean) into the unified :class:`MethodSolution`
+    interface. Supports both :class:`BoxSpline` (constructed from ``problem``
+    when ``box=None``) and mapped splines such as :class:`CookSpline`.
+
+    Parameters
+    ----------
+    problem:
+        Box geometry, material properties, clamped face, and traction load.
+    degree:
+        Spline polynomial degree (ignored when ``box`` is supplied).
+    continuity:
+        Inter-element continuity ``0..degree-1``; defaults to ``degree - 1``
+        (ignored when ``box`` is supplied).
+    n_cells:
+        Grid cell counts ``(nx, ny, nz)`` (ignored when ``box`` is supplied).
+    n_gauss:
+        1D Gauss quadrature order per cell; defaults to ``degree + 1``.
+    n_steps:
+        Nominal number of adaptive load increments passed to ``fbar.solve_static``.
+    linear_solver:
+        Linear solver backend for ``fbar.solve_static`` (``"auto"``,
+        ``"pardiso"``, ``"superlu"``, or ``"dense"``).
+    use_pardiso:
+        When ``linear_solver == "auto"``, fall back to ``"superlu"`` if ``False``.
+    box:
+        Optional prebuilt :class:`BoxSpline`-compatible spline object (e.g.
+        :class:`CookSpline`).
+    fixed_axes:
+        Optional global displacement component indices ``(0, 1, 2)`` clamped
+        throughout the entire body (e.g. ``(2,)`` for plane-strain Cook).
+    """
+    from wht_iga.analyses import fbar
+    from wht_iga.reference.box import BoxSpline
+
+    t_start = time.perf_counter()
+    if box is None:
+        cont = (int(degree) - 1) if continuity is None else int(continuity)
+        box_obj = BoxSpline(
+            lo=problem.lo,
+            hi=problem.hi,
+            n_cells=n_cells,
+            degree=int(degree),
+            continuity=cont,
+        )
+    else:
+        box_obj = box
+
+    deg = int(box_obj.degree)
+    t_build0 = time.perf_counter()
+    model = fbar.build_model(box_obj, deg, E=problem.E, nu=problem.nu, n_gauss=n_gauss)
+    t_build = time.perf_counter() - t_build0
+
+    f_ext = _assemble_fbar_face_traction(
+        box_obj,
+        problem.load_face[0],
+        problem.load_face[1],
+        problem.traction,
+        n_gauss=n_gauss,
+    )
+
+    fixed_set: set[int] = set()
+    for ctrl_id in box_obj.boundary_control_points(*problem.fixed_face):
+        base = 3 * int(ctrl_id)
+        fixed_set.update((base, base + 1, base + 2))
+    n_ctrl = int(model["n_ctrl"])
+    for ax in fixed_axes:
+        ax_i = int(ax)
+        if ax_i not in (0, 1, 2):
+            raise ValueError(f"fixed_axes entries must be in 0..2, got {ax}")
+        for ctrl_id in range(n_ctrl):
+            fixed_set.add(3 * ctrl_id + ax_i)
+    fixed_arr = np.array(sorted(fixed_set), dtype=np.int64)
+
+    solver_kind = linear_solver
+    if str(linear_solver).lower() == "auto" and not use_pardiso:
+        solver_kind = "superlu"
+
+    history: list[tuple[float, int]] = []
+    t_solve0 = time.perf_counter()
+    u = fbar.solve_static(
+        model,
+        f_ext,
+        fixed_arr,
+        n_steps=n_steps,
+        history=history,
+        linear_solver=solver_kind,
+    )
+    t_solve = time.perf_counter() - t_solve0
+    coeffs = u.reshape(-1, 3)
+
+    def _eval(pts: np.ndarray) -> np.ndarray:
+        return box_obj.evaluate(coeffs, pts)
+
+    tip_disp = _eval(problem.tip_point().reshape(1, 3))[0]
+    total_wall = time.perf_counter() - t_start
+    total_dofs = int(model["n_dof"])
+    active_dofs = total_dofs - int(fixed_arr.size)
+
+    return MethodSolution(
+        method="full_iga_body_fit",
+        total_dofs=total_dofs,
+        active_dofs=active_dofs,
+        tip_displacement=tip_disp,
+        max_displacement=float(np.max(np.abs(u))) if u.size else 0.0,
+        converged=True,
+        timings={
+            "build_s": t_build,
+            "solve_s": t_solve,
+            "total_s": total_wall,
+            "n_increments": len(history),
+        },
+        native={
+            "model": model,
+            "box": box_obj,
+            "u": u,
+            "f_ext": f_ext,
+            "fixed": fixed_arr,
+            "history": history,
+            "locking_mitigation": "fbar",
+        },
+        _eval_fn=_eval,
+    )
+
+
 def _solve_full_iga(
     problem: BoxMethodProblem,
     option: FullIgaOption,
     use_pardiso: bool,
 ) -> MethodSolution:
     """Route ``full_iga_body_fit`` and ``full_iga_immersed`` to ``wht_iga.solver.pipeline.run_linear``."""
+    use_fbar = option.locking_mitigation == "fbar" or (
+        option.locking_mitigation == "auto"
+        and option.kind == "full_iga_body_fit"
+        and problem.nu >= 0.49
+    )
+    if use_fbar:
+        if option.kind != "full_iga_body_fit":
+            raise ValueError(
+                "locking_mitigation='fbar' is only supported for kind='full_iga_body_fit'"
+            )
+        return solve_fbar_box(
+            problem,
+            degree=option.degree,
+            continuity=option.resolved_continuity,
+            n_cells=option.n_cells,
+            use_pardiso=use_pardiso,
+        )
     from wht_iga.backends.mesh_engine import box_triangle_soup
     from wht_iga.reference.box import BoxSpline
     from wht_iga.solver.pipeline import run_linear

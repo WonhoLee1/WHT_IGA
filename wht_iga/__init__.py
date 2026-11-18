@@ -42,10 +42,10 @@ _LAZY: dict[str, str] = {
         "BoxMethodProblem", "DiscretizationOption", "DiscretizationRecommendation",
         "FullIgaOption", "IgaFeHybridOption",
         "MethodDescriptor", "MethodId", "MethodSolution", "NativeFeOption",
-        "PhysicsKind", "ThbAdaptiveIgaOption",
-        "compare_method_solutions",
+        "ObbFrame", "PhysicsKind", "ThbAdaptiveIgaOption",
+        "compare_method_solutions", "compute_pca_obb",
         "list_discretization_methods", "parse_discretization_option",
-        "recommend_discretization",
+        "recommend_discretization", "solve_immersed_obb",
         "solve_with_discretization_method")},
     **{n: "wht_iga.analyses.presets" for n in (
         "bending_thb", "bulk_linear", "contact_iga", "describe")},

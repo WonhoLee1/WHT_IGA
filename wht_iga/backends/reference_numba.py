@@ -70,7 +70,6 @@ class ReferenceNumbaBackend:
             raise BackendUnsupported("ReferenceNumbaBackend has no follower-pressure (geometric) stiffness")
         t0 = time.perf_counter()
         box = mesh.box()
-        K = assemble_stiffness(box, js.E, js.nu)
         f_surf = np.zeros(box.n_dofs)
         for t in js.tractions:
             f_surf += assemble_face_traction(box, t.face[0], t.face[1], np.asarray(t.vector, float))
@@ -95,10 +94,36 @@ class ReferenceNumbaBackend:
             raise BackendUnsupported("no Dirichlet data: rigid-body singular")
         idx = np.fromiter(fixed.keys(), dtype=np.int64)
         vals = np.fromiter(fixed.values(), dtype=float)
-        t1 = time.perf_counter()
-        U = solve_with_dirichlet(K.tocsr(), f, idx, vals)
-        t2 = time.perf_counter()
-        R = K @ U - f  # reactions live on the fixed DOFs; free residual ~ 0
+
+        mitigation = str(getattr(js, "locking_mitigation", "none")).lower()
+        use_fbar = mitigation == "fbar" or (mitigation == "auto" and float(js.nu) >= 0.49)
+        if use_fbar:
+            from wht_iga.analyses import fbar
+
+            fbar_model = fbar.build_model(box, box.degree, E=js.E, nu=js.nu)
+            zero_idx = np.array([k for k, v in fixed.items() if v == 0.0], dtype=np.int64)
+            prescribed = {k: v for k, v in fixed.items() if v != 0.0}
+            t1 = time.perf_counter()
+            U = fbar.solve_static(
+                fbar_model,
+                f,
+                zero_idx,
+                prescribed=prescribed or None,
+                linear_solver="auto",
+            )
+            t2 = time.perf_counter()
+            R_int, K_tan = fbar.residual_tangent_sparse(fbar_model, U)
+            R = R_int - f
+            nnz_val = int(K_tan.nnz)
+            solver_label = "fbar.solve_static"
+        else:
+            K = assemble_stiffness(box, js.E, js.nu)
+            t1 = time.perf_counter()
+            U = solve_with_dirichlet(K.tocsr(), f, idx, vals)
+            t2 = time.perf_counter()
+            R = K @ U - f  # reactions live on the fixed DOFs; free residual ~ 0
+            nnz_val = int(K.nnz)
+            solver_label = "reference.solve_with_dirichlet"
         free = np.setdiff1d(np.arange(box.n_dofs), idx)
         rel_res = float(np.linalg.norm(R[free]) / max(np.linalg.norm(f[free]), 1e-300)) if free.size else 0.0
         rxn = np.array([R[idx[idx % 3 == d]].sum() for d in range(3)])
@@ -117,11 +142,11 @@ class ReferenceNumbaBackend:
                                      n_ctrl_pts=box.n_ctrl, n_total_dofs=box.n_dofs,
                                      n_active_dofs=box.n_dofs - len(idx), n_in_cells=nx * ny * nz,
                                      n_cut_cells=0, n_out_cells=0, out_mode="none",
-                                     n_quad_pts=nx * ny * nz * (box.degree + 1) ** 3, nnz=int(K.nnz))
+                                     n_quad_pts=nx * ny * nz * (box.degree + 1) ** 3, nnz=nnz_val)
             logger.log_stage_3_constraints(n_dirichlet_bcs=len(js.bcs), n_fixed_faces=len(js.fixed_faces),
                                            extra_notes=[f"strong Dirichlet on {len(idx)} face DOFs"])
             logger.log_stage_4_solver_selection(requested_solver="reference",
-                                                selected_solver="reference.solve_with_dirichlet")
+                                                selected_solver=solver_label)
             logger.log_stage_5_row(lin_it=1, rel_res=rel_res, wall_s=t2 - t1)
             logger.log_stage_6_summary(converged=True, max_disp=float(np.max(np.abs(U))),
                                        total_force=total_force, reaction_residual=rxn_res,

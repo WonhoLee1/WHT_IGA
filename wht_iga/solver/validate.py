@@ -124,6 +124,7 @@ class JobSpec:
     # "auto" (default): pardiso_ldlt (half the factor memory of LU — matters on a
     # 32 GB machine) unless a follower load makes the tangent unsymmetric, then pardiso_lu.
     linear_solver: LinearSolverType | str = "auto"
+    locking_mitigation: str = "none"
     num_threads_mkl: int | str | None = None  # None = MKL default; int; "consistent"
     enable_solver_log: bool = True
     solver_log_file: str | None = None

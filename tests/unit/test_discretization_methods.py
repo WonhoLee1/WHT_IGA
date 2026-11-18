@@ -308,3 +308,59 @@ def test_compare_method_solutions_pure():
     assert out["l2_rel"] == pytest.approx(0.1 / 1.0)
     same = compare_method_solutions(ref, ref, pts)
     assert same["l2_abs"] == 0.0 and same["tip_rel"] == 0.0
+
+
+def test_compute_pca_obb_canonical_and_transforms():
+    from wht_iga.analyses.methods import ObbFrame, compute_pca_obb
+
+    # 35-deg rotated box shifted to (3.0, -2.0, 1.5)
+    theta = np.deg2rad(35.0)
+    c, s = float(np.cos(theta)), float(np.sin(theta))
+    rot_z = np.array([[c, -s, 0.0], [s, c, 0.0], [0.0, 0.0, 1.0]], dtype=np.float64)
+    L, W, H = 10.0, 2.0, 1.0
+    local_corners = np.array(
+        [[x, y, z] for x in (-L / 2, L / 2) for y in (-W / 2, W / 2) for z in (-H / 2, H / 2)],
+        dtype=np.float64,
+    )
+    shift = np.array([3.0, -2.0, 1.5], dtype=np.float64)
+    global_corners = local_corners @ rot_z.T + shift
+
+    frame, lo, hi = compute_pca_obb(global_corners, padding_frac=0.02)
+    assert isinstance(frame, ObbFrame)
+    R = frame.rotation_matrix()
+    np.testing.assert_allclose(R.T @ R, np.eye(3), atol=1e-12)
+    assert np.linalg.det(R) == pytest.approx(1.0, abs=1e-12)
+    np.testing.assert_allclose(frame.origin, shift, atol=1e-12)
+
+    # Spans match (L, W, H) * (1 + 2 * 0.02)
+    spans = np.array(hi) - np.array(lo)
+    np.testing.assert_allclose(spans, np.array([L, W, H]) * 1.04, rtol=1e-12)
+
+    # Canonical sign & permutation invariance
+    perm = np.array([5, 2, 7, 0, 4, 1, 6, 3])
+    frame_perm, lo_perm, hi_perm = compute_pca_obb(global_corners[perm], padding_frac=0.02)
+    np.testing.assert_allclose(frame_perm.rotation_matrix(), R, atol=1e-12)
+    np.testing.assert_allclose(lo_perm, lo, atol=1e-12)
+    np.testing.assert_allclose(hi_perm, hi, atol=1e-12)
+
+    # Point, vector, and tensor round-trip transforms
+    pts_loc = frame.to_local_points(global_corners)
+    np.testing.assert_allclose(frame.to_global_points(pts_loc), global_corners, atol=1e-12)
+    vecs = np.array([[1.0, 2.0, -0.5], [0.0, -3.0, 4.0]])
+    np.testing.assert_allclose(frame.to_global_vectors(frame.to_local_vectors(vecs)), vecs, atol=1e-12)
+    sig_loc = np.diag([100.0, 20.0, -5.0])
+    sig_glob = frame.to_global_tensors(sig_loc)
+    np.testing.assert_allclose(sig_glob, R @ sig_loc @ R.T, atol=1e-12)
+
+
+def test_compute_pca_obb_validation_errors():
+    from wht_iga.analyses.methods import compute_pca_obb
+
+    with pytest.raises(ValueError, match="shape"):
+        compute_pca_obb(np.zeros((3, 3)))
+    with pytest.raises(ValueError, match="padding_frac"):
+        compute_pca_obb(np.eye(4, 3), padding_frac=-0.1)
+    # Coplanar (rank 2) points must raise
+    coplanar = np.array([[0.0, 0.0, 0.0], [1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [1.0, 1.0, 0.0]])
+    with pytest.raises(ValueError, match="rank < 3"):
+        compute_pca_obb(coplanar)

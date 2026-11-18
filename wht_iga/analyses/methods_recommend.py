@@ -51,12 +51,16 @@ class DiscretizationRecommendation:
         Whether a user-requested degree was lowered.
     warnings:
         Non-fatal advisories (hybrid mismatch, budget overrun at p=1, ...).
+    locking_mitigation:
+        Recommended volumetric locking mitigation (``"none"`` or ``"fbar"``
+        when ``nu >= 0.49``).
     """
 
     degree: int
     reasons: tuple[str, ...] = ()
     capped: bool = False
     warnings: tuple[str, ...] = ()
+    locking_mitigation: Literal["none", "fbar"] = "none"
 
 
 def _estimate_peak_bytes(n_cells: tuple[int, int, int], degree: int) -> int:
@@ -77,6 +81,7 @@ def recommend_discretization(
     fe_element_type: FeElementType | None = None,
     n_cells: tuple[int, int, int] | None = None,
     budget_bytes: float | None = None,
+    nu: float | None = None,
 ) -> DiscretizationRecommendation:
     """Recommend (and cap) the spline degree for a physics + resource context.
 
@@ -91,6 +96,8 @@ def recommend_discretization(
        the ``(2p+1)^3``-stencil Pardiso peak estimate must fit; otherwise the
        degree steps down 3 → 2 → 1 (``capped=True``). Overrun even at p=1 yields
        a warning suggesting THB or a coarser mesh.
+    5. Near-incompressibility guard: when ``nu`` is given and ``nu >= 0.49``,
+       surfaces ``locking_mitigation="fbar"`` (F-bar mean-dilatation).
     """
     if physics not in _PHYSICS_BASE_DEGREE:
         raise ValueError(
@@ -155,9 +162,25 @@ def recommend_discretization(
                 "refinement or a coarser mesh instead of global p elevation"
             )
 
+    locking_mitigation: Literal["none", "fbar"] = "none"
+    if nu is not None:
+        nu_val = float(nu)
+        if not (np.isfinite(nu_val) and -1.0 < nu_val < 0.5):
+            raise ValueError(f"nu must be in (-1, 0.5), got {nu}")
+        if nu_val >= 0.49:
+            locking_mitigation = "fbar"
+            reasons.append(
+                f"near-incompressible nu={nu_val:.6g} >= 0.49: F-bar mean-dilatation recommended"
+            )
+            warnings.append(
+                f"near-incompressible regime (nu={nu_val:.6g} >= 0.49): standard displacement "
+                "elements suffer volumetric locking; use locking_mitigation='fbar'"
+            )
+
     return DiscretizationRecommendation(
         degree=int(degree),
         reasons=tuple(reasons),
         capped=capped,
         warnings=tuple(warnings),
+        locking_mitigation=locking_mitigation,
     )

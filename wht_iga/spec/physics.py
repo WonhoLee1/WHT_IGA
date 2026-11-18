@@ -101,6 +101,7 @@ class StaticStepSpec(SpecBase):
     linear_solver: LinearSolverName = "auto"
     memory_budget_ratio: Annotated[float, Field(gt=0.0, le=1.0)] = 0.70
     num_threads_mkl: Annotated[int, Field(ge=1)] | None = None
+    locking_mitigation: Literal["auto", "none", "fbar"] = "none"
 
     @model_validator(mode="after")
     def _check_loads(self) -> Self:

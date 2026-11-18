@@ -193,3 +193,54 @@ def test_iga_fe_hybrid_couplings_and_sides(coupling: str, fe_side: str):
     expected_tip_ux = t_x * L / E_mod
     tol = 2e-3 if coupling == "barycentric" else 1e-6
     assert abs(float(sol.tip_displacement[0]) - expected_tip_ux) / expected_tip_ux < tol
+
+
+@pytest.mark.kratos
+def test_immersed_obb_rotated_bar_invariance():
+    """35-deg rotated bar solved via solve_immersed_obb matches exact global displacement."""
+    from wht_iga.analyses.methods import compute_pca_obb, solve_immersed_obb
+    from wht_iga.backends.mesh_engine import box_triangle_soup
+
+    E_mod, nu, L, h, t_mag = 2.0e5, 0.0, 10.0, 1.0, 2.0
+    theta = np.deg2rad(35.0)
+    c, s = float(np.cos(theta)), float(np.sin(theta))
+    rot_z = np.array([[c, -s, 0.0], [s, c, 0.0], [0.0, 0.0, 1.0]], dtype=np.float64)
+    shift = np.array([2.5, -1.5, 0.5], dtype=np.float64)
+
+    pts_local, tris = box_triangle_soup((-L / 2, -h / 2, -h / 2), (L / 2, h / 2, h / 2))
+    pts_global = pts_local @ rot_z.T + shift
+
+    # Determine which local OBB face is at -L/2 (fixed) and +L/2 (loaded) along axis 0
+    frame, _, _ = compute_pca_obb(pts_global, padding_frac=0.0)
+    axis0_global = np.asarray(frame.axes[0], dtype=np.float64)
+    # Sign of axis0_global along rotated +x determines which end is lo vs hi
+    sign = 1.0 if float(axis0_global @ rot_z[:, 0]) >= 0.0 else -1.0
+    fixed_face = (0, 0) if sign > 0.0 else (0, 1)
+    load_face = (0, 1) if sign > 0.0 else (0, 0)
+    # Traction along rotated bar axis (+rot_z[:, 0] if sign > 0, else also +rot_z[:, 0] since load is tension)
+    traction_global = tuple((t_mag * rot_z[:, 0]).tolist())
+
+    sol = solve_immersed_obb(
+        pts_global,
+        tris,
+        E=E_mod,
+        nu=nu,
+        n_cells=(4, 2, 2),
+        degree=2,
+        fixed_face_local=fixed_face,
+        load_face_local=load_face,
+        traction_global=traction_global,  # type: ignore[arg-type]
+        padding_frac=0.0,
+    )
+    assert sol.converged is True
+    assert sol.native["n_out_cells"] == 0
+
+    expected_tip = (t_mag * L / E_mod) * rot_z[:, 0]
+    np.testing.assert_allclose(sol.tip_displacement, expected_tip, rtol=1e-5, atol=1e-9)
+
+    # Check interior points along the rotated bar centerline
+    s_vals = np.array([2.5, 5.0, 7.5, 10.0])
+    pts_eval = shift + np.outer(s_vals - L / 2, rot_z[:, 0])
+    u_eval = sol.displacement_at(pts_eval)
+    expected_u = np.outer(t_mag * s_vals / E_mod, rot_z[:, 0])
+    np.testing.assert_allclose(u_eval, expected_u, rtol=1e-5, atol=1e-9)

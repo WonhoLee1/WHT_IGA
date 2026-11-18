@@ -3,6 +3,11 @@
 from __future__ import annotations
 
 from wht_iga.analyses import presets as presets
+from wht_iga.analyses.methods import (
+    ObbFrame,
+    compute_pca_obb,
+    solve_immersed_obb,
+)
 from wht_iga.analyses.methods_options import (
     DiscretizationOption,
     FullIgaOption,
@@ -42,16 +47,19 @@ __all__: list[str] = [
     "MethodId",
     "MethodSolution",
     "NativeFeOption",
+    "ObbFrame",
     "PhysicsKind",
     "ThbAdaptiveIgaOption",
     "bending_thb",
     "bulk_linear",
     "compare_method_solutions",
+    "compute_pca_obb",
     "contact_iga",
     "describe",
     "list_discretization_methods",
     "parse_discretization_option",
     "presets",
     "recommend_discretization",
+    "solve_immersed_obb",
     "solve_with_discretization_method",
 ]
