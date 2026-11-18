@@ -37,6 +37,18 @@ _LAZY: dict[str, str] = {
     **{n: "wht_iga.runner" for n in ("AnalysisSession", "StudyResults", "StepResult")},
     # Layer 5: query
     "ResultView": "wht_iga.query",
+    # Selectable multi-method discretization options
+    **{n: "wht_iga.analyses.methods" for n in (
+        "BoxMethodProblem", "DiscretizationOption", "DiscretizationRecommendation",
+        "FullIgaOption", "IgaFeHybridOption",
+        "MethodDescriptor", "MethodId", "MethodSolution", "NativeFeOption",
+        "PhysicsKind", "ThbAdaptiveIgaOption",
+        "compare_method_solutions",
+        "list_discretization_methods", "parse_discretization_option",
+        "recommend_discretization",
+        "solve_with_discretization_method")},
+    **{n: "wht_iga.analyses.presets" for n in (
+        "bending_thb", "bulk_linear", "contact_iga", "describe")},
 }
 
 __all__ = ["__version__", *sorted(_LAZY)]

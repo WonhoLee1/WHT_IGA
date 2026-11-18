@@ -1591,3 +1591,19 @@ CSV 경로 접두어: `user-guide/generated-downloads/verification-manual/proble
 | FCM α | 형상 밖 영역에 아주 작은 강성을 주는 Finite Cell Method 안정화 |
 | tessellation | CAD 곡면을 삼각형으로 근사하는 것 |
 | 항등 사상 트릭 | knot을 물리 좌표로, 제어점을 Greville 점에 두어 매개변수 좌표 = 물리 좌표(detJ = 1)로 만드는 기법 |
+
+## 부록 C. Track H 후속 통합 기록 (2026-11-19, 상용급 목표)
+
+| 항목 | 상태 | 근거 |
+|---|---|---|
+| 5종 기법 교차 검증 | 완료 (Kratos 15/15 + 비교 매트릭스 2/2) | `test_discretization_methods_kratos.py`, `test_method_comparison.py`, S34/S35 |
+| `auto` → `mortar_l2` (Kratos 네이티브 MPC) | 완료 (TDD Red→Green) | methods.py 레벨, 기본 beta 그대로 exact |
+| `recommend_discretization` + OBB 프레임 | 완료 (단위·Kratos 게이트) | S34, `test_obb_frame.py` 2/2 |
+| THB 본선 연결 | 완료 (`test_thb_pipeline.py` 5/5: 단축·굽힘·구체·거부) | `JobSpec.thb_refinement` + pipeline 분기; 컴파일러 가드·User API 무수정 |
+| API 분할 (options/solve/recommend + shim) | 완료 (91/91 green) | S38; backward-compat 유지 |
+| numba 가속 | 결론: 변경 없음 (5% 컷 미달) | 웜업 Python 0.1 s / wall 0.7 s; leggauss 호이스팅은 integrator 요청으로 이관 |
+| 검증 리포트 생성 (HTML+PNG) | 완료 (게이트표+비교+듀얼+증거셋) | `verify_report.py`, 산출물 `docs/verification/report/` |
+| 실증 자료 세트 (vtkhdf/vtu/msh/fem/stl/png) | 완료 (roundtrip 검증) | `post/evidence.py`, bulk bar 6종; hvascii 미지원 명시 |
+| 프리셋 (contact_iga/bending_thb/bulk_linear) | 완료 (단위 4/4) | `analyses/presets.py` |
+| Locking C++ (MixedUP0/VMS) | 미결 (차주 결정) | 미결 시 E04/V07 게이트 불가 |
+| 상용화 (CI·견고성·G-8·사용자 가이드) | 계획됨 (Phase 6) | 본 문서 §9 게이트와 별도 트래킹 |

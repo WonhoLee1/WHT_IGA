@@ -1,0 +1,31 @@
+$ Nastran file written by meshio v5.3.5
+BEGIN BULK
+GRID*   1                                          0.E+0           0.E+0
+*                  0.E+0
+GRID*   2                                          2.E+0           0.E+0
+*                  0.E+0
+GRID*   3                                          4.E+0           0.E+0
+*                  0.E+0
+GRID*   4                                          0.E+0           1.E+0
+*                  0.E+0
+GRID*   5                                          2.E+0           1.E+0
+*                  0.E+0
+GRID*   6                                          4.E+0           1.E+0
+*                  0.E+0
+GRID*   7                                          0.E+0           0.E+0
+*                  1.E+0
+GRID*   8                                          2.E+0           0.E+0
+*                  1.E+0
+GRID*   9                                          4.E+0           0.E+0
+*                  1.E+0
+GRID*   10                                         0.E+0           1.E+0
+*                  1.E+0
+GRID*   11                                         2.E+0           1.E+0
+*                  1.E+0
+GRID*   12                                         4.E+0           1.E+0
+*                  1.E+0
+CHEXA   1               1       2       5       4       7       8       +11     
++11     11      10      
+CHEXA   2               2       3       6       5       8       9       +12     
++12     12      11      
+ENDDATA

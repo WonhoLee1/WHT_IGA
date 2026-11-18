@@ -273,7 +273,7 @@ def _find_cut_cells_njit(soup: np.ndarray, tmin: np.ndarray, tmax: np.ndarray,
                     blo_loc[2] = lo2 + hz * k
                     bhi_loc[2] = blo_loc[2] + hz
                     if _tri_box_overlap(t0, t1, t2, blo_loc, bhi_loc):
-                        hits[pos] = i + nx * (j + ny * k)
+                        hits[pos] = (i * ny + j) * nz + k
                     pos += 1
 
     cut = np.zeros(nx * ny * nz, dtype=np.bool_)

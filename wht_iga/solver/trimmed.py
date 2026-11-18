@@ -16,28 +16,12 @@ from numba import njit, prange
 from wht_iga.grid.bspline import ders_basis_funs as _bs_ders, find_span as _bs_span
 
 
-_W: dict = {}  # per-worker geometry (set by _init_worker)
-
 #: Below this many non-OUT cells the serial loop wins (process spawn + numba
 #: cache load cost ~ seconds) -- unless the per-cell work is large:
 _PARALLEL_MIN_CELLS = 400
 #: ... cells x surface triangles above this go parallel anyway (V06 level 0 with
 #: a 40k-triangle sphere: 355 cells ran serially for 348 s).
 _PARALLEL_MIN_WORK = 2_000_000
-
-
-def _init_worker(nodes: np.ndarray, tris: np.ndarray, h: np.ndarray, q: int, p: int) -> None:
-    import os
-
-    # Set thread-count env vars only when safe; avoid resetting NUMBA_NUM_THREADS
-    # if Numba's threading backend has already initialized in this process.
-    for var in ("OMP_NUM_THREADS", "MKL_NUM_THREADS", "OPENBLAS_NUM_THREADS"):
-        os.environ[var] = "1"
-    from wht_iga.geometry import accel as A
-    from wht_iga.geometry import quadrature as Q  # noqa: F401
-
-    _W.update(nodes=nodes, tris=tris, h=h, q=q, p=p,
-              accel=A.TriSoupAccel(nodes, tris))
 
 
 def _eval_rule_chunk(
@@ -63,13 +47,6 @@ def _eval_rule_chunk(
     return out
 
 
-def _rule_chunk(blos: np.ndarray) -> list[tuple]:
-    return _eval_rule_chunk(
-        blos, _W["nodes"], _W["tris"], _W["h"], _W["q"], _W["p"],
-        _W.get("accel"), True,
-    )
-
-
 def _default_workers() -> int:
     import os
 
@@ -90,9 +67,10 @@ def _cell_rules(nodes, tris, blos: np.ndarray, h, q: int, p: int, workers: int,
     ac = A.get_accel(nodes, tris) if accel is None else accel
     small = len(blos) < _PARALLEL_MIN_CELLS and len(blos) * len(tris) < _PARALLEL_MIN_WORK
     if workers <= 1 or small:
+        # no module-global state: concurrent callers (e.g. compat.coreform
+        # Job.submit threads) must not see each other's geometry
         log(f"cell rules: {len(blos)} active cells, serial")
-        _W.update(nodes=nodes, tris=tris, h=h, q=q, p=p, accel=ac)
-        return _rule_chunk(blos)
+        return _eval_rule_chunk(blos, nodes, tris, h, q, p, ac, True)
     from concurrent.futures import ThreadPoolExecutor
 
     n_chunks = workers * 8
@@ -133,7 +111,7 @@ def _cache_key(nodes: np.ndarray, tris: np.ndarray, box, q: int) -> str:
             hsh.update(fh.read())
     # only the result-defining functions of this module (scheduling, logging and
     # post-processing edits elsewhere in trimmed.py must not invalidate caches)
-    for fn in (_build_trimmed_table, _eval_rule_chunk, _rule_chunk):
+    for fn in (_build_trimmed_table, _eval_rule_chunk):
         hsh.update(inspect.getsource(fn).encode())
     return hsh.hexdigest()
 

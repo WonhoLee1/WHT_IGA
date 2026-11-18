@@ -78,7 +78,7 @@ Phase 2 에이전트가 넘긴 Kratos 실행 작업. 사용자 지시: 여기(�
 - V02 `v02_cf3`(모멘트 수정 후) h=6..0.75 결과가 `cf2`와 동일 → V02 형상에는 결함 미발현.
 - **V02 최종 (모멘트 수정 후 재확인)**: `v02_cf3_off` 0.674%/0.031%, rate 2.34 PASS; `v02_cf3_0.3` 0.678%/0.027%, rate 2.34 PASS. **G1·G2 V02 확정.**
 - **V06 p=1 레벨0**: u≈1.0e-2 고정(ext 0.2/0.35, q=4, n_geo=96 모두 동일), stress는 Coreform보다 양호(srr 0.24 vs 0.285, stt 0.016 vs 0.019). Coreform p=1 u: L0 0.0042–0.0058, L1 0.0020, L2 0.00065. 레벨1(n_geo=96, q=2p, ext 0.2) 실행 중 `evidence/v06_l1_r2.log`.
-- **고속화 (결과 비트 동일)**: `classify._axis_votes` 격자선 그룹화 unique/argsort(기존 O(lines×verts) isclose) + 광선별 삼각형 AABB 선필터 → V06 20³ n_geo96 42 s→3.2 s, V02 264×56 7.6→3.7 s. (스칼라 MT 커널은 FMA/순서로 경계 꼭짓점 판정 246개가 달라져 폐기.) `trimmed._cell_rules`: 셀×삼각형 ≥ 2e6이면 셀<400이라도 병렬. 캐시 키: classify.py·quadrature.py 전체 + trimmed의 `_build_trimmed_table`·`_rule_chunk` 소스만. unit 326 passed.
+- **고속화 (결과 비트 동일)**: `classify._axis_votes` 격자선 그룹화 unique/argsort(기존 O(lines×verts) isclose) + 광선별 삼각형 AABB 선필터 → V06 20³ n_geo96 42 s→3.2 s, V02 264×56 7.6→3.7 s. (스칼라 MT 커널은 FMA/순서로 경계 꼭짓점 판정 246개가 달라져 폐기.) `trimmed._cell_rules`: 셀×삼각형 ≥ 2e6이면 셀<400이라도 병렬. 캐시 키: classify.py·quadrature.py 전체 + trimmed의 `_build_trimmed_table`·`_eval_rule_chunk` 소스만 (2026-11-18 스레드-안전 정리로 모듈 전역 `_W`/`_rule_chunk` 제거). unit 326 passed.
 - 다음: V06 L1 결과 → p=1 판단, V06 L2, V-COND(고정자유도 판정 수정됨), 메쉬 파일 입력 V02, G2 보고서. 남은 미조사: V02 sub-box 모멘트 불일치(모멘트 결함 수정으로 해소됐을 가능성 — 재확인 필요).
 
 ## 2026-11-15 오후 (새 세션) — G2 마무리 실행

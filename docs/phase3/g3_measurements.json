@@ -1,17 +1,17 @@
 {
   "benchmarks": {
     "E01_ips_thin_plate": {
-      "active_dofs": 16956,
-      "boundary_peak_stress": 3.8038759593351166e-06,
+      "active_dofs": 16974,
+      "boundary_peak_stress": 3.7940573763398645e-06,
       "n_cells": [
         60,
         30,
         1
       ],
-      "rel_err_bnd_vs_roark": 0.020873288246455103,
-      "rel_err_crown_vs_roark": 0.022240101942252333,
+      "rel_err_bnd_vs_roark": 0.018238205185009616,
+      "rel_err_crown_vs_roark": 0.019589999606826128,
       "roark_ref": 3.7261e-06,
-      "sigma_xx_crown": 3.8089688438470266e-06,
+      "sigma_xx_crown": 3.799094297534995e-06,
       "thin_feature_pass0": {
         "detected": true,
         "issues": [
@@ -25,8 +25,8 @@
       }
     },
     "E02_adaptive_THB": {
-      "far_field_l2_rel_diff_L0_vs_L2": 0.0004394077832151602,
-      "far_field_l2_rel_diff_L1_vs_L2": 1.6687281731220382e-05,
+      "far_field_l2_rel_diff_L0_vs_L2": 0.0004394077799217929,
+      "far_field_l2_rel_diff_L1_vs_L2": 1.6687283041621975e-05,
       "levels": {
         "0": {
           "active_dofs": 1452,
@@ -44,9 +44,9 @@
         },
         "2": {
           "active_dofs": 6031,
-          "rel_err_vs_roark": 0.01463921787049351,
-          "sigma_crown": 3.780647189707246e-06,
-          "sigma_gradient_drop_1_to_1p5": 2.023251020413235e-06,
+          "rel_err_vs_roark": 0.014639217870537497,
+          "sigma_crown": 3.78064718970741e-06,
+          "sigma_gradient_drop_1_to_1p5": 2.023251020413277e-06,
           "uniform_dofs": 40392
         }
       },
@@ -59,8 +59,8 @@
         7,
         1
       ],
-      "boundary_peak_stress": 4.350648348923437e-06,
-      "elapsed_s": 14.479744500000379,
+      "boundary_peak_stress": 4.3506483489212575e-06,
+      "elapsed_s": 17.900497200000245,
       "finest_h_xy": [
         0.3787878787878788,
         0.35714285714285715
@@ -76,11 +76,11 @@
       "n_slave_extended": 190,
       "ref_c3d20": 4.34796947956784e-06,
       "ref_roark": 4.3175e-06,
-      "rel_err_bnd_vs_c3d20": 0.0006161196319765484,
-      "rel_err_bnd_vs_roark": 0.0076776720146930445,
-      "rel_err_pt_vs_c3d20": 0.0010419476888066442,
-      "rel_err_pt_vs_roark": 0.008106505227117117,
-      "sigma_xx_crown_pt": 4.352499836318078e-06,
+      "rel_err_bnd_vs_c3d20": 0.0006161196314752993,
+      "rel_err_bnd_vs_roark": 0.007677672014188258,
+      "rel_err_pt_vs_c3d20": 0.0010419476894914053,
+      "rel_err_pt_vs_roark": 0.008106505227806711,
+      "sigma_xx_crown_pt": 4.352499836321055e-06,
       "symmetry": "quarter [0,100]x[0,20]x[-0.5,0.5] (full step [-100,100]x[-20,20]x[-0.5,0.5])",
       "thb_levels": 3,
       "uniform_fine_dofs_quarter": 462840
@@ -137,7 +137,7 @@
         "switched_reason": "[HWT-IGA SOLVER][AUTO-SOLVER] Switched direct->iterative: est_pardiso=0.046 GB > 70% of avail RAM (0.000 GB, budget=0.000 GB). Selected 'amgcl' (est_amgcl=0.003 GB)."
       },
       "default_auto_decision": {
-        "avail_bytes": 20255256576,
+        "avail_bytes": 21265707008,
         "est_amgcl_bytes": 3051188,
         "est_pardiso_bytes": 49523402,
         "kratos_solver": "pardiso_ldlt",

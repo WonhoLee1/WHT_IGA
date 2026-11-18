@@ -110,7 +110,13 @@ class JobSpec:
     # "drop" = no OUT elements, inactive basis fixed (v2.1 §7.5, wht_iga.solver.active)
     out_mode: str = "ghost"
     probes: list[dict] = field(default_factory=list)
-    assumed: list[str] = field(default_factory=list)  # M8: defaulted inputs
+    assumed: list[str] = field(default_factory=list)
+    # THB adaptive refinement (Phase 5 precursor, Track H): None = uniform grid.
+    # Shape: {"level": int 1..5, "balance": "two_to_one"|"none",
+    #         "boxes": [((x0,y0,z0),(x1,y1,z1)), ...],
+    #         "spheres": [((cx,cy,cz), r), ...]}. Named-set regions, pressures,
+    # gravity and OUT cells are out of scope for the THB path (explicit error).  # M8: defaulted inputs
+    thb_refinement: dict | None = None
     output_dir: str | None = None
     # Kratos linear solver: "pardiso_lu" (MKL, default) | "pardiso_ldlt" | "pardiso_llt"
     # (symmetric K only; no follower loads) | "skyline_lu" (small/debug only: profile
@@ -184,6 +190,7 @@ class JobSpec:
             solver_log_level=str(data.get("solver_log_level", "detailed")),  # type: ignore[arg-type]
             amgcl_params=dict(data["amgcl_params"]) if data.get("amgcl_params") is not None else None,
             memory_budget_ratio=float(data.get("memory_budget_ratio", 0.70)),
+            thb_refinement=dict(data["thb_refinement"]) if data.get("thb_refinement") is not None else None,
         )
 
 

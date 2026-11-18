@@ -151,6 +151,138 @@ def _make_linear_solver(
     raise ValueError(f"unknown linear_solver {name!r}; use one of {_LINEAR_SOLVERS}")
 
 
+def _run_linear_thb(spec: JobSpec) -> LinearResult:
+    """THB-adaptive linear static solve (Track H Phase 2, precursor scope).
+
+    Mirrors ``_solve_thb_adaptive`` (methods.py) but driven by ``JobSpec``:
+    strong ``fixed_faces`` clamping (or penalty ``bcs``), uniform ``tractions``
+    on the fine-grid faces, reduced solve via ``assemble_and_solve_thb_reduced``.
+    Pressures, gravity, OUT cells and named-set regions are out of scope and
+    raise :class:`ValidationError` instead of silently falling back.
+    """
+    import time as _time
+
+    from wht_iga.grid.hierarchy import THBHierarchy
+    from wht_iga.kratos_backend import load_kratos
+    from wht_iga.kratos_backend.assembly_builder import (
+        AssemblyBuilder,
+        AssemblySpec,
+        InstanceSpec,
+        PartSpec,
+    )
+    from wht_iga.solver.validate import DirichletBC, ValidationIssue
+
+    _t0 = _time.perf_counter()
+
+    def _err(code: str, message: str) -> ValidationIssue:
+        return ValidationIssue(severity="error", code=code, message=message,
+                               entity="thb_refinement")
+
+    cfg = dict(spec.thb_refinement or {})
+    if cfg.get("sets"):
+        raise ValidationError([_err("THB_SETS_UNSUPPORTED",
+                                    f"thb: named-set regions unsupported: {list(cfg['sets'])}")])
+    level = cfg.get("level", 1)
+    balance = cfg.get("balance", "two_to_one")
+    boxes = [tuple(map(tuple, b)) for b in cfg.get("boxes", [])]
+    spheres = []
+    for s in cfg.get("spheres", []):
+        if not (isinstance(s, (list, tuple)) and len(s) == 2):
+            issues.append(_err("THB_REGION", f"thb sphere must be ((cx,cy,cz), r), got {s!r}"))
+            continue
+        spheres.append((tuple(float(v) for v in s[0]), float(s[1])))
+    issues = []
+    if not isinstance(level, int) or not (1 <= level <= 5):
+        issues.append(_err("THB_LEVEL", f"thb level must be int in [1, 5], got {level!r}"))
+    if balance not in ("two_to_one", "none"):
+        issues.append(_err("THB_BALANCE", f"thb balance must be 'two_to_one'|'none', got {balance!r}"))
+    if not boxes and not spheres:
+        issues.append(_err("THB_REGION", "thb requires at least one box or sphere region"))
+    if spec.out_cells:
+        issues.append(_err("THB_OUT_CELLS", "thb path does not support out_cells (uniform FCM path only)"))
+    if spec.pressures:
+        issues.append(_err("THB_LOADS", "thb path supports tractions only (no pressures)"))
+    if spec.gravity is not None:
+        issues.append(_err("THB_LOADS", "thb path does not support gravity"))
+    if any(not all(b.components) for b in spec.bcs):
+        issues.append(_err("THB_BCS", "thb path supports full-component bcs only (no component BCs)"))
+    if issues:
+        raise ValidationError(issues)
+
+    mods = load_kratos()
+    KM, SM, IGA = mods["KratosMultiphysics"], mods["StructuralMechanicsApplication"], mods["IgaApplication"]
+
+    lo = tuple(float(v) for v in spec.lo)
+    hi = tuple(float(v) for v in spec.hi)
+    thb = THBHierarchy.from_uniform(
+        (lo[0], hi[0]), (lo[1], hi[1]), (lo[2], hi[2]),
+        tuple(int(v) for v in spec.n_cells), degree=int(spec.degree))
+    for r_lo, r_hi in boxes:
+        thb.mark_box(tuple(float(v) for v in r_lo), tuple(float(v) for v in r_hi),
+                     target_level=int(level))
+    for entry in spheres:
+        (cx, cy, cz), rad = entry
+        thb.mark_sphere((float(cx), float(cy), float(cz)), float(rad),
+                        target_level=int(level))
+    if balance == "two_to_one":
+        thb.enforce_2_to_1_balance()
+
+    part = PartSpec(name="domain", kind="thb", thb=thb,
+                    young_modulus=float(spec.E), poisson_ratio=float(spec.nu))
+    spec_asm = AssemblySpec(job_name="thb_pipeline",
+                            parts={"domain": part},
+                            instances=[InstanceSpec("domain", "1")],
+                            use_pardiso=False)
+    builder = AssemblyBuilder(KM=KM, SM=SM)
+    built = builder.build(spec_asm)
+    rt = built.get_instance("domain_1")
+    assert rt.box is not None
+    box_fine = rt.box
+
+    from wht_iga.analyses.methods_solve import _attach_point_loads, _fix_node_all_disp, _integrate_iga_face_traction
+    from wht_iga.solver.penalty import attach_penalty_bcs, default_beta
+
+    for ax, side in spec.fixed_faces:
+        for idx in box_fine.boundary_control_points(int(ax), int(side)):
+            _fix_node_all_disp(KM, built.structure.GetNode(int(rt.node_ids[int(idx)])))
+    if spec.bcs:
+        h0 = min(float(b) - float(a) for a, b in zip(lo, hi)) / max(1, min(int(v) for v in spec.n_cells))
+        beta = float(spec.beta) if spec.beta is not None else default_beta(float(spec.E), h0, int(spec.degree), 10.0)
+        attach_penalty_bcs(KM, IGA, built.structure, rt.volume, box_fine,
+                           [DirichletBC(face=tuple(b.face), components=tuple(b.components),
+                                        value=tuple(b.value), field=b.field) for b in spec.bcs],
+                           beta,
+                           first_cond_id=built.id_table.next_id("conditions") + 100,
+                           first_node_id=built.id_table.next_id("nodes") + 100,
+                           first_prop_id=built.id_table.next_id("properties") + 10)
+    total_f = np.zeros(3, dtype=np.float64)
+    for tr in spec.tractions:
+        ax, side = int(tr.face[0]), int(tr.face[1])
+        f_local = _integrate_iga_face_traction(box_fine, ax, side, tuple(float(v) for v in tr.vector))
+        f_kratos = {int(rt.node_ids[int(flat)]): np.asarray(vec, dtype=float)
+                    for flat, vec in f_local.items()}
+        for vec in f_kratos.values():
+            total_f = total_f + vec
+        _attach_point_loads(SM, built, f_kratos, rt.properties_map[0], scope="Loads.thb")
+
+    _t1 = _time.perf_counter()
+    res = builder.assemble_and_solve_thb_reduced(built, "domain_1", use_pardiso=False)
+    _t2 = _time.perf_counter()
+
+    u_hier = np.asarray(res["u_hier"], dtype=np.float64).reshape(-1)
+    n_thb = int(thb.n_thb_dofs)
+    return LinearResult(
+        U=u_hier,
+        beta_used=float(spec.beta) if spec.beta is not None else 0.0,
+        total_force=total_f,
+        keepalive=(thb, box_fine, rt.node_ids, built, res),
+        converged=True,
+        timings={"setup_s": _t1 - _t0, "solve_s": _t2 - _t1, "total_s": _t2 - _t0},
+        active_dofs=3 * n_thb,
+        total_dofs=3 * n_thb,
+    )
+
+
 def run_linear(spec: JobSpec, geo_issues: list[dict] | None = None,
              qp_table: dict[tuple[int, int, int], np.ndarray] | None = None,
              cell_records: list[dict] | None = None,
@@ -172,6 +304,9 @@ def run_linear(spec: JobSpec, geo_issues: list[dict] | None = None,
     issues = validate(spec, geo_issues)
     if any(i.severity == "error" for i in issues):
         raise ValidationError(issues)
+
+    if spec.thb_refinement is not None:
+        return _run_linear_thb(spec)
 
     mods = load_kratos()
     KM, SM, IGA = mods["KratosMultiphysics"], mods["StructuralMechanicsApplication"], mods["IgaApplication"]

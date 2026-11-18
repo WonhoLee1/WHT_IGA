@@ -1,0 +1,79 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<title>WHT_IGA Verification Report (Coreform-manual level)</title>
+<style>body{font-family:Arial,Helvetica,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;color:#111}
+table{border-collapse:collapse;width:100%;font-size:13px}th,td{border:1px solid #ccc;padding:5px 8px;text-align:left}
+th{background:#eef}img{max-width:100%;border:1px solid #ddd}.note{background:#fff8e1;padding:8px 12px;border-left:4px solid #e6a700}</style>
+</head><body>
+<h1>WHT_IGA Verification Report</h1>
+<p>Generated (UTC): 2026-11-17T17:44:42+00:00 &middot; Env: Python 3.12 (whtiga), Kratos 10.4.3 (E:/kratos-build/install)</p>
+<p>Gates passing: <b>14/20</b> (PASS-B = cited from parallel session, see source).</p>
+<div class="note"><b>Anti-mocking rule:</b> every number below is measured from an executed
+Kratos run or explicitly tagged PASS-B (cited). No invented values.</div>
+<h2>1. Gate summary</h2>
+<table><tr><th>ID</th><th>Case</th><th>Gate</th><th>Status</th><th>Evidence</th><th>Source</th></tr>
+<tr><td><b>V01</b></td><td>prescribed-displacement cube</td><td>1e-5 analytic</td><td><span style="background:#1a7f37;color:#fff;padding:2px 8px;border-radius:10px;font-size:12px">PASS</span></td><td>G2 p=1~3 table</td><td><code>G2_COMPLETE</code></td></tr>
+<tr><td><b>V02</b></td><td>Roark plate</td><td>peak <=1%, local 0.2%</td><td><span style="background:#1a7f37;color:#fff;padding:2px 8px;border-radius:10px;font-size:12px">PASS</span></td><td>0.674%, Abaqus 0.031%</td><td><code>G2_COMPLETE</code></td></tr>
+<tr><td><b>V03</b></td><td>beam bending (5 loads)</td><td>5%</td><td><span style="background:#1a7f37;color:#fff;padding:2px 8px;border-radius:10px;font-size:12px">PASS</span></td><td>0.6-0.8% (G3-01)</td><td><code>G3 suite 9/9</code></td></tr>
+<tr><td><b>V04</b></td><td>bimetallic beam</td><td>5% + merge-tie 1e-6</td><td><span style="background:#1a7f37;color:#fff;padding:2px 8px;border-radius:10px;font-size:12px">PASS</span></td><td>G3-02</td><td><code>G3 suite 9/9</code></td></tr>
+<tr><td><b>V05</b></td><td>multiplanar interfaces</td><td>monolithic parity</td><td><span style="background:#1a7f37;color:#fff;padding:2px 8px;border-radius:10px;font-size:12px">PASS</span></td><td>G3-03</td><td><code>G3 suite 9/9</code></td></tr>
+<tr><td><b>V06</b></td><td>pressurized sphere</td><td>CSV per-cell tol</td><td><span style="background:#1a7f37;color:#fff;padding:2px 8px;border-radius:10px;font-size:12px">PASS</span></td><td>L0-L2 x p1-3</td><td><code>G2_COMPLETE</code></td></tr>
+<tr><td><b>V07</b></td><td>Kirsch nu=0.49999</td><td>Hard Gate + Target</td><td><span style="background:#b42318;color:#fff;padding:2px 8px;border-radius:10px;font-size:12px">BLOCKED</span></td><td>needs C++ MixedUP0</td><td><code>master-plan Phase 5</code></td></tr>
+<tr><td><b>V08</b></td><td>Hertz-Coulomb indenter</td><td>F_N 4%, sliding F_T 4.5%</td><td><span style="background:#4d7c0f;color:#fff;padding:2px 8px;border-radius:10px;font-size:12px">PASS-B</span></td><td>R1 +0.97%, R2 2.63/2.60% @h=0.25</td><td><code>S32 (parallel track)</code></td></tr>
+<tr><td><b>V09</b></td><td>cantilever shock/vibration</td><td>1% / RMS</td><td><span style="background:#9a6700;color:#fff;padding:2px 8px;border-radius:10px;font-size:12px">PENDING</span></td><td>G4 running</td><td><code>test_p4_gate_g4</code></td></tr>
+<tr><td><b>V10</b></td><td>vibrating beam (Bossak)</td><td>doc basis</td><td><span style="background:#9a6700;color:#fff;padding:2px 8px;border-radius:10px;font-size:12px">PENDING</span></td><td>G4 running</td><td><code>test_p4_gate_g4</code></td></tr>
+<tr><td><b>V11</b></td><td>NAFEMS p18-t1 thermal</td><td>4%</td><td><span style="background:#9a6700;color:#fff;padding:2px 8px;border-radius:10px;font-size:12px">PENDING</span></td><td>G4 running</td><td><code>test_p4_gate_g4</code></td></tr>
+<tr><td><b>V12</b></td><td>NAFEMS t2/t3/t4</td><td>1%/2%/3%</td><td><span style="background:#4d7c0f;color:#fff;padding:2px 8px;border-radius:10px;font-size:12px">PASS-B</span></td><td>T2 +0.0008%, T3 p2 +0.14%, T4 p2 -1.15%</td><td><code>G4_report (parallel)</code></td></tr>
+<tr><td><b>V-EXP</b></td><td>1D elastic wave (explicit)</td><td>2%</td><td><span style="background:#1a7f37;color:#fff;padding:2px 8px;border-radius:10px;font-size:12px">PASS</span></td><td>tip L2 <2%, arrival +-0.03</td><td><code>TRACK2_COMPLETE</code></td></tr>
+<tr><td><b>V-EXP-C</b></td><td>two-block impact</td><td>mom 1e-6, E 2%</td><td><span style="background:#1a7f37;color:#fff;padding:2px 8px;border-radius:10px;font-size:12px">PASS</span></td><td>mom 1e-15, E 0.18/0.26%</td><td><code>TRACK2_COMPLETE</code></td></tr>
+<tr><td><b>V-COND</b></td><td>condition number</td><td>split decision</td><td><span style="background:#1a7f37;color:#fff;padding:2px 8px;border-radius:10px;font-size:12px">PASS</span></td><td>V-COND-split flat+slope</td><td><code>G2_COMPLETE</code></td></tr>
+<tr><td><b>E01</b></td><td>thin plate + hole</td><td>Coreform-level</td><td><span style="background:#1a7f37;color:#fff;padding:2px 8px;border-radius:10px;font-size:12px">PASS</span></td><td>G3-05</td><td><code>G3 suite 9/9</code></td></tr>
+<tr><td><b>E02</b></td><td>adaptivity plate</td><td>trend match</td><td><span style="background:#1a7f37;color:#fff;padding:2px 8px;border-radius:10px;font-size:12px">PASS</span></td><td>G3-06</td><td><code>G3 suite 9/9</code></td></tr>
+<tr><td><b>E03</b></td><td>glass-to-metal seal</td><td>convergence + qualitative</td><td><span style="background:#4d7c0f;color:#fff;padding:2px 8px;border-radius:10px;font-size:12px">PASS-B</span></td><td>13-cell STEP + 3-step, S33</td><td><code>S33 (parallel track)</code></td></tr>
+<tr><td><b>E04</b></td><td>Cook membrane</td><td>u_y 1%</td><td><span style="background:#b42318;color:#fff;padding:2px 8px;border-radius:10px;font-size:12px">BLOCKED</span></td><td>traction 191.5N reading; stock TL 69% low</td><td><code>S27 (C++ U/P needed)</code></td></tr>
+<tr><td><b>E05</b></td><td>door-lock assembly</td><td>RF3 5%</td><td><span style="background:#9a6700;color:#fff;padding:2px 8px;border-radius:10px;font-size:12px">PENDING</span></td><td>not started</td><td><code>-</code></td></tr></table>
+<h2>2. Method comparison (measured 2026-11-19, OMP=1)</h2>
+<img src="fig_compare_accuracy.png" alt="accuracy">
+<img src="fig_compare_cost.png" alt="cost">
+<h2>3. Hertz SSN convergence</h2>
+<img src="fig_hertz_convergence.png" alt="hertz">
+<h2>4. Head-to-head vs Coreform IGA (V08 h=0.25)</h2>
+<img src="fig_coreform_duel.png" alt="duel">
+<p>Read: F_N win (0.97% vs 3.74%). F_T RMS within gate but behind
+(2.60% vs 2.23%) — friction sliding refinement is next.</p>
+<h2>5. Checkable evidence set (bulk bar, native FE, true scale)</h2>
+<p>All formats generated from one executed Kratos solve
+(<code>export_bulk_bar_evidence</code>):
+<a href="evidence_bulk_bar/bulk_bar_ux.vtkhdf">vtkhdf</a>,
+<a href="evidence_bulk_bar/bulk_bar_ux.vtu">vtu</a>,
+<a href="evidence_bulk_bar/bulk_bar_ux.msh">msh (Gmsh)</a>,
+<a href="evidence_bulk_bar/bulk_bar_ux.fem">fem (Nastran bulk = OptiStruct-readable)</a>,
+<a href="evidence_bulk_bar/bulk_bar_ux.stl">stl</a>,
+<a href="evidence_bulk_bar/bulk_bar_ux.png">png contour</a>.
+hvascii has no writer in-repo or in meshio and is explicitly out of scope.</p>
+<h2>6. Measurement files</h2>
+<pre>{
+  "g3": {
+    "path": "D:/PythonCodeStudy/CAD-CAE-COPILOT/WHT_IGA/docs/phase3/g3_measurements.json",
+    "keys": [
+      "benchmarks",
+      "suite"
+    ]
+  },
+  "g4": {
+    "path": "D:/PythonCodeStudy/CAD-CAE-COPILOT/WHT_IGA/docs/phase4/g4_measurements.json",
+    "keys": [
+      "V09",
+      "V10_MODERATE_DISSIPATION",
+      "V10_TRANSIENT_FIDELITY",
+      "V11",
+      "V12_T2",
+      "V12_T3_p1",
+      "V12_T3_p1_n20",
+      "V12_T3_p1_n40",
+      "V12_T3_p2",
+      "V12_T4"
+    ]
+  }
+}</pre>
+<p>Full evidence: S26-S36, TRACK2/3/H_COMPLETE, G2_COMPLETE, g3/g4_measurements.json.</p>
+</body></html>

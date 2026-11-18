@@ -17,6 +17,31 @@ import numpy as np
 
 from wht_iga.kratos_backend.geometry import cell_gauss_points
 
+# Element families verified on cell QuadraturePointGeometry (all Gauss points of
+# one cell in one geometry). Anything else must be verified first: mixed /
+# B-bar / Q1P0 elements either crash on QP geometry (S13: Mixed*VolumetricStrain
+# access violation) or run silently wrong (S39: TotalLagrangianQ1P0Mixed* gives
+# NaN or detF < 0 on the Cook model). See docs/spikes/S13.md, S39.md.
+QP_VERIFIED_ELEMENT_PREFIXES = (
+    "SmallDisplacementElement3D",
+    "TotalLagrangianElement3D",
+    "UpdatedLagrangianElement3D",
+)
+
+
+def check_qp_element_name(element_name: str) -> str:
+    """Return ``element_name`` if it is verified on QP geometry, else raise.
+
+    Guards against the silent wrong answer of unverified element types on the
+    IGA quadrature-point path.
+    """
+    if not element_name.startswith(QP_VERIFIED_ELEMENT_PREFIXES):
+        raise ValueError(
+            f"element {element_name!r} is not verified on QuadraturePointGeometry; "
+            f"allowed families: {QP_VERIFIED_ELEMENT_PREFIXES} (see docs/spikes/S13.md, S39.md)"
+        )
+    return element_name
+
 
 def attach_cell_elements(
     KM: Any,
@@ -33,6 +58,7 @@ def attach_cell_elements(
     Returns the created elements in cell order. ``volume`` is the NurbsVolume
     from ``make_nurbs_volume`` (shared helper, read-only use).
     """
+    check_qp_element_name(element_name)
     nx, ny, nz = box.n_cells
     if cells is None:
         cells = [(i, j, k) for k in range(nz) for j in range(ny) for i in range(nx)]
