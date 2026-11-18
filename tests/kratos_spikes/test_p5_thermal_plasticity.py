@@ -416,8 +416,11 @@ def test_e_total_lagrangian_finite_strain_matches_small_strain():
     PK2 vs small strain differs only by geometric terms: 1D TL equilibrium
     holds for P = tau / (1 + eps) (not for S = tau / (1 + eps)^2), and
     ln(1 + eps) - eps, GL - eps = O(eps^2). So
-    |S - sigma| <= 10 eps_max sigma_max (generous constant) + 1e-4 sigma_y
-    (Kratos yield band); displacements to that stress tolerance / E_min."""
+    |S - sigma| <= 10 eps_max sigma_max (generous constant; the leading term
+    is 2 eps sigma); displacements to that stress tolerance / E_min. No yield
+    band term: ``_assert_clear_of_yield_band`` keeps every trial > 1e-3
+    sigma_y away from the 1e-4 band and the perfectly plastic J2 return is
+    exact in one iteration."""
     scale = 1e4
     mods = load_kratos()
     KM = mods["KratosMultiphysics"]
@@ -426,7 +429,7 @@ def test_e_total_lagrangian_finite_strain_matches_small_strain():
                   for q in ref)
     sig_max = max(abs(q["sigma"]) for q in ref)
     assert eps_max < 5e-6
-    tol_s = 10.0 * eps_max * sig_max + 1e-4 * 1.0
+    tol_s = 10.0 * eps_max * sig_max
     _check_uniaxial_strain(rec, ref, tol_s=tol_s, tol_u=2 * tol_s / (60.0 * scale))
     assert ref[3]["sigma"] == pytest.approx(-1.92, abs=1e-12)  # same plastic path as (c)
     assert ref[-1]["sigma"] == pytest.approx(-0.3, abs=1e-12)
@@ -462,7 +465,8 @@ def test_f_e03_secant_expansion_matches_recommended_thermal_strain():
 def test_g_grouping_many_cells_sets_cellwise_initial_strain():
     """2000 cells (20 x 10 x 10), linear elastic, alpha = 1e-3, T_zero = 0,
     random cell temperatures on a 0.05 C grid in [0, 100] plus jitter in
-    +-4e-7 C (< quantum/2), two states (T_init = 20 uniform).
+    +-4e-7 C (< quantum/2 = 5e-7: every cell stays in the rounding bin of its
+    grid value), two states (T_init = 20 uniform).
 
     Reference group count: number of distinct rounded keys (Python set, not
     numpy.unique). After ``apply(1.0)`` every element's INITIAL_STRAIN_VECTOR
@@ -522,3 +526,22 @@ def test_h_intermediate_state_separates_groups():
     assert rec[-1]["stress"][0][:, 1] == pytest.approx(-1.8, abs=_TOL_S)
     assert rec[-1]["stress"][1][:, 1] == pytest.approx(-2.2, abs=_TOL_S)
     assert rec[-1]["u"][1] == pytest.approx(0.004, abs=_TOL_U)
+
+
+def test_i_group_temperature_error_below_one_quantum():
+    """Documented grouping bound: quantum = 1, one cell at 99.51 C and 20 at
+    100.49 C round to the same bin (100) -> one group at the member MEAN
+    (99.51 + 20 * 100.49) / 21 = 100.443333; the lone cell is off by
+    0.933333 quantum: more than quantum/2 (bin centre would give <= 0.49),
+    less than one quantum (bin width)."""
+    mods = load_kratos()
+    KM = mods["KratosMultiphysics"]
+    model, mp, els, _vol = _bar(KM, 21, lateral_fixed=True)
+    T = np.array([99.51] + [100.49] * 20)
+    mat = TP.ThermoMaterial("glass", 100.0, 0.0, 1e-3, t_zero=0.0, yield_stress=None)
+    groups = TP.CellThermalGroups(KM, mods, mp, els, [mat], 0, [20.0, T], quantum=1.0)
+    assert groups.n_groups == 1
+    assert groups.group_T[1, 0] == pytest.approx((99.51 + 20 * 100.49) / 21.0, abs=1e-12)
+    err = np.abs(T - groups.group_T[1, 0]).max()
+    assert err == pytest.approx(0.98 * 20.0 / 21.0, abs=1e-12)
+    assert 0.5 < err < 1.0

@@ -399,7 +399,7 @@ def test_deformable_coulomb_friction_patch_mu():
     assert R_cut[1] == pytest.approx(float(res["force_total"][1]), rel=1e-10)
 
 
-def _setup_v08_half(KM, SM, inp: H.V08Inputs, h: float):
+def _setup_v08_half(KM, SM, inp: H.V08Inputs, h: float, n_soup: int = 24):
     """Build trimmed deformable indenter + deformable block systems for V08 sym='half'."""
     lo_b, hi_b, nc_b = H.v08_block_grid(h, sym="half")
     box_blk = BoxSpline(lo_b, hi_b, nc_b, degree=2)
@@ -416,7 +416,7 @@ def _setup_v08_half(KM, SM, inp: H.V08Inputs, h: float):
     )
 
     nodes_ind, tris_ind, fids_ind = H.hollow_hemisphere_soup(
-        inp.R, inp.Ri, inp.center, n=24, sym="half"
+        inp.R, inp.Ri, inp.center, n=n_soup, sym="half"
     )
     lo_i, hi_i, nc_i = H.v08_indenter_grid(h, inp.center, inp.R, sym="half")
     box_ind = BoxSpline(lo_i, hi_i, nc_i, degree=2)
@@ -499,12 +499,20 @@ def test_v08_case_r1_deformable_half():
         assert eq_rel < 1e-4
         assert max(r[1] for r in curve) <= 12
 
-    # G5 4% gate at h1 = 0.25!
-    assert abs(results_by_h[0.25][2]) <= 4.0
+    # NOT a G5 pass (S41): at h=0.25, n=24, eps_n=1e9 the soft-penalty penetration
+    # (about 5 % of delta), the coarse soup and the coarse mesh cancel. With
+    # eps_n -> inf and n -> inf the small-strain result at h=0.125 is about +5 %.
+    # Regression pin of this configuration only (measured 2026-11-18/19):
+    assert results_by_h[0.25][0] == pytest.approx(486248.6, rel=1e-5)
 
 
 def test_v08_case_r2_sliding_friction_half():
-    """Test 4: V08 Case R2 (deformable-deformable sliding friction mu=0.3, sym='half')."""
+    """Test 4: V08 Case R2 (deformable-deformable sliding friction mu=0.3, sym='half').
+
+    Caveat (S41): runs at eps_n=1e9 and soup n=24 like R1, whose h=0.25 pass is an
+    error cancellation. In the slip window F_T = mu F_N, so the RMS gates below are
+    expected to inherit the same penalty dependence (not yet measured for R2).
+    """
     with open(_V08_JSON, encoding="utf-8") as f:
         inp = H.V08Inputs.from_json(json.load(f))
 
@@ -581,3 +589,39 @@ def test_v08_case_r2_sliding_friction_half():
             assert abs(float(ratios_win[-1]) - inp.mu) < 0.015
             assert rms_fn < 0.045
             assert rms_ft < 0.045
+
+
+def test_v08_r1_penalty_converged_small_strain_misses_gate():
+    """S41: with a converged penalty the small-strain R1 at h=0.25 misses the 4 % gate.
+
+    h=0.25, soup n=48: eps_n 1e10 -> 1e11 changes F_N by 0.5 % (penalty converged
+    to < 1 %), and F_N is +6.6 % above Hertz. Pins the honest status of the
+    small-strain SSN path; the S32 pass at eps_n=1e9 is penetration-softened.
+    Measured 2026-11-19: 510,891.8 (1e10), 513,553.7 (1e11) lbf.
+    """
+    with open(_V08_JSON, encoding="utf-8") as f:
+        inp = H.V08Inputs.from_json(json.load(f))
+    F_hertz = H.v08_reference(inp)["normal_force_F_N_lbf"]
+    mods = load_kratos()
+    KM, SM = mods["KratosMultiphysics"], mods["StructuralMechanicsApplication"]
+    _bb, box_ind, sys_m, sys_s, X_s, w_q, B_s, master_face = _setup_v08_half(KM, SM, inp, 0.25, n_soup=48)
+    fn = {}
+    for eps_n in (1e10, 1e11):
+        um = np.zeros(int(sys_m["free_mask"].sum()), dtype=np.float64)
+        us = np.zeros(int(sys_s["free_mask"].sum()), dtype=np.float64)
+        for t in np.linspace(0.03, 0.1, 8):
+            ux, uy = H.v08_cut_face_displacement(float(t))
+            u_presc = _prescribed_vector(sys_s["presc_mask"], float(ux), float(uy), 0.0)
+            u_fixed_s = np.zeros(box_ind.n_dofs, dtype=np.float64)
+            u_fixed_s[sys_s["presc_mask"]] = u_presc
+            res = solve_deformable_ssn_contact(
+                sys_m["K_ff"], sys_s["K_ff"], X_s, w_q, B_s, master_face, eps_n,
+                free_m=sys_m["free_mask"], free_s=sys_s["free_mask"], u_fixed_s=u_fixed_s,
+                f_ext_s=-(sys_s["K_fp"] @ u_presc), u_init_m=um, u_init_s=us,
+                rtol=1e-9, use_pardiso=True,
+            )
+            um, us = res["u_free_m"], res["u_free_s"]
+        fn[eps_n] = 2.0 * float(-res["force_total"][1])
+    assert abs(fn[1e11] / fn[1e10] - 1.0) < 0.01  # penalty converged
+    err = fn[1e11] / F_hertz - 1.0
+    assert 0.06 < err < 0.075, err  # small-strain, h=0.25: gate (4 %) NOT met

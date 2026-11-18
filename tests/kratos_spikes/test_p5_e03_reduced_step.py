@@ -151,7 +151,13 @@ def e03_step_bundle():
     }
 
 
-def _build_and_run_e03(bundle, mats: list[TP.ThermoMaterial], increments: list[int]):
+def _build_and_run_e03(
+    bundle,
+    mats: list[TP.ThermoMaterial],
+    increments: list[int],
+    element_name: str = "SmallDisplacementElement3D4N",
+    finite_strain: bool = False,
+):
     """Build the 3-region bonded Kratos model on the coarse BoxSpline and run thermal steps."""
     mods = load_kratos()
     KM = mods["KratosMultiphysics"]
@@ -174,7 +180,7 @@ def _build_and_run_e03(bundle, mats: list[TP.ThermoMaterial], increments: list[i
 
     volume, _nodes = make_nurbs_volume(KM, mp, box)
     elements, elem_mat_idx, active_union = TP.attach_region_elements(
-        KM, mp, volume, box, reg_pairs, element_name="SmallDisplacementElement3D4N",
+        KM, mp, volume, box, reg_pairs, element_name=element_name,
         n_gauss=bundle["q_order"] + 1,
     )
 
@@ -193,7 +199,7 @@ def _build_and_run_e03(bundle, mats: list[TP.ThermoMaterial], increments: list[i
     states = [450.0, 20.0, -55.0, 200.0]
     groups = TP.CellThermalGroups(
         KM, mods, mp, elements, mats, elem_mat_idx, states,
-        law_factory=TP.default_law_factory(mods, finite_strain=False),
+        law_factory=TP.default_law_factory(mods, finite_strain=finite_strain),
     )
 
     snapshots: list[dict] = []
@@ -201,6 +207,7 @@ def _build_and_run_e03(bundle, mats: list[TP.ThermoMaterial], increments: list[i
     def observer(level: float) -> None:
         if abs(level - round(level)) > 1e-9:
             return
+        peeq_by_id = groups.equivalent_plastic_strain()
         entry: dict[str, object] = {"level": float(round(level))}
         for m_idx, name in enumerate(region_order):
             m_els = [el for el, mi in zip(elements, elem_mat_idx) if mi == m_idx]
@@ -216,12 +223,16 @@ def _build_and_run_e03(bundle, mats: list[TP.ThermoMaterial], increments: list[i
                     for el in m_els
                     for v in el.CalculateOnIntegrationPoints(KM.PLASTIC_DISSIPATION, mp.ProcessInfo)
                 )
+            peeq_max = 0.0
+            if mats[m_idx].hardening is not None:
+                peeq_max = max(float(peeq_by_id[int(el.Id)].max()) for el in m_els)
             entry[name] = {
                 "vm_max": float(vm.max()),
                 "s1_max": float(s1.max()),
                 "s3_min": float(s3.min()),
                 "abs_max": float(np.abs(sigs).max()),
                 "diss_max": diss_max,
+                "peeq_max": peeq_max,
             }
         snapshots.append(entry)
 
@@ -383,6 +394,61 @@ def test_e03_reduced_3step_thermal_cycle(e03_step_bundle):
     assert s_hot["pins"]["diss_max"] > s_cold["pins"]["diss_max"]
 
     # Glass thermoelastic response: compressive clamping during cooling + residual tension on reheat
+    assert s_room["glass"]["s3_min"] < -300.0
+    assert s_cold["glass"]["s3_min"] < s_room["glass"]["s3_min"]
+    assert s_room["glass"]["s1_max"] > 0.0
+    assert s_cold["glass"]["s1_max"] > s_room["glass"]["s1_max"]
+    assert s_hot["glass"]["s1_max"] > s_cold["glass"]["s1_max"]
+
+
+def test_e03_reduced_3step_hardening_nlgeom(e03_step_bundle):
+    """Run 450 -> 20 -> -55 -> 200 C with full isotropic hardening and TotalLagrangianElement3D4N."""
+    mats_dict = TP.e03_materials(_DATA_DIR)
+    res = _build_and_run_e03(
+        e03_step_bundle,
+        [mats_dict["SS304L_header"], mats_dict["S8061_glass"], mats_dict["Alloy52_pins"]],
+        increments=[3, 3, 3],
+        element_name="TotalLagrangianElement3D4N",
+        finite_strain=True,
+    )
+    print(f"\n[hardening+nlgeom] out={res['out']}")
+    for s in res["snapshots"]:
+        print(f"[hardening+nlgeom] snap={s}")
+
+    assert res["out"]["steps"] == 9
+    assert res["out"]["level"] == pytest.approx(3.0)
+    assert res["groups"].n_groups == 3
+
+    s_room, s_cold, s_hot = res["snapshots"]
+    assert [s["level"] for s in res["snapshots"]] == [1.0, 2.0, 3.0]
+
+    # Metal vm_max exceeds initial yield due to isotropic hardening
+    # (304L initial yield: 162.0 / 194.4 / 120.2 MPa; Alloy 52 initial yield: 234.4 MPa)
+    assert s_room["header"]["vm_max"] > 162.0
+    assert s_cold["header"]["vm_max"] > 194.4
+    assert s_hot["header"]["vm_max"] > 120.2
+    for snap in (s_room, s_cold, s_hot):
+        assert snap["pins"]["vm_max"] > 234.4
+
+    # Monotonically non-decreasing accumulated PEEQ in both header and pins, and
+    # monotonically increasing plastic dissipation in T-independent Alloy 52 pins
+    # (note: 304L KM.PLASTIC_DISSIPATION is temperature-scaled l_c * W_T(PEEQ) / G_f,
+    # so it decreases on reheat to 200 C as sigma_y(T) drops, while PEEQ itself is non-decreasing).
+    assert s_room["header"]["peeq_max"] > 0.0
+    assert s_cold["header"]["peeq_max"] > s_room["header"]["peeq_max"]
+    assert s_hot["header"]["peeq_max"] >= s_cold["header"]["peeq_max"]
+    assert s_room["header"]["diss_max"] > 0.0
+    assert s_cold["header"]["diss_max"] > s_room["header"]["diss_max"]
+    assert s_hot["header"]["diss_max"] > 0.0
+
+    assert s_room["pins"]["peeq_max"] > 0.0
+    assert s_cold["pins"]["peeq_max"] > s_room["pins"]["peeq_max"]
+    assert s_hot["pins"]["peeq_max"] > s_cold["pins"]["peeq_max"]
+    assert s_room["pins"]["diss_max"] > 0.0
+    assert s_cold["pins"]["diss_max"] > s_room["pins"]["diss_max"]
+    assert s_hot["pins"]["diss_max"] > s_cold["pins"]["diss_max"]
+
+    # Glass compressive/tensile principal stresses remain physical
     assert s_room["glass"]["s3_min"] < -300.0
     assert s_cold["glass"]["s3_min"] < s_room["glass"]["s3_min"]
     assert s_room["glass"]["s1_max"] > 0.0
