@@ -22,7 +22,7 @@ Pieces
   (Abaqus ``*EXPANSION, ZERO=`` with an initial-temperature field: the
   initial state is strain free).
 * :class:`HardeningTable` - isotropic hardening sigma_y(PEEQ, T) in the
-  Abaqus ``*PLASTIC`` form (S42).
+  Abaqus ``*PLASTIC`` form (S44).
 * :class:`CellThermalGroups` - groups elements (= cells; one element per cell
   from ``attach_cell_elements``) by (material, rounded temperature history
   over ALL thermal states). Cells with the same key have the same thermal
@@ -35,7 +35,7 @@ Pieces
   ``[k, k+1]`` is the linear interpolation between thermal states ``k`` and
   ``k+1``; one strategy for the whole history.
 
-Hardening (S42). Without a :class:`HardeningTable` the plastic laws are
+Hardening (S44). Without a :class:`HardeningTable` the plastic laws are
 perfectly plastic (``HARDENING_CURVE = 3``). With one, the group Properties
 use ``HARDENING_CURVE = 6`` (CurveDefinedByPoints) with
 ``PLASTIC_STRAIN_VECTOR_PLASTICITY_POINT_CURVE`` = the PEEQ grid plus one far
@@ -43,24 +43,31 @@ point that continues the last stress flat (Abaqus holds it constant; Kratos
 would soften linearly after the last point). The generic laws harden on the
 normalised plastic dissipation ``kappa = W_p * l_c / FRACTURE_ENERGY`` with
 ``W_p = sum sigma : d eps_p`` and ``l_c`` = largest distance of the element's
-control points from their centroid (reference configuration). On every
-segment Kratos uses ``S = a sqrt(1 - b kappa)``, i.e. ``S^2`` linear in
-``W_p``, which is exactly ``S`` linear in PEEQ with ``W_p = int S dPEEQ``;
-``l_c`` and ``FRACTURE_ENERGY`` cancel (no mesh-size dependence). Two
-discrete defects remain and are removed by a PEEQ sync: Kratos integrates
-``W_p`` with the end-of-iteration stress (excess about ``H dPEEQ^2 / 2`` per
-increment, accumulating), and a temperature-dependent curve would be read at
-the plastic WORK of the history instead of its PEEQ. So
+geometry points (QP elements: the control points with support on the cell)
+from their centroid (reference configuration). On segment j Kratos uses
+``S = a sqrt(1 - b kappa)``, i.e. ``S^2`` linear in ``W_p``, which is exactly
+``S`` linear in PEEQ with ``W_p = int S dPEEQ`` (``S^2 = S_j^2 + 2 h_j (W -
+W_j)``); ``l_c`` and ``FRACTURE_ENERGY`` cancel (no mesh-size dependence).
+The form needs ``a^2 = S_j^2 - 2 h_j W_j > 0`` on every segment (a hardening
+slope ``h_j`` that is steep compared with the work already done makes ``a``
+NaN and the return loop never converges); :func:`point_curve_margin` checks
+it for every table row and every curve written. Two discrete defects remain
+and are removed by a PEEQ sync: Kratos integrates ``W_p`` with the
+end-of-iteration stress (excess about ``H dPEEQ^2 / 2`` per increment,
+accumulating), and a temperature-dependent curve would be read at the
+plastic WORK of the history instead of its PEEQ. So
 :meth:`CellThermalGroups.commit` accumulates PEEQ from the converged
-``PLASTIC_STRAIN_VECTOR`` increments (``sqrt(2/3 |d eps_p|^2)``) and
-:meth:`CellThermalGroups.apply` writes ``kappa = l_c W_T(PEEQ) / G_f`` at
-every integration point before each increment (``SetValuesOnIntegrationPoints
-(PLASTIC_DISSIPATION)``), so the threshold is sigma_y(PEEQ, T) at the start
-of every increment (Abaqus semantics). Residual error: Kratos' return
-tolerance ``F <= 1e-4 sigma_y`` plus the within-increment excess, about
-``H^2 dPEEQ^2 / sigma_y`` in stress.
+``PLASTIC_STRAIN_VECTOR`` increments (``sqrt(2/3 |d eps_p|^2)``, engineering
+shear) and :meth:`CellThermalGroups.apply` writes ``kappa = l_c W_T(PEEQ) /
+G_f`` at every integration point before each increment
+(``SetValuesOnIntegrationPoints(PLASTIC_DISSIPATION)``), so the threshold is
+sigma_y(PEEQ, T) at the start of every increment (Abaqus semantics).
+Residual error: Kratos' return tolerance ``F <= 1e-4 sigma_y`` plus the
+within-increment excess, about ``H^2 dPEEQ^2 / sigma_y`` in stress, plus an
+over-return of up to ``(h2 - h1) dPEEQ`` when an increment crosses a convex
+kink (slope rising from h1 to h2).
 
-Limits (S30, S42): the temperature is constant per element (the process
+Limits (S30, S44): the temperature is constant per element (the process
 writes the same state to every integration point of an element); hardening is
 isotropic only; groups and Properties must be built before the strategy is
 initialized (the elements clone ``CONSTITUTIVE_LAW`` from their Properties in
@@ -88,6 +95,7 @@ __all__ = [
     "ThermoMaterial",
     "CellThermalGroups",
     "characteristic_length",
+    "point_curve_margin",
     "default_law_factory",
     "thermal_levels",
     "run_thermal_steps",
@@ -145,6 +153,31 @@ def _curve_work(grid: np.ndarray, stress: np.ndarray, eps_p) -> np.ndarray:
     return seg[j] + stress[j] * de + 0.5 * slope[j] * de * de
 
 
+def point_curve_margin(grid, stress) -> np.ndarray:
+    """``a_j^2 / S_j^2 = 1 - 2 h_j W_j / S_j^2`` per segment of a Kratos
+    CurveDefinedByPoints curve (``W_j`` = curve work up to point j, ``h_j``
+    = segment slope). Kratos writes segment j as ``S = a sqrt(1 - b kappa)``
+    with ``a^2`` the W = 0 intercept of the straight line ``S^2(W)`` through
+    the segment end points; the curve is usable only if every entry is > 0
+    (S44: (0, 1), (1, 2), (1.1, 10) gives -59 and the return never converges).
+    The first segment always gives 1; a flat segment gives 1."""
+    g = np.asarray(grid, dtype=float)
+    s = np.asarray(stress, dtype=float)
+    w = np.concatenate([[0.0], np.cumsum(0.5 * (s[1:] + s[:-1]) * np.diff(g))])
+    h = np.diff(s) / np.diff(g)
+    return 1.0 - 2.0 * h * w[:-1] / s[:-1] ** 2
+
+
+def _check_point_curve(grid, stress, what: str) -> None:
+    m = point_curve_margin(grid, stress)
+    if np.any(m <= 0.0):
+        j = int(np.argmin(m))
+        raise ValueError(
+            f"{what}: Kratos point curve not representable on segment {j} "
+            f"(PEEQ {grid[j]:.6g} -> {grid[j + 1]:.6g}): S_j^2 - 2 h_j W_j = "
+            f"{m[j] * float(stress[j]) ** 2:.6g} <= 0 (slope too steep for the work done)")
+
+
 @dataclass(frozen=True)
 class HardeningTable:
     """Isotropic hardening sigma_y(PEEQ, T) - Abaqus ``*PLASTIC`` with temperature.
@@ -153,8 +186,9 @@ class HardeningTable:
     equivalent plastic strain ``plastic_strains[j]`` (common grid, first point
     0). Linear in PEEQ between points and constant after the last one, linear
     in T between rows and constant outside (Abaqus, equal strain grids).
-    Curves must not soften (Kratos' point curve would, but S42 verified only
-    hardening).
+    Curves must not soften (Kratos' point curve would, but S44 verified only
+    hardening), and every row must pass :func:`point_curve_margin` (> 0);
+    curves interpolated between rows are checked again when written.
     """
 
     plastic_strains: tuple[float, ...]
@@ -173,6 +207,8 @@ class HardeningTable:
             raise ValueError(f"stresses must be {t.size} rows x {e.size} values, got {s.shape}")
         if np.any(s <= 0.0) or np.any(np.diff(s, axis=1) < 0.0):
             raise ValueError("stresses must be positive and non-decreasing in PEEQ")
+        for k in range(t.size):
+            _check_point_curve(e, s[k], f"hardening row T = {t[k]:g}")
         object.__setattr__(self, "plastic_strains", tuple(float(x) for x in e))
         object.__setattr__(self, "stresses", tuple(tuple(float(x) for x in row) for row in s))
         object.__setattr__(self, "temperatures", tuple(float(x) for x in t))
@@ -202,7 +238,7 @@ class ThermoMaterial:
     ``expansion`` is the secant (mean) coefficient about ``t_zero`` (Abaqus
     ``ZERO`` temperature, default 0 as in Abaqus). Plasticity: either
     ``yield_stress`` (perfect plasticity) or ``hardening`` (isotropic
-    hardening table, S42); neither means thermoelastic (linear elastic law,
+    hardening table, S44); neither means thermoelastic (linear elastic law,
     e.g. the S-8061 glass).
     """
 
@@ -296,7 +332,12 @@ class CellThermalGroups:
             quantum, not quantum/2.
         fracture_energy: ``FRACTURE_ENERGY`` for the plastic laws (required by
             Kratos; irrelevant for perfect plasticity, cancels for hardening
-            tables but must exceed ``l_c`` x the work of the extended curve).
+            tables). Kratos raises if ``G_f / l_c`` is below the work of the
+            extended curve (up to PEEQ ``grid[-1] + FLAT_EXTENSION``) or if
+            ``l_c > 2 E G_f / sigma_y^2``; with the default, ``kappa =
+            W_p l_c / G_f`` is about 1e-20 for E03 (W_p a few MPa, l_c about
+            1 mm), far from Kratos' clips (``kappa <= 0.9999``, increments
+            above 1 dropped).
 
     Hardening groups (material with a :class:`HardeningTable`) additionally
     track PEEQ per integration point: :meth:`commit` after every converged
@@ -429,6 +470,8 @@ class CellThermalGroups:
                 props.SetValue(KM.YIELD_STRESS, float(vals["sigma_y"][g]))
         for g in self.hardening_groups:
             c = self._curve(g, vals["T"][g])  # c[0] == sigma_y (Kratos Check)
+            _check_point_curve(self.materials[self.group_material[g]].hardening.plastic_strains, c,
+                               f"group {g} at T = {vals['T'][g]:g}")
             self.properties[g].SetValue(self._cl.EQUIVALENT_STRESS_VECTOR_PLASTICITY_POINT_CURVE,
                                         _kvec(KM, np.append(c, c[-1])))
 
@@ -585,7 +628,7 @@ def e03_materials_initial_yield(data_dir: str | Path) -> dict[str, ThermoMateria
     (Tables 9-16 and ``data/*.tsv``); all expansions are secant about 20 C.
     APPROXIMATION (name says it): plasticity is perfect at the INITIAL yield
     (304L: eps_p = 0 row per temperature; Alloy 52: 234.4 MPa). The tables
-    with hardening are :func:`e03_materials` (S42).
+    with hardening are :func:`e03_materials` (S44).
     """
     d = Path(data_dir)
     glass = _read_tsv(d / "abaqus_s8061_elastic.tsv")        # E, nu, T
@@ -612,7 +655,7 @@ def e03_materials_initial_yield(data_dir: str | Path) -> dict[str, ThermoMateria
 
 
 def e03_materials(data_dir: str | Path) -> dict[str, ThermoMaterial]:
-    """E03 materials with the Coreform isotropic hardening tables (S42).
+    """E03 materials with the Coreform isotropic hardening tables (S44).
 
     Alloy 52: ``abaqus_alloy52_plastic.tsv`` (234.4 MPa at PEEQ 0, 580.72 at
     0.18: linear 1924 MPa, constant afterwards), temperature independent.
