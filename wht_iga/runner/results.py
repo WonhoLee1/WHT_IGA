@@ -29,6 +29,9 @@ class StepResult:
     reaction_residual: float | None = None
     issues: list[dict] = field(default_factory=list)
     vtkhdf_written: bool = False
+    #: ``"linear_elastic"`` (small strain, ``D:eps``) or ``"fbar_neo_hookean_cauchy"``
+    #: (F-bar Cauchy stress, Green-Lagrange strain) -- what probe ``S``/``E`` mean.
+    stress_measure: str = "linear_elastic"
 
     @property
     def control_points_u(self) -> np.ndarray:

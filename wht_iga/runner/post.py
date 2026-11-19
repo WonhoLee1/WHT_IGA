@@ -9,6 +9,10 @@ through the same code path:
 * ``S``: ``D(E, nu) · E`` (isotropic linear elastic, same Voigt order as Kratos
   ``CAUCHY_STRESS_VECTOR``);
 * ``MISES``: von Mises of ``S``.
+
+For an F-bar (Neo-Hookean mean-dilatation) solve the caller passes the
+``fbar.build_model`` dict: ``S`` is then the F-bar Cauchy stress and ``E`` the
+Green-Lagrange strain (``fbar_point_stress_strain``).
 """
 
 from __future__ import annotations
@@ -75,9 +79,66 @@ def von_mises_voigt(s: np.ndarray) -> np.ndarray:
                    + 3.0 * (s[:, 3] ** 2 + s[:, 4] ** 2 + s[:, 5] ** 2))
 
 
+def _point_cells(box, pts: np.ndarray) -> np.ndarray:
+    """Flat cell index ``ix + nx*(iy + ny*iz)`` of each point (``fbar.build_model`` order).
+
+    Same side convention as ``find_span``: a point on an interior cell face
+    belongs to the cell on its +side; the upper box face to the last cell.
+    """
+    idx = []
+    for d in range(3):
+        br = np.unique(np.asarray(box.knots[d], dtype=float))
+        idx.append(np.clip(np.searchsorted(br, pts[:, d], side="right") - 1, 0, len(br) - 2))
+    nx, ny = len(np.unique(box.knots[0])) - 1, len(np.unique(box.knots[1])) - 1
+    return idx[0] + nx * (idx[1] + ny * idx[2])
+
+
+def fbar_cell_jbar(fbar_model: dict, U: np.ndarray, cells: np.ndarray) -> np.ndarray:
+    """Cell-averaged ``Jbar = sum_q w_q J_q / sum_q w_q`` of the given cells (F-bar/P0)."""
+    uc = np.asarray(U, dtype=float).reshape(-1, 3)
+    cells = np.asarray(cells, dtype=np.int64)
+    G = fbar_model["G_all"][cells]                      # (m, nq, ncn, 3)
+    W = fbar_model["W_all"][cells]                      # (m, nq)
+    uloc = uc[fbar_model["conn"][cells]]                # (m, ncn, 3)
+    F = np.eye(3) + np.einsum("mni,mqnj->mqij", uloc, G)
+    J = np.linalg.det(F)
+    return np.sum(W * J, axis=1) / np.sum(W, axis=1)
+
+
+def fbar_point_stress_strain(box, U: np.ndarray, pts: np.ndarray, fbar_model: dict):
+    """Cauchy stress and Green-Lagrange strain (Voigt, engineering shear) of an F-bar solution.
+
+    Same law as ``fbar.cauchy_stress`` (compressible Neo-Hookean, mean
+    dilatation): ``sigma = mu/J * F F^T + U'(Jbar) I`` with
+    ``U'(J) = (lam ln J - mu)/J`` and ``Jbar`` of the cell containing the point
+    (pressure is constant per cell, so S jumps across cell faces).
+    """
+    H = displacement_gradient(box, U, pts)
+    F = np.eye(3) + H
+    J = np.linalg.det(F)
+    if np.any(J <= 0.0):
+        raise ValueError("F-bar post-processing: det F <= 0 at a probe point")
+    cells = _point_cells(box, pts)
+    uniq, inv = np.unique(cells, return_inverse=True)
+    jbar = fbar_cell_jbar(fbar_model, U, uniq)[inv]
+    mu, lam = float(fbar_model["mu"]), float(fbar_model["lam"])
+    pbar = (lam * np.log(jbar) - mu) / jbar
+    sig = (mu / J)[:, None, None] * np.einsum("nij,nkj->nik", F, F) + pbar[:, None, None] * np.eye(3)
+    s = np.stack([sig[:, 0, 0], sig[:, 1, 1], sig[:, 2, 2], sig[:, 0, 1], sig[:, 1, 2], sig[:, 0, 2]], axis=1)
+    Egl = 0.5 * (np.einsum("nki,nkj->nij", F, F) - np.eye(3))
+    e = np.stack([Egl[:, 0, 0], Egl[:, 1, 1], Egl[:, 2, 2],
+                  2.0 * Egl[:, 0, 1], 2.0 * Egl[:, 1, 2], 2.0 * Egl[:, 0, 2]], axis=1)
+    return s, e
+
+
 def evaluate_point_fields(box, U: np.ndarray, points: np.ndarray, E: float, nu: float,
-                          variables) -> dict[str, np.ndarray]:
-    """Requested variables (keys exactly as requested, e.g. ``"S"`` or ``"CAUCHY_STRESS_TENSOR"``)."""
+                          variables, *, fbar_model: dict | None = None) -> dict[str, np.ndarray]:
+    """Requested variables (keys exactly as requested, e.g. ``"S"`` or ``"CAUCHY_STRESS_TENSOR"``).
+
+    ``fbar_model`` (the ``fbar.build_model`` dict of an F-bar solve): ``S`` /
+    ``MISES`` become the Neo-Hookean F-bar Cauchy stress and ``E`` the
+    Green-Lagrange strain. Without it: small strain and linear ``D(E, nu)``.
+    """
     from wht_iga.reference.assemble_elastic import isotropic_D
 
     pts = np.ascontiguousarray(np.atleast_2d(points), dtype=np.float64)
@@ -85,8 +146,11 @@ def evaluate_point_fields(box, U: np.ndarray, points: np.ndarray, E: float, nu: 
     out: dict[str, np.ndarray] = {}
     eps = sig = None
     if any(c in ("E", "S", "MISES") for c in canon.values()):
-        eps = strain_voigt(displacement_gradient(box, U, pts))
-        sig = eps @ isotropic_D(E, nu).T
+        if fbar_model is not None:
+            sig, eps = fbar_point_stress_strain(box, U, pts, fbar_model)
+        else:
+            eps = strain_voigt(displacement_gradient(box, U, pts))
+            sig = eps @ isotropic_D(E, nu).T
     for name, c in canon.items():
         if c == "U":
             out[name] = box.evaluate(np.asarray(U, float).reshape(-1, 3), pts)
@@ -101,7 +165,8 @@ def evaluate_point_fields(box, U: np.ndarray, points: np.ndarray, E: float, nu: 
     return out
 
 
-def write_step_vtkhdf(path, box, U: np.ndarray, out_cells, E: float, nu: float) -> str:
+def write_step_vtkhdf(path, box, U: np.ndarray, out_cells, E: float, nu: float, *,
+                      fbar_model: dict | None = None) -> str:
     """Hex proxy over all non-OUT cells with point fields ``U`` and ``S`` + control-point ``U``.
 
     CUT cells are drawn as full hexahedra (fields there are the B-spline
@@ -116,7 +181,7 @@ def write_step_vtkhdf(path, box, U: np.ndarray, out_cells, E: float, nu: float) 
     bounds = [[[br[0][i], br[1][j], br[2][k]], [br[0][i + 1], br[1][j + 1], br[2][k + 1]]]
               for k in range(nz) for j in range(ny) for i in range(nx) if (i, j, k) not in out]
     pm = generate_hex_proxy_for_cells(np.asarray(bounds, float), n_sub=1, block_name="active_cells")
-    fields = evaluate_point_fields(box, U, pm.points, E, nu, ("U", "S"))
+    fields = evaluate_point_fields(box, U, pm.points, E, nu, ("U", "S"), fbar_model=fbar_model)
     pm.point_data["U"] = fields["U"]
     pm.point_data["S"] = fields["S"]
     return write_vtkhdf(path, pm, control_points={0: {"U": np.asarray(U, float).reshape(-1, 3)}},

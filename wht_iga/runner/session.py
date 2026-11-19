@@ -161,7 +161,9 @@ class AnalysisSession:
             self.cancel_token.raise_if_cancelled(f"step {step.name} solved")
             self._emit(f"post:{step.name}", lo_f + 0.8 * span, f"post-processing step {step.name}")
             box = self.mesh.box()
-            probes = {p.name: evaluate_point_fields(box, sol.U, p.points(), mat.E, mat.nu, p.variables)
+            fbm = getattr(sol, "fbar_model", None)
+            probes = {p.name: evaluate_point_fields(box, sol.U, p.points(), mat.E, mat.nu, p.variables,
+                                                    fbar_model=fbm)
                       for p in spec.probes}
             arts = self.plan.artifacts.step(step.name)
             payload = {name: {"points": [p.points().tolist() for p in spec.probes if p.name == name][0],
@@ -170,14 +172,15 @@ class AnalysisSession:
             arts.probe_json.write_text(json.dumps(payload, indent=1), encoding="utf-8")
             wrote = False
             if self.write_vtkhdf:
-                write_step_vtkhdf(arts.vtkhdf, box, sol.U, self.mesh.out_cells, mat.E, mat.nu)
+                write_step_vtkhdf(arts.vtkhdf, box, sol.U, self.mesh.out_cells, mat.E, mat.nu, fbar_model=fbm)
                 wrote = True
             out[step.name] = StepResult(
                 name=step.name, backend=sol.backend, U=sol.U, converged=sol.converged, n_iter=sol.n_iter,
                 total_force=sol.total_force, probes=probes, artifacts=arts, solver_log=sol.solver_log,
                 solver_log_file=sol.solver_log_file, solver_decision=sol.solver_decision,
                 timings=sol.timings, reaction_residual=sol.reaction_residual, issues=sol.issues,
-                vtkhdf_written=wrote)
+                vtkhdf_written=wrote,
+                stress_measure="fbar_neo_hookean_cauchy" if fbm is not None else "linear_elastic")
             self._emit(f"solve:{step.name}", lo_f + span, f"step {step.name} done")
         self.results = StudyResults(out)
         self._emit("done", 1.0, "run complete")

@@ -106,6 +106,9 @@ class BackendSolution:
     solver_decision: dict | None = None
     reaction_residual: float | None = None
     native: Any = None  # backend-specific result object (e.g. pipeline.LinearResult)
+    #: ``fbar.build_model`` dict when the step was solved with F-bar mean-dilatation
+    #: Neo-Hookean; post-processing then reports Cauchy stress / Green-Lagrange strain.
+    fbar_model: dict | None = None
 
 
 @dataclass(frozen=True)

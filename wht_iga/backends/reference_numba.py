@@ -104,13 +104,16 @@ class ReferenceNumbaBackend:
             zero_idx = np.array([k for k, v in fixed.items() if v == 0.0], dtype=np.int64)
             prescribed = {k: v for k, v in fixed.items() if v != 0.0}
             t1 = time.perf_counter()
+            hist: list = []
             U = fbar.solve_static(
                 fbar_model,
                 f,
                 zero_idx,
                 prescribed=prescribed or None,
                 linear_solver="auto",
+                history=hist,
             )
+            n_iter = int(sum(its for _lam, its in hist))  # Newton iterations over all increments
             t2 = time.perf_counter()
             R_int, K_tan = fbar.residual_tangent_sparse(fbar_model, U)
             R = R_int - f
@@ -124,6 +127,7 @@ class ReferenceNumbaBackend:
             R = K @ U - f  # reactions live on the fixed DOFs; free residual ~ 0
             nnz_val = int(K.nnz)
             solver_label = "reference.solve_with_dirichlet"
+            fbar_model, n_iter = None, 1
         free = np.setdiff1d(np.arange(box.n_dofs), idx)
         rel_res = float(np.linalg.norm(R[free]) / max(np.linalg.norm(f[free]), 1e-300)) if free.size else 0.0
         rxn = np.array([R[idx[idx % 3 == d]].sum() for d in range(3)])
@@ -153,11 +157,12 @@ class ReferenceNumbaBackend:
                                        setup_s=t1 - t0, solve_s=t2 - t1, post_s=time.perf_counter() - t2)
         log_file = str(logger.solver_log_file) if (logger.enabled and logger.solver_log_file) else None
         return BackendSolution(
-            backend=self.name, U=U, converged=True, n_iter=1, total_force=total_force,
+            backend=self.name, U=U, converged=True, n_iter=n_iter, total_force=total_force,
             timings={"setup_s": t1 - t0, "solve_s": t2 - t1, "linear_solver": "reference",
                      "rel_residual": rel_res},
             solver_log=logger.get_text(), solver_log_file=log_file,
-            artifacts={"solver_log": log_file} if log_file else {}, reaction_residual=rxn_res)
+            artifacts={"solver_log": log_file} if log_file else {}, reaction_residual=rxn_res,
+            fbar_model=fbar_model)
 
     def close(self) -> None:
         """Nothing native to release."""

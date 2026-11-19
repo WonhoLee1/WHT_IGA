@@ -225,13 +225,20 @@ def test_run_study_locking_override_reaches_the_backend(tmp_path, override, effe
     U = np.asarray(step["probes"]["pts"]["values"]["U"])
     if effective == "none":
         assert step["formulation"] == "linear_elastic"
+        assert step["stress_measure"] == "linear_elastic"
         assert _rel(U, lin_ref) < 1e-9
         assert step["probes"]["pts"]["invalid_variables"] == {}
         return
     assert step["formulation"] == "fbar_mean_dilatation_neo_hookean"
     assert _rel(U, nh_ref) < 1e-6
-    assert set(step["probes"]["pts"]["invalid_variables"]) == {"S", "MISES"}  # linear post-processing of F-bar
-    assert any("not the F-bar Cauchy stress" in w for w in res["warnings"])
+    # F-bar probes are the Neo-Hookean Cauchy stress (homogeneous: sigma_xx = t / b^2, others 0)
+    assert step["stress_measure"] == "fbar_neo_hookean_cauchy"
+    assert step["probes"]["pts"]["invalid_variables"] == {}
+    assert not any("not the F-bar Cauchy stress" in w for w in res["warnings"])
+    b = 1.0 + nh_ref[0, 1] / PROBE_PTS[0][1]  # u_y = (b - 1) y at the probe corner (2, 1, 1)
+    sig = np.asarray(step["probes"]["pts"]["values"]["S"])
+    # gate 1e-5 t: lam/t ~ 8e6 amplifies the Newton's ~1e-13 strain error (see test_fbar_probe_stress.py)
+    assert np.max(np.abs(sig - np.array([T_RUB / b ** 2, 0, 0, 0, 0, 0]))) < 1e-5 * T_RUB
 
     import wht_iga.spec as s
     from wht_iga.backends import ReferenceNumbaBackend
