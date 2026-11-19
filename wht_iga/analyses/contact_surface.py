@@ -105,11 +105,12 @@ def subdivide_long_edges(
     max_edge: float,
     max_passes: int = 8,
 ) -> tuple[np.ndarray, np.ndarray]:
-    """Bisect triangles whose longest edge exceeds ``max_edge`` (preserves winding).
+    """Conformingly subdivide triangles whose edges exceed ``max_edge`` (preserves winding).
 
-    Useful for extruded/cylindrical OCC faces where ``BRepMesh`` generates long
-    triangles along straight generators (so interior B-spline displacements vary
-    across the face while curved circumferences stay exact).
+    Uses edge-shared Red-Green (1->2 / 1->3 / 1->4) subdivision so every split
+    edge is bisected identically by both incident triangles. Watertight manifold
+    meshes remain strictly conforming and watertight (zero T-junction cracks),
+    preserving continuous vertex normals and ``exclude_boundary=True`` topology.
     """
     pts = np.asarray(nodes, dtype=np.float64)
     tri_arr = np.asarray(tris, dtype=np.int64)
@@ -122,38 +123,80 @@ def subdivide_long_edges(
         e0 = np.sum((p[:, 1] - p[:, 0]) ** 2, axis=1)
         e1 = np.sum((p[:, 2] - p[:, 1]) ** 2, axis=1)
         e2 = np.sum((p[:, 0] - p[:, 2]) ** 2, axis=1)
-        elen = np.column_stack([e0, e1, e2])
-        longest = np.argmax(elen, axis=1)
-        max_sq = elen[np.arange(tri_arr.shape[0]), longest]
-        need = max_sq > limit_sq
-        if not np.any(need):
+
+        m0 = e0 > limit_sq
+        m1 = e1 > limit_sq
+        m2 = e2 > limit_sq
+        if not (np.any(m0) or np.any(m1) or np.any(m2)):
             break
 
-        edge_pairs = np.empty((int(need.sum()), 2), dtype=np.int64)
-        split_idx = np.flatnonzero(need)
-        for idx, k in enumerate(split_idx):
-            c = int(longest[k])
-            a = int(tri_arr[k, c])
-            b = int(tri_arr[k, (c + 1) % 3])
-            edge_pairs[idx] = (a, b) if a < b else (b, a)
+        # Gather every undirected edge exceeding max_edge across all triangles
+        parts = []
+        if np.any(m0):
+            parts.append(tri_arr[m0][:, [0, 1]])
+        if np.any(m1):
+            parts.append(tri_arr[m1][:, [1, 2]])
+        if np.any(m2):
+            parts.append(tri_arr[m2][:, [2, 0]])
+        raw_edges = np.vstack(parts)
+        canon_edges = np.sort(raw_edges, axis=1)
+        uniq_edges = np.unique(canon_edges, axis=0)
 
-        uniq_edges, inv = np.unique(edge_pairs, axis=0, return_inverse=True)
-        mids = 0.5 * (pts[uniq_edges[:, 0]] + pts[uniq_edges[:, 1]])
         n0 = pts.shape[0]
+        mids = 0.5 * (pts[uniq_edges[:, 0]] + pts[uniq_edges[:, 1]])
         pts = np.vstack([pts, mids])
 
-        new_tris = [tri_arr[~need]]
-        split_rows = np.empty((2 * split_idx.size, 3), dtype=np.int64)
-        for idx, k in enumerate(split_idx):
-            c = int(longest[k])
-            v0 = int(tri_arr[k, c])
-            v1 = int(tri_arr[k, (c + 1) % 3])
-            v2 = int(tri_arr[k, (c + 2) % 3])
-            vm = n0 + int(inv[idx])
-            split_rows[2 * idx] = (v0, vm, v2)
-            split_rows[2 * idx + 1] = (vm, v1, v2)
-        new_tris.append(split_rows)
-        tri_arr = np.vstack(new_tris)
+        edge_mid: dict[tuple[int, int], int] = {
+            (int(u), int(v)): n0 + idx for idx, (u, v) in enumerate(uniq_edges)
+        }
+
+        out_tris: list[tuple[int, int, int]] = []
+        for row in tri_arr:
+            v0, v1, v2 = int(row[0]), int(row[1]), int(row[2])
+            k01 = (v0, v1) if v0 < v1 else (v1, v0)
+            k12 = (v1, v2) if v1 < v2 else (v2, v1)
+            k20 = (v2, v0) if v2 < v0 else (v0, v2)
+            s01 = edge_mid.get(k01, -1)
+            s12 = edge_mid.get(k12, -1)
+            s20 = edge_mid.get(k20, -1)
+
+            n_split = (s01 >= 0) + (s12 >= 0) + (s20 >= 0)
+            if n_split == 0:
+                out_tris.append((v0, v1, v2))
+            elif n_split == 3:
+                out_tris.append((v0, s01, s20))
+                out_tris.append((s01, v1, s12))
+                out_tris.append((s20, s12, v2))
+                out_tris.append((s01, s12, s20))
+            elif n_split == 1:
+                if s01 >= 0:
+                    a, b, c, m = v0, v1, v2, s01
+                elif s12 >= 0:
+                    a, b, c, m = v1, v2, v0, s12
+                else:
+                    a, b, c, m = v2, v0, v1, s20
+                out_tris.append((a, m, c))
+                out_tris.append((m, b, c))
+            else:  # n_split == 2
+                # Rotate so edges (a, b) and (b, c) are split, (c, a) is unsplit
+                if s20 < 0:
+                    a, b, c, mab, mbc = v0, v1, v2, s01, s12
+                elif s01 < 0:
+                    a, b, c, mab, mbc = v1, v2, v0, s12, s20
+                else:
+                    a, b, c, mab, mbc = v2, v0, v1, s20, s01
+                out_tris.append((mab, b, mbc))
+                # Split quad (a, mab, mbc, c) along its shorter diagonal
+                d_a_mbc = float(np.sum((pts[a] - pts[mbc]) ** 2))
+                d_mab_c = float(np.sum((pts[mab] - pts[c]) ** 2))
+                if d_a_mbc <= d_mab_c:
+                    out_tris.append((a, mab, mbc))
+                    out_tris.append((a, mbc, c))
+                else:
+                    out_tris.append((a, mab, c))
+                    out_tris.append((mab, mbc, c))
+
+        tri_arr = np.asarray(out_tris, dtype=np.int64)
 
     return np.ascontiguousarray(pts, dtype=np.float64), np.ascontiguousarray(
         tri_arr, dtype=np.int64
@@ -789,6 +832,10 @@ class NonlinearBodyOperator:
         q: int = 2,
         ghost_alpha: float = 0.0,
         stiffness_reg: np.ndarray | None = None,
+        surface_bc_B: Any | None = None,
+        surface_bc_weights: np.ndarray | None = None,
+        surface_bc_penalty: float = 0.0,
+        surface_bc_target: tuple[float, float, float] | np.ndarray | None = None,
         fracture_energy: float = 1e20,
     ) -> None:
         from wht_iga.solver.active import inactive_ctrl_mask
@@ -1007,6 +1054,43 @@ class NonlinearBodyOperator:
         else:
             self._stiffness_reg = None
 
+        if surface_bc_B is not None and surface_bc_weights is not None and float(surface_bc_penalty) > 0.0:
+            import scipy.sparse as sp
+
+            w_bc = np.asarray(surface_bc_weights, dtype=np.float64).ravel() * float(surface_bc_penalty)
+            gram_scalar = (surface_bc_B.T @ sp.diags(w_bc, format="csr") @ surface_bc_B).tocsr()
+            self._K_sbc = sp.kron(gram_scalar, sp.eye(3, format="csr"), format="csr")
+            self._u_sbc_target = np.zeros(self.n_dofs, dtype=np.float64)
+            if surface_bc_target is not None:
+                self.set_surface_bc_target(surface_bc_target)
+        else:
+            self._K_sbc = None
+            self._u_sbc_target = None
+
+    def set_surface_bc_target(
+        self, target: tuple[float, float, float] | np.ndarray
+    ) -> None:
+        """Set uniform 3D displacement target ``(ux, uy, uz)`` or full vector on surface BC."""
+        if self._K_sbc is None:
+            raise RuntimeError("set_surface_bc_target called without surface_bc_B configured")
+        arr = np.asarray(target, dtype=np.float64)
+        if arr.size == 3:
+            tgt = np.tile(arr.reshape(3), self.n_ctrl)
+        elif arr.size == self.n_dofs:
+            tgt = arr.reshape(self.n_dofs).copy()
+        else:
+            raise ValueError(f"Expected 3-vector or ({self.n_dofs},) array, got shape {arr.shape}")
+        tgt[self.zero_mask] = 0.0
+        self._u_sbc_target = tgt
+
+    def surface_bc_reaction(self, u_full: np.ndarray) -> np.ndarray:
+        """Return total 3D reaction force ``-K_sbc @ (u_full - u_target)`` on surface BC."""
+        if self._K_sbc is None:
+            return np.zeros(3, dtype=np.float64)
+        u_arr = np.asarray(u_full, dtype=np.float64).reshape(self.n_dofs)
+        r_vec = -(self._K_sbc @ (u_arr - self._u_sbc_target))
+        return r_vec.reshape(-1, 3).sum(axis=0)
+
     def begin_step(self, time_val: float | None = None, *, sync_peeq: bool = True) -> None:
         """Open a new load step on Kratos ModelPart (must precede ``eval``)."""
         if self._step_open:
@@ -1056,6 +1140,10 @@ class NonlinearBodyOperator:
 
             K = (K + sp.diags(self._stiffness_reg, format="csr")).tocsr()
             f_int = f_int + self._stiffness_reg * np.asarray(u_full, dtype=np.float64).reshape(-1)
+        if self._K_sbc is not None:
+            u_arr = np.asarray(u_full, dtype=np.float64).reshape(self.n_dofs)
+            K = (K + self._K_sbc).tocsr()
+            f_int = f_int + self._K_sbc @ (u_arr - self._u_sbc_target)
         return K, f_int
 
     def _read_plastic_strain(self, el: Any) -> np.ndarray:
@@ -1110,6 +1198,22 @@ class NonlinearBodyOperator:
                 if grp["peeq"][i].size:
                     max_peeq = max(max_peeq, float(grp["peeq"][i].max()))
         return max_peeq
+
+    def abort_step(self, u_restore: np.ndarray | None = None) -> None:
+        """Abort an uncommitted step, restoring nodal coordinates and committed dissipation."""
+        if not self._step_open:
+            return
+        if u_restore is not None:
+            KM = self.KM
+            U = np.asarray(u_restore, dtype=np.float64).reshape(-1, 3)
+            for n, x0, uu in zip(self._ctrl_nodes, self._X0, U):
+                n.SetSolutionStepValue(
+                    KM.DISPLACEMENT, KM.Array3([float(uu[0]), float(uu[1]), float(uu[2])])
+                )
+                n.X, n.Y, n.Z = x0[0] + uu[0], x0[1] + uu[1], x0[2] + uu[2]
+        if self._hardening_groups:
+            self._write_dissipation()
+        self._step_open = False
 
     def max_peeq(self) -> float:
         """Return maximum accumulated PEEQ across all hardening elements."""
@@ -1397,21 +1501,38 @@ def solve_multibody_ssn_contact(
 
     prev_active: list[np.ndarray] | None = None
     prev_slip: list[np.ndarray] | None = None
+    prev2_active: list[np.ndarray] | None = None
+    prev2_slip: list[np.ndarray] | None = None
     converged = False
     n_solves = 0
+    rnorm_init = 0.0
 
-    for _ in range(1, int(max_iter) + 1):
+    for it_ssn in range(1, int(max_iter) + 1):
         res, rnorm, K_tan, pair_out, active_sigs, slip_sigs = _evaluate(u, need_tangent=True)
+        if it_ssn == 1:
+            rnorm_init = float(rnorm)
         same_act = prev_active is not None and all(
             np.array_equal(a, b) for a, b in zip(active_sigs, prev_active)
         )
         same_slp = prev_slip is not None and all(
             np.array_equal(a, b) for a, b in zip(slip_sigs, prev_slip)
         )
-        if same_act and same_slp and rnorm <= rtol:
+        cyc2_act = (
+            it_ssn >= 25
+            and prev2_active is not None
+            and all(np.array_equal(a, b) for a, b in zip(active_sigs, prev2_active))
+        )
+        cyc2_slp = (
+            it_ssn >= 25
+            and prev2_slip is not None
+            and all(np.array_equal(a, b) for a, b in zip(slip_sigs, prev2_slip))
+        )
+        if rnorm <= rtol and ((same_act and same_slp) or (cyc2_act and cyc2_slp)):
             converged = True
             break
 
+        prev2_active = prev_active
+        prev2_slip = prev_slip
         prev_active = [a.copy() for a in active_sigs]
         prev_slip = [s.copy() for s in slip_sigs]
 
@@ -1422,11 +1543,21 @@ def solve_multibody_ssn_contact(
         if mu > 0.0 and float(np.linalg.norm(du)) > 0.0:
             res_norm0 = float(np.linalg.norm(res))
             alpha = 1.0
+            best_alpha = 1.0
+            best_norm = np.inf
+            accepted = False
             while alpha >= 1.0 / 64.0:
                 res_try, _, _, _, _, _ = _evaluate(u + alpha * du, need_tangent=False)
-                if float(np.linalg.norm(res_try)) < (1.0 - 1e-4 * alpha) * res_norm0:
+                norm_try = float(np.linalg.norm(res_try))
+                if norm_try < best_norm:
+                    best_norm = norm_try
+                    best_alpha = alpha
+                if norm_try < (1.0 - 1e-4 * alpha) * res_norm0:
+                    accepted = True
                     break
                 alpha *= 0.5
+            if not accepted:
+                alpha = best_alpha if (it_ssn >= 20 or best_norm < 2.0 * res_norm0) else 0.5
             u_next = u + alpha * du
 
         u = u_next
@@ -1475,6 +1606,7 @@ def solve_multibody_ssn_contact(
         "slip_states": next_slip_states,
         "iterations": int(n_solves),
         "rnorm": float(rnorm),
+        "rnorm_init": float(rnorm_init),
     }
 
 
@@ -1491,6 +1623,7 @@ def solve_multibody_nlgeom_contact_step(
     outer_tol: float = 1e-6,
     max_outer: int = 30,
     rtol: float = 1e-8,
+    ssn_max_iter: int = 150,
     use_pardiso: bool = True,
     sync_peeq: bool = True,
 ) -> dict[str, Any]:
@@ -1502,56 +1635,117 @@ def solve_multibody_nlgeom_contact_step(
     :func:`solve_multibody_ssn_contact` until ``outer_rel <= outer_tol``, and
     calls ``commit_step`` on convergence.
     """
-    u_curr = [np.asarray(u, dtype=np.float64).copy() for u in u_full_list]
+    u_orig = [np.asarray(u, dtype=np.float64).copy() for u in u_full_list]
+    u_curr = [u.copy() for u in u_orig]
     free_masks = [b.free_mask for b in bodies]
+    n_free_list = [int(fm.sum()) for fm in free_masks]
+    offsets_f = np.cumsum([0] + n_free_list)
     for b in bodies:
         b.begin_step(step_time, sync_peeq=sync_peeq)
 
     rel = np.inf
+    r0 = np.inf
     res: dict[str, Any] | None = None
-    for n_outer in range(1, int(max_outer) + 1):
-        K_free_list = []
-        f_ext_list = []
-        u_free_curr = []
-        for b, u_f in zip(bodies, u_curr):
-            K_b, f_int_b = b.eval(u_f)
-            fm = b.free_mask
-            Kf_b = K_b[fm][:, fm].tocsr()
-            u_fb = u_f[fm].copy()
-            K_free_list.append(Kf_b)
-            f_ext_list.append(Kf_b @ u_fb - f_int_b[fm])
-            u_free_curr.append(u_fb)
+    prev_x: np.ndarray | None = None
+    prev_du: np.ndarray | None = None
+    aa_dX: list[np.ndarray] = []
+    aa_dG: list[np.ndarray] = []
+    aa_m = 4
+    omega = 1.0
+    try:
+        for n_outer in range(1, int(max_outer) + 1):
+            K_free_list = []
+            f_ext_list = []
+            u_free_curr = []
+            for b, u_f in zip(bodies, u_curr):
+                K_b, f_int_b = b.eval(u_f)
+                fm = b.free_mask
+                Kf_b = K_b[fm][:, fm].tocsr()
+                u_fb = u_f[fm].copy()
+                K_free_list.append(Kf_b)
+                f_ext_list.append(Kf_b @ u_fb - f_int_b[fm])
+                u_free_curr.append(u_fb)
 
-        res = solve_multibody_ssn_contact(
-            K_free_list,
-            f_ext_list,
-            free_masks,
-            u_curr,
-            pairs,
-            eps_n,
-            u_init_list=u_free_curr,
-            mu=mu,
-            eps_t=eps_t,
-            slip_states=slip_states,
-            rtol=rtol,
-            use_pardiso=use_pardiso,
-        )
+            res = solve_multibody_ssn_contact(
+                K_free_list,
+                f_ext_list,
+                free_masks,
+                u_curr,
+                pairs,
+                eps_n,
+                u_init_list=u_free_curr,
+                mu=mu,
+                eps_t=eps_t,
+                slip_states=slip_states,
+                rtol=rtol,
+                max_iter=int(ssn_max_iter),
+                use_pardiso=use_pardiso,
+            )
 
-        du_parts = [
-            res["u_free_list"][i] - u_free_curr[i] for i in range(len(bodies))
-        ]
-        for i, b in enumerate(bodies):
-            u_curr[i][b.free_mask] = res["u_free_list"][i]
+            x_vec = np.concatenate(u_free_curr)
+            du_parts = [
+                res["u_free_list"][i] - u_free_curr[i] for i in range(len(bodies))
+            ]
+            du_vec = np.concatenate(du_parts)
+            du_norm = float(np.linalg.norm(du_vec))
+            u_norm = float(np.linalg.norm(np.concatenate(u_curr)))
+            rel = du_norm / max(u_norm, 1e-300)
+            r0 = float(res.get("rnorm_init", np.inf))
 
-        du_norm = float(np.linalg.norm(np.concatenate(du_parts)))
-        u_norm = float(np.linalg.norm(np.concatenate(u_curr)))
-        rel = du_norm / max(u_norm, 1e-300)
-        if rel <= outer_tol:
-            break
-    else:
-        raise RuntimeError(
-            f"Multi-body NLGEOM outer Newton did not converge in {max_outer} iterations (rel={rel:.2e})"
-        )
+            if rel <= outer_tol or (n_outer >= 2 and r0 <= outer_tol and rel <= 10.0 * outer_tol):
+                for i, b in enumerate(bodies):
+                    u_curr[i][b.free_mask] = res["u_free_list"][i]
+                break
+
+            if prev_x is not None and prev_du is not None:
+                aa_dX.append(x_vec - prev_x)
+                aa_dG.append(du_vec - prev_du)
+                if len(aa_dX) > aa_m:
+                    aa_dX.pop(0)
+                    aa_dG.pop(0)
+                if n_outer >= 6:
+                    dot_prev = float(np.dot(du_vec, prev_du))
+                    if dot_prev < 0.0:
+                        diff = du_vec - prev_du
+                        d2 = float(np.dot(diff, diff))
+                        if d2 > 1e-30:
+                            omega = float(np.clip(-omega * float(np.dot(prev_du, diff)) / d2, 0.2, 1.0))
+                    elif omega < 1.0:
+                        omega = min(1.0, 1.25 * omega)
+
+            prev_x = x_vec
+            prev_du = du_vec
+
+            x_next: np.ndarray | None = None
+            if n_outer >= 4 and rel < 5e-2 and len(aa_dX) >= 2:
+                dG = np.column_stack(aa_dG)
+                dX = np.column_stack(aa_dX)
+                G_mat = dG.T @ dG
+                reg = 1e-12 * max(float(np.trace(G_mat)), 1e-30)
+                try:
+                    gamma = np.linalg.solve(G_mat + reg * np.eye(G_mat.shape[0]), dG.T @ du_vec)
+                    cand = (x_vec - dX @ gamma) + (du_vec - dG @ gamma)
+                    step_aa = cand - x_vec
+                    if np.all(np.isfinite(step_aa)) and float(np.linalg.norm(step_aa)) <= 3.0 * max(du_norm, 1e-30):
+                        x_next = cand
+                except np.linalg.LinAlgError:
+                    x_next = None
+
+            if x_next is not None:
+                for i, b in enumerate(bodies):
+                    u_curr[i][b.free_mask] = x_next[offsets_f[i] : offsets_f[i + 1]]
+            else:
+                for i, b in enumerate(bodies):
+                    u_curr[i][b.free_mask] = u_free_curr[i] + omega * du_parts[i]
+        else:
+            raise RuntimeError(
+                f"Multi-body NLGEOM outer Newton did not converge in {max_outer} iterations "
+                f"(rel={rel:.2e}, r0={r0:.2e})"
+            )
+    except Exception:
+        for b, u_0 in zip(bodies, u_orig):
+            b.abort_step(u_0)
+        raise
 
     f_int_list = []
     peeq_max_list = []
@@ -1566,5 +1760,6 @@ def solve_multibody_nlgeom_contact_step(
         "f_int_list": f_int_list,
         "n_outer": int(n_outer),
         "outer_rel": float(rel),
+        "outer_rnorm": float(r0),
         "peeq_max_list": peeq_max_list,
     }
