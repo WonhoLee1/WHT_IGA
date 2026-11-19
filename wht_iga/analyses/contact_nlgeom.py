@@ -19,8 +19,15 @@ Material: use a hyperelastic law (``CL.HyperElastic3DLaw``, compressible
 Neo-Hookean). ``SM.LinearElastic3DLaw`` under TL is St. Venant-Kirchhoff, which
 softens strongly in compression and gave -8.2 % on V08 (measured 2026-11-19);
 Abaqus ``*Elastic`` with ``nlgeom`` is hypoelastic and does not soften that way.
-Ghost (OUT) cells always use the linear law: their stiffness is negligible
-(``ghost_alpha * E``) but Neo-Hookean returns NaN on inverted ghost cells.
+Ghost (OUT) cells use ``ghost_element`` (default ``SmallDisplacementElement3D4N``)
+with the linear law at ``ghost_alpha * E``. Inactive control points are fixed at
+zero, so a ghost cell between them and active points that slide far is strongly
+stretched: as TL + linear law (= St. Venant-Kirchhoff) its force grows like
+(u/h)**3 and leaked 1,891 lbf into the zero DOFs on V08 R2 h=0.25 at t=0.70
+(cut-face tangential equilibrium error 1.3e-2). The small-strain ghost element
+leaks 5.1 lbf (eq error 3.5e-5) with the contact history unchanged to 0.013 %
+(measured 2026-11-19, scratchpad v08/ghost_r2.py). Neo-Hookean is never used on
+ghost cells (NaN on inverted cells).
 
 Friction: the slip history (``slip_state``) is the state at the START of the
 load step and is passed unchanged to every outer iteration; the step-end state
@@ -62,11 +69,13 @@ class KratosBodyOperator:
         trim_soup: tuple[np.ndarray, np.ndarray] | None = None,
         q: int = 4,
         ghost_alpha: float = 1e-8,
+        ghost_element: str = "SmallDisplacementElement3D4N",
     ) -> None:
         from wht_iga.solver.active import inactive_ctrl_mask
         from wht_iga.solver.trimmed import build_trimmed_table
 
         check_qp_element_name(element)
+        check_qp_element_name(ghost_element)
         self.KM = KM
         self.box = box
         if trim_soup is not None:
@@ -100,17 +109,18 @@ class KratosBodyOperator:
         for k in range(nz):
             for j in range(ny):
                 for i in range(nx):
+                    elem_name = element
                     if (i, j, k) in out_set:
                         if ghost_alpha <= 0.0:
                             continue
-                        pts, props = cell_gauss_points(box, i, j, k), pg
+                        pts, props, elem_name = cell_gauss_points(box, i, j, k), pg, ghost_element
                     elif (i, j, k) in qp_table:
                         pts, props = np.asarray(qp_table[(i, j, k)], dtype=float).tolist(), pv
                     else:
                         pts, props = cell_gauss_points(box, i, j, k), pv
                     qps = KM.GeometriesVector()
                     vol.CreateQuadraturePointGeometries(qps, 2, pts)
-                    mp.CreateNewElement(element, eid, qps[0], props)
+                    mp.CreateNewElement(elem_name, eid, qps[0], props)
                     eid += 1
         for v, r in ((KM.DISPLACEMENT_X, KM.REACTION_X), (KM.DISPLACEMENT_Y, KM.REACTION_Y),
                      (KM.DISPLACEMENT_Z, KM.REACTION_Z)):
