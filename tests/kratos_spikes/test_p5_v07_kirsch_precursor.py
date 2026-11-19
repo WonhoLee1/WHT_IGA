@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import subprocess
 import sys
+import time
 from dataclasses import dataclass, field
 
 import numpy as np
@@ -595,3 +596,70 @@ def test_check_b_kirsch_fbar_vs_kratos_disp():
     assert results_fbar[1][1] < 0.005 and results_fbar[1][2] < 0.1
     assert results_fbar[1][1] < results_kratos[1][1]
     assert results_fbar[1][2] < results_kratos[1][2]
+
+
+# ---------------------------------------------------------------------------
+# 5. Check C: V07 3-Level Hard Gate (h0=0.5, h1=0.25, h2=0.125) with fbar
+# ---------------------------------------------------------------------------
+
+def test_check_c_kirsch_fbar_3level_hard_gate():
+    """Check C: V07 3-level Master Plan v2.1 hard gate for fbar at nu=0.49999."""
+    v_exact = T_THICK * (B_VAL**2 - 0.25 * np.pi * A_VAL**2)
+    configs = [
+        ("h0=0.5", 0.5, 6, 8, 2, 0.01, 0.2),
+        ("h1=0.25", 0.25, 12, 16, 2, 0.005, 0.1),
+        ("h2=0.125", 0.125, 24, 32, 2, 0.002, 0.05),
+    ]
+    results = []
+
+    for label, h_val, nu_c, nv_half, nw_c, eu_tol, es_tol in configs:
+        t0 = time.perf_counter()
+        plate = MappedQuarterPlate(n_u=nu_c, n_v_half=nv_half, n_w=nw_c, degree=2)
+        X_all, W_all, _ = _qp_positions_and_weights(plate)
+        vol_h = float(np.sum(W_all))
+        vol_err = abs(vol_h - v_exact) / v_exact
+        assert vol_err <= 0.001, f"{label}: domain volume error {vol_err:.6e} > 0.1%"
+
+        fixed, prescribed = _kirsch_dirichlet_dofs(plate)
+        model = fbar.build_model(plate, degree=2, E=E_VAL, nu=NU_VAL)
+        f_ext = np.zeros(model["n_dof"], dtype=np.float64)
+        u_fbar = fbar.solve_static(
+            model, f_ext, fixed, n_steps=1, prescribed=prescribed, linear_solver="auto"
+        )
+        u_q_fbar = _eval_u_at_qps(plate, u_fbar)
+        s_list_fbar = fbar.cauchy_stress(model, u_fbar)
+        sxx_q_fbar = np.stack([s[:, 0] for s in s_list_fbar])
+        eu_f, es_f = _l2_errors(X_all, W_all, u_q_fbar, sxx_q_fbar)
+        elapsed = time.perf_counter() - t0
+
+        n_ctrl = plate.n_cp[0] * plate.n_cp[1] * plate.n_cp[2]
+        n_cells = X_all.shape[0]
+        print(
+            f"\n[Check C {label}] n_ctrl={n_ctrl}, n_dof={model['n_dof']}, "
+            f"n_cells={n_cells}, vol_err={vol_err:.3e}, time={elapsed:.2f}s\n"
+            f"  fbar: e_u={eu_f:.6e} (tol={eu_tol}), e_sigma_xx={es_f:.6e} (tol={es_tol})"
+        )
+        assert eu_f <= eu_tol, f"{label}: e_u={eu_f:.6e} > {eu_tol}"
+        assert es_f <= es_tol, f"{label}: e_sigma_xx={es_f:.6e} > {es_tol}"
+        results.append((h_val, eu_f, es_f, vol_err, n_ctrl, model["n_dof"], n_cells, elapsed))
+
+    slope_u_01 = float(np.log(results[0][1] / results[1][1]) / np.log(2.0))
+    slope_s_01 = float(np.log(results[0][2] / results[1][2]) / np.log(2.0))
+    slope_u_12 = float(np.log(results[1][1] / results[2][1]) / np.log(2.0))
+    slope_s_12 = float(np.log(results[1][2] / results[2][2]) / np.log(2.0))
+
+    hs = np.array([r[0] for r in results])
+    eus = np.array([r[1] for r in results])
+    ess = np.array([r[2] for r in results])
+    fit_slope_u = float(np.polyfit(np.log(hs), np.log(eus), 1)[0])
+    fit_slope_s = float(np.polyfit(np.log(hs), np.log(ess), 1)[0])
+
+    print(
+        f"\n[Check C slopes]\n"
+        f"  h0->h1: slope_u={slope_u_01:.3f}, slope_sigma_xx={slope_s_01:.3f}\n"
+        f"  h1->h2: slope_u={slope_u_12:.3f}, slope_sigma_xx={slope_s_12:.3f}\n"
+        f"  3-lvl OLS fit: slope_u={fit_slope_u:.3f}, slope_sigma_xx={fit_slope_s:.3f}"
+    )
+
+    assert slope_u_01 > 0.5 and slope_s_01 > 0.5
+    assert slope_u_12 > 0.5 and slope_s_12 > 0.5
