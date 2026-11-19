@@ -108,8 +108,21 @@ def test_s25_explicit_penalty_process_fails_on_qp_geometry():
         proc.ExecuteInitialize()
 
 
+def _assemble_block_stiffness(KM, mp, elements, nodes) -> np.ndarray:
+    """Assemble the 3*n_node stiffness matrix of one block from element LHS."""
+    id_to_local = {nd.Id: idx for idx, nd in enumerate(nodes)}
+    n_dof = 3 * len(nodes)
+    K = np.zeros((n_dof, n_dof), dtype=float)
+    for el in elements:
+        lhs = KM.Matrix()
+        el.CalculateLeftHandSide(lhs, mp.ProcessInfo)
+        dofs = [3 * id_to_local[nd.Id] + d for nd in el.GetNodes() for d in range(3)]
+        K[np.ix_(dofs, dofs)] += np.array(lhs)
+    return K
+
+
 def test_s25_direct_penalty_free_impact():
-    """Free-free impact via surface layers + Python penalty: momentum + stability."""
+    """Free-free impact via surface layers + Python penalty: momentum, energy, stability."""
     mods = load_kratos()
     KM = mods["KratosMultiphysics"]
     SM = mods["StructuralMechanicsApplication"]
@@ -121,17 +134,35 @@ def test_s25_direct_penalty_free_impact():
         if 100 <= nd.Id < 1000 or nd.Id >= 2000:
             nd.SetSolutionStepValue(KM.VELOCITY_Z, -_V0)
     strat.Initialize()
+    lo_nodes = [nd for nd in mp.Nodes if nd.Id < 100]
+    hi_nodes = [nd for nd in mp.Nodes if 100 <= nd.Id < 1000]
+    K_lo = _assemble_block_stiffness(KM, mp, [mp.GetElement(1)], lo_nodes)
+    K_hi = _assemble_block_stiffness(KM, mp, [mp.GetElement(100)], hi_nodes)
     masses = {nd.Id: float(nd.GetValue(KM.NODAL_MASS)) for nd in mp.Nodes}
+    m_vec = np.array([masses[nd.Id] for nd in lo_nodes + hi_nodes for _ in range(3)])
     p0 = sum(m * (-_V0 if (100 <= i < 1000 or i >= 2000) else 0.0) for i, m in masses.items())
+    e0 = 0.5 * sum(masses[nd.Id] for nd in hi_nodes) * _V0 * _V0
     assert p0 != 0.0
+
+    def disp_vec(nodes):
+        return np.array([nd.GetSolutionStepValue(v) for nd in nodes
+                         for v in (KM.DISPLACEMENT_X, KM.DISPLACEMENT_Y, KM.DISPLACEMENT_Z)])
+
+    def vel_vec(nodes):
+        return np.array([nd.GetSolutionStepValue(v) for nd in nodes
+                         for v in (KM.VELOCITY_X, KM.VELOCITY_Y, KM.VELOCITY_Z)])
+
     t_abs, ok = 0.0, True
-    hist_p, hist_gap = [], []
+    hist_p, hist_gap, hist_e = [], [], []
+    u_lo_prev = disp_vec(lo_nodes)
+    u_hi_prev = disp_vec(hi_nodes)
+    g_prev = np.array([b.GetSolutionStepValue(KM.DISPLACEMENT_Z) + b.Z0
+                       - (a.GetSolutionStepValue(KM.DISPLACEMENT_Z) + a.Z0)
+                       for a, b in zip(s_lo, s_hi)])
     for _s in range(_NSTEPS):
-        gaps = []
-        for a, b in zip(s_lo, s_hi):
-            za = a.GetSolutionStepValue(KM.DISPLACEMENT_Z) + a.Z0
-            zb = b.GetSolutionStepValue(KM.DISPLACEMENT_Z) + b.Z0
-            gaps.append(zb - za)
+        gaps = [b.GetSolutionStepValue(KM.DISPLACEMENT_Z) + b.Z0
+                - (a.GetSolutionStepValue(KM.DISPLACEMENT_Z) + a.Z0)
+                for a, b in zip(s_lo, s_hi)]
         for (a, b), g in zip(zip(s_lo, s_hi), gaps):
             f = _KPEN * max(0.0, -g)
             a.SetSolutionStepValue(SM.POINT_LOAD_Z, float(-f))
@@ -142,9 +173,21 @@ def test_s25_direct_penalty_free_impact():
         strat.Solve()
         pz = sum(masses[nd.Id] * float(nd.GetSolutionStepValue(KM.VELOCITY_Z))
                  for nd in mp.Nodes)
+        # Align KE(v_n) with PE_strain(u_n) + E_penalty(u_n) at step time t_n
+        vn = vel_vec(lo_nodes + hi_nodes)
+        ke_n = 0.5 * float(np.sum(m_vec * vn * vn))
+        pe_n = 0.5 * float(u_lo_prev @ K_lo @ u_lo_prev) + 0.5 * float(u_hi_prev @ K_hi @ u_hi_prev)
+        e_pen_n = 0.5 * _KPEN * float(np.sum(np.maximum(0.0, -g_prev) ** 2))
+        e_tot = ke_n + pe_n + e_pen_n
         hist_p.append(pz)
         hist_gap.append(min(gaps))
-        if not np.isfinite(pz):
+        hist_e.append(e_tot)
+        u_lo_prev = disp_vec(lo_nodes)
+        u_hi_prev = disp_vec(hi_nodes)
+        g_prev = np.array([b.GetSolutionStepValue(KM.DISPLACEMENT_Z) + b.Z0
+                           - (a.GetSolutionStepValue(KM.DISPLACEMENT_Z) + a.Z0)
+                           for a, b in zip(s_lo, s_hi)])
+        if not (np.isfinite(pz) and np.isfinite(e_tot)):
             ok = False
             break
     assert ok, "direct-penalty impact went unstable"
@@ -152,4 +195,9 @@ def test_s25_direct_penalty_free_impact():
     assert min(hist_gap) > -0.02, f"excessive penetration: {min(hist_gap)}"
     dev = float(np.max(np.abs(np.array(hist_p) - p0)) / abs(p0))
     assert dev < 1e-6, f"momentum not conserved: {dev}"
-    print(f"S25 impact: steps={len(hist_p)} mom_dev={dev:.2e} min_gap={min(hist_gap):.4f}")
+    max_de = float(np.max(np.abs(np.array(hist_e) - e0)) / e0)
+    # _KPEN=2000 per pair at dt=0.005 resolves contact in ~10 steps -> ~8% energy growth
+    # (the <= 2% gate is enforced in test_vexp_explicit.py::test_vexp_c_dt_sweep).
+    assert max_de < 0.10, f"total energy unbounded: {max_de:.4%}"
+    print(f"S25 impact: steps={len(hist_p)} mom_dev={dev:.2e} min_gap={min(hist_gap):.4f} "
+          f"max_dE={max_de:.4%}")
