@@ -22,13 +22,13 @@ with ``dJbar/du_J = (1/Wcell) sum_s w_s J_s (FinvT_s G_sJ)`` and the
 finite differences in ``tests/unit/test_fbar_mean_dilatation.py``).
 
 Assembly: ``residual_tangent_sparse`` scatters the cell blocks into a CSR
-pattern precomputed in ``build_model`` (one Numba pass over all cells);
-``solve_static`` factorises it with Pardiso / SuperLU. The dense
-``residual_tangent`` is kept as the test oracle (S40).
+pattern precomputed in ``build_model`` (node-pair scatter map, one Numba
+pass over all cells); ``solve_static`` factorises it with Pardiso / SuperLU.
+The dense ``residual_tangent`` is kept as the test oracle (S40).
 
 Scope: untrimmed single-patch boxes (E04 precursor), clamped knots with any
-uniform continuity C^0..C^(p-1) (Coreform E04 uses C^(p-2)). No Kratos
-dependency.
+interior multiplicity 1..p per knot, i.e. C^(p-1)..C^0, uniform or mixed
+(Coreform E04 uses C^(p-2)). No Kratos dependency.
 """
 
 from __future__ import annotations
@@ -199,12 +199,14 @@ def _lagrange_1d(xi: float, nodes: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
 
 @njit(cache=True)
 def _assemble_csr(G_all: np.ndarray, W_all: np.ndarray, conn: np.ndarray, u: np.ndarray,
-                  mu: float, lam: float, coo2csr: np.ndarray, nnz: int):
-    """Global R and CSR data of K. Cell blocks are scattered through the
-    precomputed ``coo2csr`` map (cell c, local (i, j) -> c*nd*nd + i*nd + j),
-    adding cells in the same order as the dense oracle ``residual_tangent``."""
+                  mu: float, lam: float, indptr: np.ndarray, node_pos: np.ndarray, nnz: int):
+    """Global R and CSR data of K (pattern from ``_csr_pattern``).
+
+    Entry (3n+a, 3m+b) of a coupled node pair sits at
+    ``indptr[3n+a] + 3*node_pos[c, I, J] + b``. Cells are added in the same
+    order as the dense oracle ``residual_tangent``.
+    """
     nc, nen = conn.shape
-    nd = 3 * nen
     R = np.zeros(u.shape[0], dtype=np.float64)
     data = np.zeros(nnz, dtype=np.float64)
     uc = np.empty((nen, 3), dtype=np.float64)
@@ -214,14 +216,46 @@ def _assemble_csr(G_all: np.ndarray, W_all: np.ndarray, conn: np.ndarray, u: np.
             for a in range(3):
                 uc[I, a] = u[3 * n + a]
         Rc, Kc, _ = _cell_residual_tangent(G_all[c], W_all[c], uc, mu, lam)
-        for i in range(nd):
-            R[3 * conn[c, i // 3] + i % 3] += Rc[i]
-        base = c * nd * nd
-        for i in range(nd):
-            row = base + i * nd
-            for j in range(nd):
-                data[coo2csr[row + j]] += Kc[i, j]
+        for I in range(nen):
+            n = conn[c, I]
+            for a in range(3):
+                R[3 * n + a] += Rc[3 * I + a]
+                rs = indptr[3 * n + a]
+                for J in range(nen):
+                    p0 = rs + 3 * node_pos[c, I, J]
+                    for b in range(3):
+                        data[p0 + b] += Kc[3 * I + a, 3 * J + b]
     return R, data
+
+
+def _csr_pattern(conn: np.ndarray, n_ctrl: int) -> dict:
+    """CSR pattern of the 3-DOF-per-node tangent and the cell scatter map.
+
+    Built per node pair (nc * nen^2 entries, 9x less than per DOF pair): nodes
+    n, m are coupled iff they share a cell, and then all 3x3 DOF pairs are
+    stored. Row 3n+a lists ``3m+b`` for the sorted neighbours m of n, so
+    entry (3n+a, 3m+b) is at ``indptr[3n+a] + 3k + b`` with k the rank of m
+    among the neighbours of n; ``node_pos[c, I, J]`` holds k for cell c.
+    """
+    nc, nen = conn.shape
+    key = (np.repeat(conn, nen, axis=1).astype(np.int64) * n_ctrl
+           + np.tile(conn, (1, nen)).astype(np.int64)).ravel()
+    uniq, inv = np.unique(key, return_inverse=True)
+    rows, cols = uniq // n_ctrl, uniq % n_ctrl
+    deg = np.bincount(rows, minlength=n_ctrl).astype(np.int64)
+    nstart = np.zeros(n_ctrl + 1, dtype=np.int64)
+    np.cumsum(deg, out=nstart[1:])
+    rank = np.arange(uniq.size, dtype=np.int64) - nstart[rows]
+    node_pos = rank[inv.ravel()].reshape(nc, nen, nen)
+    row_node = np.repeat(np.arange(n_ctrl, dtype=np.int64), 3)
+    row_len = 3 * deg[row_node]
+    indptr = np.zeros(3 * n_ctrl + 1, dtype=np.int64)
+    np.cumsum(row_len, out=indptr[1:])
+    nnz = int(indptr[-1])
+    nb_cols = (3 * cols[:, None] + np.arange(3, dtype=np.int64)[None, :]).ravel()
+    gather = np.repeat(3 * nstart[row_node] - indptr[:-1], row_len) + np.arange(nnz, dtype=np.int64)
+    return {"indptr": indptr, "indices": nb_cols[gather],
+            "node_pos": np.ascontiguousarray(node_pos), "nnz": nnz}
 
 
 def _axis_cells(knots: np.ndarray, p: int, xg: np.ndarray) -> list:
@@ -255,7 +289,8 @@ def build_model(box, degree: int, E: float, nu: float,
     """Precompute per-cell QP data and the CSR pattern.
 
     *box*: BoxSpline-like (``knots``, ``n_cp``, ``control_points()``), clamped
-    knots with any uniform interior multiplicity (``continuity`` 0..p-1).
+    knots with any interior multiplicity 1..p per knot (C^(p-1)..C^0, uniform
+    or mixed); ``_axis_cells`` maps each cell to its span.
     """
     p = int(degree)
     ng = p + 1 if n_gauss is None else int(n_gauss)
@@ -288,21 +323,15 @@ def build_model(box, degree: int, E: float, nu: float,
                 G = np.einsum("qnc,qcd->qnd", d3, np.linalg.inv(Jg))
                 W = wq * (0.125 * (xh - xl) * (yh - yl) * (zh - zl)) * np.abs(np.linalg.det(Jg))
                 cells.append({"nodes": idx.astype(np.int64), "G": G, "W": W})
-    conn = np.stack([c["nodes"] for c in cells])
-    nc, nd, ndof = conn.shape[0], 3 * ncn, 3 * n_ctrl
-    dofs = (3 * conn[:, :, None] + np.arange(3)[None, None, :]).reshape(nc, nd)
-    key = (np.repeat(dofs, nd, axis=1).astype(np.int64) * ndof
-           + np.tile(dofs, (1, nd)).astype(np.int64)).ravel()
-    uniq, coo2csr = np.unique(key, return_inverse=True)
-    indptr = np.zeros(ndof + 1, dtype=np.int64)
-    np.cumsum(np.bincount(uniq // ndof, minlength=ndof), out=indptr[1:])
-    csr = {"indptr": indptr, "indices": (uniq % ndof).astype(np.int64),
-           "coo2csr": coo2csr.astype(np.int64).ravel(), "nnz": int(uniq.size)}
-    return {"cells": cells, "n_ctrl": n_ctrl, "n_dof": ndof,
+    conn = np.ascontiguousarray(np.stack([c["nodes"] for c in cells]))
+    G_all = np.ascontiguousarray(np.stack([c["G"] for c in cells]))
+    W_all = np.ascontiguousarray(np.stack([c["W"] for c in cells]))
+    for i, cell in enumerate(cells):  # views: one copy of the QP data, not two
+        cell["G"], cell["W"] = G_all[i], W_all[i]
+    return {"cells": cells, "n_ctrl": n_ctrl, "n_dof": 3 * n_ctrl,
             "mu": float(mu), "lam": float(lam), "degree": p,
-            "G_all": np.ascontiguousarray(np.stack([c["G"] for c in cells])),
-            "W_all": np.ascontiguousarray(np.stack([c["W"] for c in cells])),
-            "conn": np.ascontiguousarray(conn), "csr": csr}
+            "G_all": G_all, "W_all": W_all, "conn": conn,
+            "csr": _csr_pattern(conn, n_ctrl)}
 
 
 def residual_tangent(model: dict, u: np.ndarray):
@@ -330,7 +359,8 @@ def residual_tangent_sparse(model: dict, u: np.ndarray):
     s = model["csr"]
     R, data = _assemble_csr(model["G_all"], model["W_all"], model["conn"],
                             np.ascontiguousarray(u, dtype=np.float64).reshape(ndof),
-                            float(model["mu"]), float(model["lam"]), s["coo2csr"], s["nnz"])
+                            float(model["mu"]), float(model["lam"]),
+                            s["indptr"], s["node_pos"], s["nnz"])
     K = sp.csr_matrix((data, s["indices"], s["indptr"]), shape=(ndof, ndof))
     K.has_sorted_indices = True
     return R, K

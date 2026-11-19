@@ -5,16 +5,18 @@ Small bar: 4 cells, h = 1, E = 100, rho = 1 (c = 10), y/z fixed, x fixed at
 x = 0. Kratos ``MechanicalExplicitStrategy`` + ``ExplicitCentralDifferencesScheme``.
 
 ``estimate_dt_crit`` is applied to the system Kratos actually integrates:
-- K from the Kratos element LHS. The static builder is not used: its
-  ``CheckAndCorrectZeroDiagonalValues`` puts a scale factor on every row whose
-  entries are all <= eps. For p = 3 and eta = 1e-6, the cut-cell-only row is such a
-  row and the extracted K_eff got a spurious entry (0.17 -> 78, dt ratio 0.09).
+- K from the Kratos element LHS, not from the static builder. The builder
+  replaces near-zero diagonals (``CheckAndCorrectZeroDiagonalValues``). Measured
+  2026-11-19 for p = 3, eta = 1e-6: the last x-layer rows are <= 1.5e-18, and
+  the builder K has 19.0 on that diagonal where the element K has 3.7e-30.
 - M is the Kratos NODAL_MASS read back, or the HRZ values written by
   ``overwrite_nodal_mass``. With ties, K_eff = T^T K T on the masters.
 
 References:
 - p = 1 uncut: 1D fixed-free lumped bar, w_max = (2 c / h) cos(pi / (4 n)).
 - Execution: from rest, central differences give u_n = u_0 cos(n theta) per mode.
+  This uses the half-step start v_{1/2} = (dt/2) a_0. Kratos starts that way:
+  the V-EXP 1D reference with this start matches Kratos to round-off.
   With E_n = 1/2 u_n K u_n + 1/2 v_{n-1/2} M v_{n-1/2}, this gives
   E_n / E_0 <= 1 + w dt / 2 < 2 while w_max dt < 2. Above the limit the energy
   grows geometrically (gate: >= 1e6 within 100 steps).
@@ -143,7 +145,8 @@ def _max_energy_ratio(KM, SM, S, dt, n_steps, m=None, seed=0, return_state=False
     def energy(_mp):
         u = np.array([nd.GetSolutionStepValue(KM.DISPLACEMENT_X) for nd in nodes])
         v = np.array([nd.GetSolutionStepValue(SM.MIDDLE_VELOCITY_X) for nd in nodes])[lex]
-        e = 0.5 * float(u @ K @ u) + 0.5 * float(np.sum(m[free] * v[free] ** 2))
+        with np.errstate(over="ignore", invalid="ignore"):  # overflow = the blow-up being measured
+            e = 0.5 * float(u @ K @ u) + 0.5 * float(np.sum(m[free] * v[free] ** 2))
         ratios.append(e / e0)
         return e / e0
 

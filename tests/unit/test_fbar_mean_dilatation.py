@@ -51,12 +51,37 @@ def test_fbar_multicell_volume_and_patch(p, n_cells, cont):
     quadrature volume is wrong by +200 % (p=1) / +30 % (p=2), and (1,2,3)
     raises ZeroDivisionError. So the exact trapezoid volume is the gate.
     ``cont`` < p-1 (repeated interior knots; Coreform E04 uses C^(p-2)) checks
-    the cell -> span / first-control-point map of ``build_model``.
+    the cell -> span / first-control-point map of ``build_model``. Measured
+    2026-11-19 (S40): the former map span = ci + p fails every ``cont`` < p-1
+    case here (ZeroDivisionError in the basis on a zero-length span).
     """
-    from wht_iga.reference.cook import CookSpline, HL_MM, HR_MM, L_MM, T_MM
+    from wht_iga.reference.cook import CookSpline
 
     box = CookSpline(lo=(0.0, 0.0, 0.0), hi=(1.0, 1.0, 1.0), n_cells=n_cells, degree=p,
                      continuity=cont)
+    _assert_volume_and_affine_patch(box, p)
+
+
+@pytest.mark.parametrize("p,kx,ky", [
+    (2, [1 / 3, 2 / 3, 2 / 3], [1 / 3, 1 / 3, 2 / 3]),
+    (3, [0.25, 0.5, 0.5, 0.5, 0.75, 0.75], [0.5, 0.5]),
+])
+def test_fbar_mixed_multiplicity_volume_and_patch(p, kx, ky):
+    """Interior knots of different multiplicity in one knot vector (C^0 and
+    C^(p-1) side by side, as in the V07 Kirsch plate), different per axis.
+    Same exact-volume + affine-patch gate as above."""
+    from wht_iga.reference.cook import CookSpline
+
+    box = CookSpline(lo=(0.0, 0.0, 0.0), hi=(1.0, 1.0, 1.0), n_cells=(1, 1, 1), degree=p)
+    box.knots[0] = np.array([0.0] * (p + 1) + kx + [1.0] * (p + 1))
+    box.knots[1] = np.array([0.0] * (p + 1) + ky + [1.0] * (p + 1))
+    box.n_cp = tuple(len(k) - p - 1 for k in box.knots)
+    _assert_volume_and_affine_patch(box, p)
+
+
+def _assert_volume_and_affine_patch(box, p):
+    from wht_iga.reference.cook import HL_MM, HR_MM, L_MM, T_MM
+
     model = FB.build_model(box, p, E=3.0, nu=0.3)
     vol = sum(float(c["W"].sum()) for c in model["cells"])
     vol_ref = 0.5 * (HL_MM + HR_MM) * L_MM * T_MM
@@ -123,8 +148,9 @@ def test_fbar_tangent_fd_multicell_c0_sparse():
 def test_fbar_sparse_assembly_matches_dense_oracle(p, n_cells, cont):
     """CSR scatter vs the dense ``np.ix_`` oracle at a random state.
 
-    Same cell kernel and same cell order, so any index-map error is O(1);
-    1e-13 only allows for summation round-off.
+    Same cell kernel and same cell order, so any error in the node-pair map
+    (``_csr_pattern``) is O(1); 1e-13 only allows for summation round-off
+    (measured: bit-identical).
     """
     from wht_iga.reference.cook import CookSpline
 
@@ -293,44 +319,25 @@ def test_fbar_uniaxial_matches_s19_analytic():
 def test_fbar_cook_e04_gate():
     """E04 Cook (nu=0.49999, TL Neo-Hookean): u_y within 1 % of 6.98946 (G5 gate).
 
-    p=2, 16x16x1 cells, P0 per cell, u_z fixed everywhere (e04.json), consistent
-    load for the uniform 6.25 N/mm^2 shear traction on the right face
-    (int N_i ds of each B-spline, exact). Runtime about 35 s (CSR + Pardiso;
-    about 3 min with the former dense Newton, same u_y 7.03806, S40).
+    p=2 C^1, 16x16x1 cells, P0 per cell, u_z fixed everywhere (e04.json),
+    consistent load for the uniform 6.25 N/mm^2 shear traction on the right
+    face (int N_i ds of each B-spline, exact; ``_cook_case``). CSR + Pardiso,
+    about 20-40 s depending on machine load (S40 addendum); the dense oracle
+    path gives the same u_y 7.0380574 to 1.2e-15 in about 6 min.
 
     Measured 2026-11-19, consistent load: p=2 4/8/12/16 = +5.55 / +2.25 /
     +1.21 / +0.70 % (converges from above, observed order about 1.1, corner
     singularity). p=1 4/8/16 (tributary load = consistent for p=1) = -11.0 /
     -3.76 / -1.29 % (from below, Richardson limit about 6.987). Stock Kratos
     TL locks at -69 %. A lumped Greville load gives p=2 8x8 +0.52 % only by
-    under-loading the corner node; do not use it for p >= 2.
+    under-loading the corner node; do not use it for p >= 2. p=2 C^0
+    (Coreform's C^(p-2)) with P0 is far softer, 4/8/16 = +30.9 / +13.9 /
+    +9.05 %, so this gate stays on C^1 (S40 addendum).
     """
-    from wht_iga.reference.cook import CookSpline, HR_MM, L_MM, T_MM, U_Y_REF_MM
+    from wht_iga.reference.cook import U_Y_REF_MM
 
-    p = 2
-    box = CookSpline(lo=(0.0, 0.0, 0.0), hi=(1.0, 1.0, 1.0),
-                     n_cells=(16, 16, 1), degree=p)
-    model = FB.build_model(box, p, E=240.565, nu=0.49999)
-    cp = np.asarray(box.control_points())
-    nu_, nv_, nw_ = (int(v) for v in box.n_cp)
-    kv, kw = (np.asarray(k, dtype=float) for k in box.knots[1:])
-    a = np.array([(kv[j + p + 1] - kv[j]) / (p + 1) for j in range(nv_)])  # int N_j d(eta)
-    c = np.array([(kw[k + p + 1] - kw[k]) / (p + 1) for k in range(nw_)])  # int N_k d(zeta)
-    assert abs(a.sum() - 1.0) < 1e-14 and abs(c.sum() - 1.0) < 1e-14
-    traction = 6.25
-    f = np.zeros(model["n_dof"])
-    fixed = []
-    for I, (x, y, z) in enumerate(cp):
-        fixed.append(3 * I + 2)  # e04.json: u_z fixed throughout the body
-        if abs(x) < 1e-9:
-            fixed += [3 * I, 3 * I + 1]
-    for k in range(nw_):
-        for j in range(nv_):
-            I = (nu_ - 1) + nu_ * (j + nv_ * k)
-            assert abs(cp[I, 0] - L_MM) < 1e-9
-            f[3 * I + 1] = traction * HR_MM * T_MM * a[j] * c[k]
-    assert abs(f.sum() - traction * HR_MM * T_MM) < 1e-9  # 191.516 N
-    u = FB.solve_static(model, f, np.asarray(fixed, dtype=int), n_steps=10)
-    tips = [(nu_ - 1) + nu_ * ((nv_ - 1) + nv_ * k) for k in range(nw_)]
+    model, f, fixed, tips = _cook_case(16, 2, None, 240.565, 0.49999, 6.25)
+    assert model["n_dof"] == 3 * 18 * 18 * 3
+    u = FB.solve_static(model, f, fixed, n_steps=10)
     uy = float(np.mean([u[3 * I + 1] for I in tips]))
     assert abs(uy - U_Y_REF_MM) / U_Y_REF_MM < 0.01, uy
