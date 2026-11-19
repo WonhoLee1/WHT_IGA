@@ -26,8 +26,9 @@ from wht_iga.geometry.cad import (
 STEP_EXTENSIONS: frozenset[str] = frozenset({".step", ".stp"})
 IGES_EXTENSIONS: frozenset[str] = frozenset({".iges", ".igs"})
 BREP_EXTENSIONS: frozenset[str] = frozenset({".brep"})
+SAT_EXTENSIONS: frozenset[str] = frozenset({".sat"})
 SUPPORTED_CAD_EXTENSIONS: frozenset[str] = (
-    STEP_EXTENSIONS | IGES_EXTENSIONS | BREP_EXTENSIONS
+    STEP_EXTENSIONS | IGES_EXTENSIONS | BREP_EXTENSIONS | SAT_EXTENSIONS
 )
 
 
@@ -198,8 +199,10 @@ def _count_free_edges(shape: Any) -> int:
         exp = TopExp_Explorer(face, TopAbs_EDGE)
         while exp.More():
             edge = TopoDS.Edge(exp.Current())
-            if not BRep_Tool.Degenerated_s(edge) and not any(
-                prev.IsSame(edge) for prev in seen_in_face
+            if (
+                not BRep_Tool.Degenerated_s(edge)
+                and not BRep_Tool.IsClosed_s(edge, face)
+                and not any(prev.IsSame(edge) for prev in seen_in_face)
             ):
                 seen_in_face.append(edge)
                 matched = False
@@ -252,6 +255,11 @@ def _read_raw_cad_shape(path: Path) -> tuple[Any, str]:
         if not BRepTools.Read_s(shape, str(path), BRep_Builder()) or shape.IsNull():
             raise IOError(f"BREP read failed: {path}")
         return shape, "brep"
+
+    if ext in SAT_EXTENSIONS:
+        from wht_iga.geometry.sat_io import read_sat_shape
+
+        return read_sat_shape(path), "sat"
 
     raise ValueError(
         f"Unsupported CAD extension {ext!r}; expected one of {sorted(SUPPORTED_CAD_EXTENSIONS)}"
@@ -489,6 +497,7 @@ __all__ = [
     "CADGeometry",
     "HealingReport",
     "IGES_EXTENSIONS",
+    "SAT_EXTENSIONS",
     "STEP_EXTENSIONS",
     "SUPPORTED_CAD_EXTENSIONS",
     "load_cad_file",
