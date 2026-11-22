@@ -32,8 +32,10 @@ def triangle_quadrature(order: int = 2) -> tuple[np.ndarray, np.ndarray]:
         wts = np.full(3, 1.0 / 6.0)
     elif order == 4:
         # Dunavant degree-4 6-point rule (barycentric -> (xi, eta)).
-        a, wa = 0.445948490915965, 0.11169079483905
-        b, wb = 0.091576213509771, 0.0549758718227661
+        # Weights = Dunavant 0.223381589678011 / 0.109951743655322 halved (sum 0.5). The b weight
+        # had a transcription typo (0.0549758718227661) that put the sum 1.5e-11 low (found 2026-11-20).
+        a, wa = 0.445948490915965, 0.1116907948390055
+        b, wb = 0.091576213509771, 0.054975871827661
         bary = [(a, a, 1.0 - 2.0 * a), (a, 1.0 - 2.0 * a, a), (1.0 - 2.0 * a, a, a),
                 (b, b, 1.0 - 2.0 * b), (b, 1.0 - 2.0 * b, b), (1.0 - 2.0 * b, b, b)]
         pts = np.array([[l1, l2] for (l1, l2, _l3) in bary])
