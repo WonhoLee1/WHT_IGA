@@ -137,8 +137,13 @@ class FullIgaOption(SpecBase):
         Optional CAD tessellation chord deflection for immersed trimming.
     locking_mitigation:
         Volumetric locking mitigation for near-incompressible materials:
-        ``"none"`` (default linear elasticity), ``"fbar"`` (F-bar mean-dilatation
-        for body-fit boxes), or ``"auto"`` (uses F-bar when ``nu >= 0.49``).
+        ``"none"`` (default linear elasticity), ``"fbar"`` (F-bar mean-dilatation:
+        :mod:`wht_iga.analyses.fbar` for body-fit boxes,
+        :mod:`wht_iga.analyses.fbar_trimmed` for immersed boxes), or ``"auto"``
+        (uses F-bar when ``nu >= 0.49``). Immersed F-bar needs
+        ``out_mode="drop"``, uniform C^(p-1) knots (``continuity`` unset or
+        ``degree - 1``) and strong clamping (``bc_penalty`` unset); see
+        :meth:`fbar_trimmed_scope_error`.
     """
 
     kind: Literal["full_iga_body_fit", "full_iga_immersed"] = "full_iga_body_fit"
@@ -158,11 +163,32 @@ class FullIgaOption(SpecBase):
             raise ValueError(
                 f"continuity must be < degree, got continuity={self.continuity}, degree={self.degree}"
             )
-        if self.locking_mitigation == "fbar" and self.kind != "full_iga_body_fit":
-            raise ValueError(
-                "locking_mitigation='fbar' is only supported for kind='full_iga_body_fit'"
-            )
+        if self.locking_mitigation == "fbar" and self.kind == "full_iga_immersed":
+            reason = self.fbar_trimmed_scope_error()
+            if reason is not None:
+                raise ValueError(
+                    f"locking_mitigation='fbar' with kind='full_iga_immersed': {reason}"
+                )
         return self
+
+    def fbar_trimmed_scope_error(self) -> str | None:
+        """Why this immersed option is outside :mod:`fbar_trimmed`'s scope (``None`` if inside).
+
+        ``fbar_trimmed`` drops OUT cells (no ghost stiffness), needs the uniform
+        C^(p-1) knots of ``inactive_ctrl_mask`` and clamps Dirichlet control
+        points strongly (no penalty parameter).
+        """
+        problems = []
+        if self.out_mode != "drop":
+            problems.append(f"out_mode={self.out_mode!r} is not supported (fbar_trimmed drops OUT cells; use 'drop')")
+        if self.resolved_continuity != self.degree - 1:
+            problems.append(
+                f"continuity={self.resolved_continuity} is not supported (fbar_trimmed needs "
+                f"uniform C^(p-1) knots, continuity={self.degree - 1})"
+            )
+        if self.bc_penalty is not None:
+            problems.append("bc_penalty is not supported (fbar_trimmed clamps the fixed face strongly)")
+        return "; ".join(problems) if problems else None
 
     @property
     def resolved_continuity(self) -> int:

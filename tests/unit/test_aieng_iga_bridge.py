@@ -290,6 +290,32 @@ def test_recommend_then_run_method_matches_in_process_fbar_solve():
     assert res["tip_point"] == [4.0, 0.5, 0.5]  # centre of the loaded x = 4 face
 
 
+def test_run_method_immersed_fbar_equilibrium_uses_fbar_trimmed():
+    """Immersed + F-bar (fbar_trimmed) through the bridge: equilibrium checked with fbar_trimmed's residual.
+
+    Before 2026-11-20 the runner always used fbar.residual_tangent_sparse, which crashed
+    (KeyError 'G_all') on a trimmed model.
+    """
+    from wht_iga.analyses.methods import (
+        BoxMethodProblem,
+        parse_discretization_option,
+        solve_with_discretization_method,
+    )
+
+    problem = {"lo": [0.0, 0.0, 0.0], "hi": [4.0, 1.0, 1.0], "E": E_RUB, "nu": NU_RUB,
+               "fixed_face": [0, 0], "load_face": [0, 1], "traction": [0.0, 0.5, 0.0]}
+    option = {"kind": "full_iga_immersed", "degree": 2, "n_cells": [3, 2, 2], "locking_mitigation": "fbar"}
+    res = B.run_method(problem, option, config=CFG)
+    assert res["method"] == "full_iga_immersed" and res["locking_mitigation"]["effective"] == "fbar"
+    assert res["equilibrium_check"]["evaluated"] and res["equilibrium_check"]["passed"]
+    assert res["credibility"] == "computed"
+    direct = solve_with_discretization_method(
+        BoxMethodProblem(lo=tuple(problem["lo"]), hi=tuple(problem["hi"]), E=E_RUB, nu=NU_RUB,
+                         fixed_face=(0, 0), load_face=(0, 1), traction=(0.0, 0.5, 0.0)),
+        parse_discretization_option(option), use_pardiso=False)
+    assert _rel(res["tip_displacement"], direct.tip_displacement) < 1e-10
+
+
 def test_kratos_route_is_refused_not_started():
     """nu = 0.3 without F-bar routes to the Kratos pipeline: explicit kratos_required, Kratos never loaded."""
     problem = {"lo": [0, 0, 0], "hi": [4, 1, 1], "E": 200.0, "nu": 0.3, "traction": [0, 0.5, 0]}

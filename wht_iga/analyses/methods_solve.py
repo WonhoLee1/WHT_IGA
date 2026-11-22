@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import time
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
 from typing import Any, Callable, Literal
 
@@ -821,27 +822,286 @@ def solve_fbar_box(
     )
 
 
+def _problem_soup(problem: BoxMethodProblem) -> tuple[np.ndarray, np.ndarray]:
+    """``problem.tess_soup`` or, when unset, the 12-triangle surface of the box."""
+    if problem.tess_soup is not None:
+        nodes, tris = problem.tess_soup
+        return np.asarray(nodes, dtype=np.float64), np.asarray(tris, dtype=np.int64)
+    from wht_iga.backends.mesh_engine import box_triangle_soup
+
+    return box_triangle_soup(problem.lo, problem.hi)
+
+
+def _require_faces_in_solid(
+    box: Any,
+    nodes: np.ndarray,
+    tris: np.ndarray,
+    faces: list[tuple[str, tuple[int, int]]],
+    n_gauss: int | None,
+) -> None:
+    """Raise ``ValueError`` unless every face Gauss point of each BC face lies in the solid.
+
+    The trimmed F-bar route clamps / loads the box face (as ``solve_fbar_box``).
+    That is the boundary of the trimmed solid only where the face lies in the
+    solid; elsewhere a clamp would act on the extension and a traction would
+    land on fictitious material (or on inactive control points, where
+    ``fbar_trimmed.solve_static`` would drop it). Test points: the face Gauss
+    points of the traction rule (``n_gauss`` per axis and cell, default p+1),
+    moved ``1e-6 h`` into the box, classified by the generalized winding number.
+    """
+    from wht_iga.geometry.classify import winding_inside
+
+    if not faces:
+        return
+    p = int(box.degree)
+    ng = p + 1 if n_gauss is None else int(n_gauss)
+    s = 0.5 * (np.polynomial.legendre.leggauss(ng)[0] + 1.0)
+    lo = np.asarray(box.lo, dtype=np.float64)
+    hi = np.asarray(box.hi, dtype=np.float64)
+    for name, (axis, side) in faces:
+        others = [d for d in range(3) if d != axis]
+        gpts = []
+        for d in others:
+            br = np.asarray(box.breakpoints(d), dtype=np.float64)
+            gpts.append((br[:-1, None] + np.diff(br)[:, None] * s[None, :]).ravel())
+        g0, g1 = np.meshgrid(gpts[0], gpts[1], indexing="ij")
+        pts = np.empty((g0.size, 3), dtype=np.float64)
+        pts[:, others[0]] = g0.ravel()
+        pts[:, others[1]] = g1.ravel()
+        h_ax = (hi[axis] - lo[axis]) / float(box.n_cells[axis])
+        pts[:, axis] = lo[axis] + 1e-6 * h_ax if side == 0 else hi[axis] - 1e-6 * h_ax
+        inside = winding_inside(pts, nodes, tris)
+        if not np.all(inside):
+            bad = pts[~inside][:3].tolist()
+            raise ValueError(
+                f"{name}={(axis, side)}: {int(np.sum(~inside))}/{inside.size} face Gauss points lie "
+                f"outside the trimmed solid (e.g. {bad}); the trimmed F-bar route applies "
+                "clamps and tractions on box faces and needs the face inside the solid"
+            )
+
+
+def solve_fbar_trimmed_box(
+    problem: BoxMethodProblem,
+    *,
+    degree: int = 2,
+    n_cells: tuple[int, int, int] = (4, 2, 2),
+    quadrature_degree: int | None = None,
+    eta_thresh: float | None = None,
+    n_gauss: int | None = None,
+    n_steps: int = 1,
+    linear_solver: str = "auto",
+    use_pardiso: bool = True,
+    clamp_fixed_face: bool = True,
+    fixed_axes: tuple[int, ...] = (),
+    fixed_dofs: Sequence[int] = (),
+    prescribed: Mapping[int, float] | None = None,
+    trim_workers: int | None = None,
+    trim_cache_dir: str | None = None,
+) -> MethodSolution:
+    """Solve a near-incompressible immersed (trimmed) box problem with F-bar / P0.
+
+    Wires :mod:`wht_iga.analyses.fbar_trimmed` (mean dilatation per pressure
+    group, small cut cells agglomerated, docs/spikes/S46_fbar_trimmed.md) into
+    :class:`MethodSolution`, with the same fields as :func:`solve_fbar_box`.
+    The solid is ``problem.tess_soup`` (default: the box surface), trimmed from
+    a ``BoxSpline`` background grid with ``build_trimmed_table``.
+
+    Scope (``fbar_trimmed``): ``BoxSpline`` identity geometry with uniform
+    C^(p-1) knots (``continuity = degree - 1`` is used), OUT cells dropped,
+    inactive control points fixed to 0, Dirichlet DOFs clamped strongly. The
+    clamped ``problem.fixed_face`` and a loaded ``problem.load_face`` must lie
+    in the solid (checked at the face Gauss points; ``ValueError`` otherwise).
+
+    Parameters
+    ----------
+    problem:
+        Box (background grid extent), material, clamped face, traction, soup.
+    degree, n_cells:
+        Background ``BoxSpline`` degree and cell counts.
+    quadrature_degree:
+        Cut-cell moment-fitting degree ``q`` (default ``min(2*degree, 4)``).
+    eta_thresh:
+        Small-cell threshold of the pressure groups (default
+        ``fbar_trimmed.DEFAULT_ETA_THRESH``; 0 = cell-wise P0).
+    n_gauss:
+        Gauss points per axis on uncut cells and on the loaded face (default p+1).
+    n_steps, linear_solver, use_pardiso:
+        As :func:`solve_fbar_box` (passed to ``fbar_trimmed.solve_static``).
+    clamp_fixed_face:
+        Clamp all components of the control points of ``problem.fixed_face``
+        (default). ``False`` leaves only ``fixed_axes`` / ``fixed_dofs`` /
+        ``prescribed`` (e.g. symmetry planes plus prescribed displacements).
+    fixed_axes:
+        Displacement components clamped on every control point (as ``solve_fbar_box``).
+    fixed_dofs:
+        Additional homogeneous Dirichlet DOFs (``3*I + d``).
+    prescribed:
+        ``{dof: value}`` prescribed displacements, ramped with the load factor;
+        must not overlap the fixed DOFs or an inactive control point.
+    trim_workers, trim_cache_dir:
+        Passed to ``build_trimmed_table`` (``None`` = its env defaults).
+    """
+    from wht_iga.analyses import fbar_trimmed as FT
+    from wht_iga.reference.box import BoxSpline
+    from wht_iga.solver.trimmed import build_trimmed_table
+
+    t_start = time.perf_counter()
+    deg = int(degree)
+    box = BoxSpline(
+        lo=problem.lo,
+        hi=problem.hi,
+        n_cells=tuple(int(v) for v in n_cells),
+        degree=deg,
+        continuity=deg - 1,
+    )
+    nodes, tris = _problem_soup(problem)
+    q = min(2 * deg, 4) if quadrature_degree is None else int(quadrature_degree)
+    t_trim0 = time.perf_counter()
+    qp_table, out_cells, _issues, _records, trim_diag = build_trimmed_table(
+        nodes, tris, box, q=q, workers=trim_workers, cache_dir=trim_cache_dir
+    )
+    t_trim = time.perf_counter() - t_trim0
+
+    eta = FT.DEFAULT_ETA_THRESH if eta_thresh is None else float(eta_thresh)
+    t_build0 = time.perf_counter()
+    model = FT.build_model(box, qp_table, out_cells, problem.E, problem.nu,
+                           eta_thresh=eta, n_gauss=n_gauss)
+    t_build = time.perf_counter() - t_build0
+
+    loaded = float(np.linalg.norm(np.asarray(problem.traction, dtype=np.float64))) > 0.0
+    bc_faces: list[tuple[str, tuple[int, int]]] = []
+    if clamp_fixed_face:
+        bc_faces.append(("fixed_face", problem.fixed_face))
+    if loaded:
+        bc_faces.append(("load_face", problem.load_face))
+    _require_faces_in_solid(box, nodes, tris, bc_faces, n_gauss)
+
+    n_dof = int(model["n_dof"])
+    inactive_dofs = np.asarray(model["inactive_dofs"], dtype=np.int64)
+    if loaded:
+        f_ext = _assemble_fbar_face_traction(
+            box, problem.load_face[0], problem.load_face[1], problem.traction, n_gauss=n_gauss
+        )
+    else:
+        f_ext = np.zeros(n_dof, dtype=np.float64)
+    if np.any(f_ext[inactive_dofs] != 0.0):
+        raise ValueError("traction reaches inactive control points (load face outside the trimmed solid)")
+
+    fixed_set: set[int] = set()
+    if clamp_fixed_face:
+        for ctrl_id in box.boundary_control_points(*problem.fixed_face):
+            base = 3 * int(ctrl_id)
+            fixed_set.update((base, base + 1, base + 2))
+    n_ctrl = int(model["n_ctrl"])
+    for ax in fixed_axes:
+        ax_i = int(ax)
+        if ax_i not in (0, 1, 2):
+            raise ValueError(f"fixed_axes entries must be in 0..2, got {ax}")
+        fixed_set.update(3 * c + ax_i for c in range(n_ctrl))
+    for d in fixed_dofs:
+        d_i = int(d)
+        if not 0 <= d_i < n_dof:
+            raise ValueError(f"fixed dof {d} outside 0..{n_dof - 1}")
+        fixed_set.add(d_i)
+    presc = {int(k): float(v) for k, v in (prescribed or {}).items()}
+    overlap = sorted(fixed_set.intersection(presc))
+    if overlap:
+        raise ValueError(f"dofs both fixed and prescribed: {overlap[:5]}")
+    fixed_arr = np.array(sorted(fixed_set), dtype=np.int64)
+
+    solver_kind = linear_solver
+    if str(linear_solver).lower() == "auto" and not use_pardiso:
+        solver_kind = "superlu"
+
+    history: list[tuple[float, int]] = []
+    t_solve0 = time.perf_counter()
+    u = FT.solve_static(
+        model,
+        f_ext,
+        fixed_arr,
+        n_steps=n_steps,
+        prescribed=presc,
+        history=history,
+        linear_solver=solver_kind,
+    )
+    t_solve = time.perf_counter() - t_solve0
+    coeffs = u.reshape(-1, 3)
+
+    def _eval(pts: np.ndarray) -> np.ndarray:
+        return box.evaluate(coeffs, pts)
+
+    tip_disp = _eval(problem.tip_point().reshape(1, 3))[0]
+    not_solved = fixed_set.union(presc, (int(d) for d in inactive_dofs))
+    total_wall = time.perf_counter() - t_start
+
+    return MethodSolution(
+        method="full_iga_immersed",
+        total_dofs=n_dof,
+        active_dofs=n_dof - len(not_solved),
+        tip_displacement=tip_disp,
+        max_displacement=float(np.max(np.abs(u))) if u.size else 0.0,
+        converged=True,
+        timings={
+            "trim_s": t_trim,
+            "build_s": t_build,
+            "solve_s": t_solve,
+            "total_s": total_wall,
+            "n_increments": len(history),
+        },
+        native={
+            "model": model,
+            "box": box,
+            "u": u,
+            "f_ext": f_ext,
+            "fixed": fixed_arr,
+            "prescribed": presc,
+            "history": history,
+            "locking_mitigation": "fbar",
+            "eta_thresh": eta,
+            "quadrature_degree": q,
+            "out_cells": list(out_cells),
+            "trim_diag": trim_diag,
+        },
+        _eval_fn=_eval,
+    )
+
+
 def _solve_full_iga(
     problem: BoxMethodProblem,
     option: FullIgaOption,
     use_pardiso: bool,
 ) -> MethodSolution:
-    """Route ``full_iga_body_fit`` and ``full_iga_immersed`` to ``wht_iga.solver.pipeline.run_linear``."""
+    """Route ``full_iga_body_fit`` / ``full_iga_immersed`` to F-bar or ``run_linear``.
+
+    F-bar is used for ``locking_mitigation='fbar'`` or for ``'auto'`` with
+    ``nu >= 0.49``: :func:`solve_fbar_box` (body-fit) or
+    :func:`solve_fbar_trimmed_box` (immersed). An immersed option outside
+    ``fbar_trimmed``'s scope raises ``ValueError``; it never falls back to the
+    linear path.
+    """
     use_fbar = option.locking_mitigation == "fbar" or (
-        option.locking_mitigation == "auto"
-        and option.kind == "full_iga_body_fit"
-        and problem.nu >= 0.49
+        option.locking_mitigation == "auto" and problem.nu >= 0.49
     )
     if use_fbar:
-        if option.kind != "full_iga_body_fit":
-            raise ValueError(
-                "locking_mitigation='fbar' is only supported for kind='full_iga_body_fit'"
+        if option.kind == "full_iga_body_fit":
+            return solve_fbar_box(
+                problem,
+                degree=option.degree,
+                continuity=option.resolved_continuity,
+                n_cells=option.n_cells,
+                use_pardiso=use_pardiso,
             )
-        return solve_fbar_box(
+        reason = option.fbar_trimmed_scope_error()
+        if reason is not None:
+            raise ValueError(
+                f"locking_mitigation={option.locking_mitigation!r} selects trimmed F-bar for "
+                f"nu={problem.nu:.6g}, but {reason}; no fallback to the linear path"
+            )
+        return solve_fbar_trimmed_box(
             problem,
             degree=option.degree,
-            continuity=option.resolved_continuity,
             n_cells=option.n_cells,
+            quadrature_degree=option.resolved_quadrature_degree,
             use_pardiso=use_pardiso,
         )
     from wht_iga.backends.mesh_engine import box_triangle_soup

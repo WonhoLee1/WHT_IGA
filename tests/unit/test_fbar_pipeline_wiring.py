@@ -53,8 +53,10 @@ def test_full_iga_option_locking_mitigation_validation():
     parsed = parse_discretization_option(opt.model_dump_json())
     assert parsed == opt
 
-    with pytest.raises(ValidationError, match="full_iga_body_fit"):
-        FullIgaOption(kind="full_iga_immersed", locking_mitigation="fbar")
+    # Since 2026-11-20 immersed F-bar routes to fbar_trimmed; only configurations outside its scope fail.
+    FullIgaOption(kind="full_iga_immersed", locking_mitigation="fbar")
+    with pytest.raises(ValidationError, match="out_mode"):
+        FullIgaOption(kind="full_iga_immersed", locking_mitigation="fbar", out_mode="ghost")
 
 
 @pytest.mark.parametrize("mitigation", ["fbar", "auto"])
