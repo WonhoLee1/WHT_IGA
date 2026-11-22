@@ -1,0 +1,270 @@
+[13:18:55 +    0.0s] trimmed table: cache hit 7a77dd18d8f9
+[13:18:55 +    0.2s] run_linear[vcond_flat_on_0]: creating 640 cell elements
+[13:18:55 +    0.4s] elements: 160/640 (25%), 0s elapsed, ETA 1s
+[13:18:56 +    0.6s] elements: 320/640 (50%), 0s elapsed, ETA 0s
+[13:18:56 +    0.7s] elements: 480/640 (75%), 1s elapsed, ETA 0s
+[13:18:56 +    0.9s] elements: 640/640 (100%), 1s elapsed, ETA 0s
+[13:18:56 +    0.9s] run_linear[vcond_flat_on_0]: out_mode=drop, 12 OUT cells skipped, 0 inactive control points fixed
+[13:18:57 +    2.0s] run_linear[vcond_flat_on_0]: solve start (pardiso_ldlt, 1776 nodes, 120 MPC)
+[13:19:04 +    9.0s] run_linear[vcond_flat_on_0]: solve done in 6.9s
+[13:19:05 +   10.0s] run_linear[vcond_flat_on_0]: stress extraction (640 elements)
+[13:19:06 +   11.2s] run_linear[vcond_flat_on_0]: writing outputs
+[V-COND flat_on_0] phi=1e-08 eta_min=1.00e-08 kappa=4.557e+10 kmax=1.308e+02 kmin=2.869e-09 cut=621 ties=120
+[13:19:07 +   12.2s] trimmed table: cache hit 2f584ab6ac58
+[13:19:07 +   12.2s] run_linear[vcond_flat_on_1]: creating 640 cell elements
+[13:19:07 +   12.4s] elements: 160/640 (25%), 0s elapsed, ETA 0s
+[13:19:07 +   12.5s] elements: 320/640 (50%), 0s elapsed, ETA 0s
+[13:19:08 +   12.6s] elements: 480/640 (75%), 0s elapsed, ETA 0s
+[13:19:08 +   12.7s] elements: 640/640 (100%), 1s elapsed, ETA 0s
+[13:19:08 +   12.7s] run_linear[vcond_flat_on_1]: out_mode=drop, 12 OUT cells skipped, 0 inactive control points fixed
+[13:19:08 +   13.0s] run_linear[vcond_flat_on_1]: solve start (pardiso_ldlt, 1776 nodes, 120 MPC)
+[13:19:15 +   19.8s] run_linear[vcond_flat_on_1]: solve done in 6.8s
+[13:19:15 +   20.4s] run_linear[vcond_flat_on_1]: stress extraction (640 elements)
+[13:19:16 +   21.3s] run_linear[vcond_flat_on_1]: writing outputs
+[V-COND flat_on_1] phi=1e-06 eta_min=1.00e-06 kappa=4.557e+10 kmax=1.308e+02 kmin=2.869e-09 cut=621 ties=120
+[13:19:17 +   22.0s] trimmed table: cache hit 3c805b8ad268
+[13:19:17 +   22.0s] run_linear[vcond_flat_on_2]: creating 640 cell elements
+[13:19:17 +   22.1s] elements: 160/640 (25%), 0s elapsed, ETA 0s
+[13:19:17 +   22.2s] elements: 320/640 (50%), 0s elapsed, ETA 0s
+[13:19:17 +   22.4s] elements: 480/640 (75%), 0s elapsed, ETA 0s
+[13:19:17 +   22.5s] elements: 640/640 (100%), 1s elapsed, ETA 0s
+[13:19:17 +   22.5s] run_linear[vcond_flat_on_2]: out_mode=drop, 12 OUT cells skipped, 0 inactive control points fixed
+[13:19:18 +   22.8s] run_linear[vcond_flat_on_2]: solve start (pardiso_ldlt, 1776 nodes, 120 MPC)
+[13:19:25 +   29.7s] run_linear[vcond_flat_on_2]: solve done in 7.0s
+[13:19:25 +   30.4s] run_linear[vcond_flat_on_2]: stress extraction (640 elements)
+[13:19:26 +   31.2s] run_linear[vcond_flat_on_2]: writing outputs
+[V-COND flat_on_2] phi=0.0001 eta_min=1.00e-04 kappa=4.557e+10 kmax=1.308e+02 kmin=2.869e-09 cut=621 ties=120
+[13:19:28 +   32.7s] trimmed table: cache hit 21bce176b427
+[13:19:28 +   32.7s] run_linear[vcond_flat_on_3]: creating 640 cell elements
+[13:19:28 +   32.9s] elements: 160/640 (25%), 0s elapsed, ETA 1s
+[13:19:28 +   33.0s] elements: 320/640 (50%), 0s elapsed, ETA 0s
+[13:19:28 +   33.2s] elements: 480/640 (75%), 0s elapsed, ETA 0s
+[13:19:28 +   33.3s] elements: 640/640 (100%), 1s elapsed, ETA 0s
+[13:19:28 +   33.3s] run_linear[vcond_flat_on_3]: out_mode=drop, 12 OUT cells skipped, 0 inactive control points fixed
+[13:19:29 +   33.6s] run_linear[vcond_flat_on_3]: solve start (pardiso_ldlt, 1776 nodes, 120 MPC)
+[13:19:37 +   41.6s] run_linear[vcond_flat_on_3]: solve done in 8.1s
+[13:19:37 +   42.4s] run_linear[vcond_flat_on_3]: stress extraction (640 elements)
+[13:19:38 +   43.3s] run_linear[vcond_flat_on_3]: writing outputs
+[V-COND flat_on_3] phi=0.01 eta_min=1.00e-02 kappa=4.553e+10 kmax=1.307e+02 kmin=2.871e-09 cut=621 ties=120
+[13:19:39 +   44.2s] trimmed table: cache hit 1d56afc43d7f
+[13:19:39 +   44.2s] run_linear[vcond_flat_on_4]: creating 640 cell elements
+[13:19:39 +   44.4s] elements: 160/640 (25%), 0s elapsed, ETA 1s
+[13:19:40 +   44.5s] elements: 320/640 (50%), 0s elapsed, ETA 0s
+[13:19:40 +   44.7s] elements: 480/640 (75%), 0s elapsed, ETA 0s
+[13:19:40 +   44.8s] elements: 640/640 (100%), 1s elapsed, ETA 0s
+[13:19:40 +   44.8s] run_linear[vcond_flat_on_4]: out_mode=drop, 12 OUT cells skipped, 0 inactive control points fixed
+[13:19:40 +   45.1s] run_linear[vcond_flat_on_4]: solve start (pardiso_ldlt, 1776 nodes, 120 MPC)
+[13:19:47 +   52.2s] run_linear[vcond_flat_on_4]: solve done in 7.1s
+[13:19:48 +   52.9s] run_linear[vcond_flat_on_4]: stress extraction (640 elements)
+[13:19:49 +   54.0s] run_linear[vcond_flat_on_4]: writing outputs
+[V-COND flat_on_4] phi=0.1 eta_min=2.64e-02 kappa=4.510e+10 kmax=1.304e+02 kmin=2.892e-09 cut=621 ties=120
+[13:19:50 +   54.8s] trimmed table: cache hit 526cbc60480d
+[13:19:50 +   54.9s] run_linear[vcond_flat_on_5]: creating 640 cell elements
+[13:19:50 +   55.1s] elements: 160/640 (25%), 0s elapsed, ETA 1s
+[13:19:50 +   55.3s] elements: 320/640 (50%), 0s elapsed, ETA 0s
+[13:19:50 +   55.5s] elements: 480/640 (75%), 1s elapsed, ETA 0s
+[13:19:51 +   55.8s] elements: 640/640 (100%), 1s elapsed, ETA 0s
+[13:19:51 +   55.8s] run_linear[vcond_flat_on_5]: out_mode=drop, 8 OUT cells skipped, 0 inactive control points fixed
+[13:19:51 +   55.9s] run_linear[vcond_flat_on_5]: solve start (pardiso_ldlt, 1776 nodes, 0 MPC)
+[13:19:59 +   63.6s] run_linear[vcond_flat_on_5]: solve done in 7.7s
+[13:20:00 +   64.6s] run_linear[vcond_flat_on_5]: stress extraction (640 elements)
+[13:20:01 +   66.0s] run_linear[vcond_flat_on_5]: writing outputs
+[V-COND flat_on_5] phi=0.5 eta_min=1.85e-03 kappa=4.770e+10 kmax=1.291e+02 kmin=2.707e-09 cut=626 ties=0
+[13:20:02 +   67.0s] trimmed table: cache hit 26eb7b2bd629
+[13:20:02 +   67.0s] run_linear[vcond_flat_on_6]: creating 640 cell elements
+[13:20:02 +   67.1s] elements: 160/640 (25%), 0s elapsed, ETA 1s
+[13:20:02 +   67.3s] elements: 320/640 (50%), 0s elapsed, ETA 0s
+[13:20:02 +   67.5s] elements: 480/640 (75%), 1s elapsed, ETA 0s
+[13:20:03 +   67.6s] elements: 640/640 (100%), 1s elapsed, ETA 0s
+[13:20:03 +   67.6s] run_linear[vcond_flat_on_6]: out_mode=drop, 8 OUT cells skipped, 0 inactive control points fixed
+[13:20:03 +   67.7s] run_linear[vcond_flat_on_6]: solve start (pardiso_ldlt, 1776 nodes, 0 MPC)
+[13:20:10 +   75.4s] run_linear[vcond_flat_on_6]: solve done in 7.8s
+[13:20:11 +   76.3s] run_linear[vcond_flat_on_6]: stress extraction (640 elements)
+[13:20:12 +   77.4s] run_linear[vcond_flat_on_6]: writing outputs
+[V-COND flat_on_6] phi=1 eta_min=8.59e-02 kappa=4.531e+10 kmax=1.275e+02 kmin=2.814e-09 cut=626 ties=0
+[13:20:13 +   78.3s] trimmed table: cache hit 7a77dd18d8f9
+[13:20:13 +   78.3s] run_linear[vcond_flat_off_0]: creating 640 cell elements
+[13:20:13 +   78.4s] elements: 160/640 (25%), 0s elapsed, ETA 0s
+[13:20:14 +   78.6s] elements: 320/640 (50%), 0s elapsed, ETA 0s
+[13:20:14 +   78.8s] elements: 480/640 (75%), 1s elapsed, ETA 0s
+[13:20:14 +   79.0s] elements: 640/640 (100%), 1s elapsed, ETA 0s
+[13:20:14 +   79.0s] run_linear[vcond_flat_off_0]: out_mode=drop, 12 OUT cells skipped, 0 inactive control points fixed
+[13:20:14 +   79.1s] run_linear[vcond_flat_off_0]: solve start (pardiso_ldlt, 1776 nodes, 0 MPC)
+[13:21:39 +  163.7s] run_linear[vcond_flat_off_0]: solve done in 84.6s
+D:\PythonCodeStudy\CAD-CAE-COPILOT\WHT_IGA\wht_iga\solver\pipeline.py:286: RuntimeWarning: Kratos solve did not report convergence; run_linear raises instead of writing results
+  warnings.warn("Kratos solve did not report convergence; "
+[V-COND flat_off_0] phi=1e-08 eta_min=1.00e-08 kappa=4.557e+10 kmax=1.308e+02 kmin=2.869e-09 cut=621 ties=None (solve not converged: K only)
+[13:21:40 +  164.8s] trimmed table: cache hit 2f584ab6ac58
+[13:21:40 +  164.9s] run_linear[vcond_flat_off_1]: creating 640 cell elements
+[13:21:40 +  165.0s] elements: 160/640 (25%), 0s elapsed, ETA 0s
+[13:21:40 +  165.2s] elements: 320/640 (50%), 0s elapsed, ETA 0s
+[13:21:40 +  165.3s] elements: 480/640 (75%), 0s elapsed, ETA 0s
+[13:21:40 +  165.4s] elements: 640/640 (100%), 1s elapsed, ETA 0s
+[13:21:40 +  165.4s] run_linear[vcond_flat_off_1]: out_mode=drop, 12 OUT cells skipped, 0 inactive control points fixed
+[13:21:40 +  165.5s] run_linear[vcond_flat_off_1]: solve start (pardiso_ldlt, 1776 nodes, 0 MPC)
+[13:22:48 +  232.8s] run_linear[vcond_flat_off_1]: solve done in 67.3s
+[V-COND flat_off_1] phi=1e-06 eta_min=1.00e-06 kappa=1.029e+11 kmax=1.308e+02 kmin=1.271e-09 cut=621 ties=None (solve not converged: K only)
+[13:22:49 +  234.3s] trimmed table: cache hit 3c805b8ad268
+[13:22:49 +  234.3s] run_linear[vcond_flat_off_2]: creating 640 cell elements
+[13:22:49 +  234.5s] elements: 160/640 (25%), 0s elapsed, ETA 1s
+[13:22:50 +  234.6s] elements: 320/640 (50%), 0s elapsed, ETA 0s
+[13:22:50 +  234.8s] elements: 480/640 (75%), 0s elapsed, ETA 0s
+[13:22:50 +  235.0s] elements: 640/640 (100%), 1s elapsed, ETA 0s
+[13:22:50 +  235.0s] run_linear[vcond_flat_off_2]: out_mode=drop, 12 OUT cells skipped, 0 inactive control points fixed
+[13:22:50 +  235.0s] run_linear[vcond_flat_off_2]: solve start (pardiso_ldlt, 1776 nodes, 0 MPC)
+[13:23:02 +  247.3s] run_linear[vcond_flat_off_2]: solve done in 12.3s
+[13:23:03 +  248.1s] run_linear[vcond_flat_off_2]: stress extraction (640 elements)
+[13:23:04 +  249.2s] run_linear[vcond_flat_off_2]: writing outputs
+[V-COND flat_off_2] phi=0.0001 eta_min=1.00e-04 kappa=6.637e+16 kmax=1.308e+02 kmin=1.970e-15 cut=621 ties=0
+[13:23:07 +  252.1s] trimmed table: cache hit 21bce176b427
+[13:23:07 +  252.2s] run_linear[vcond_flat_off_3]: creating 640 cell elements
+[13:23:07 +  252.4s] elements: 160/640 (25%), 0s elapsed, ETA 1s
+[13:23:08 +  252.6s] elements: 320/640 (50%), 0s elapsed, ETA 0s
+[13:23:08 +  252.7s] elements: 480/640 (75%), 1s elapsed, ETA 0s
+[13:23:08 +  252.8s] elements: 640/640 (100%), 1s elapsed, ETA 0s
+[13:23:08 +  252.8s] run_linear[vcond_flat_off_3]: out_mode=drop, 12 OUT cells skipped, 0 inactive control points fixed
+[13:23:08 +  252.9s] run_linear[vcond_flat_off_3]: solve start (pardiso_ldlt, 1776 nodes, 0 MPC)
+[13:23:14 +  258.8s] run_linear[vcond_flat_off_3]: solve done in 5.9s
+[13:23:14 +  259.4s] run_linear[vcond_flat_off_3]: stress extraction (640 elements)
+[13:23:15 +  260.1s] run_linear[vcond_flat_off_3]: writing outputs
+[V-COND flat_off_3] phi=0.01 eta_min=1.00e-02 kappa=6.775e+10 kmax=1.307e+02 kmin=1.929e-09 cut=621 ties=0
+[13:23:16 +  260.9s] trimmed table: cache hit 1d56afc43d7f
+[13:23:16 +  260.9s] run_linear[vcond_flat_off_4]: creating 640 cell elements
+[13:23:16 +  261.0s] elements: 160/640 (25%), 0s elapsed, ETA 0s
+[13:23:16 +  261.1s] elements: 320/640 (50%), 0s elapsed, ETA 0s
+[13:23:16 +  261.2s] elements: 480/640 (75%), 0s elapsed, ETA 0s
+[13:23:16 +  261.3s] elements: 640/640 (100%), 0s elapsed, ETA 0s
+[13:23:16 +  261.3s] run_linear[vcond_flat_off_4]: out_mode=drop, 12 OUT cells skipped, 0 inactive control points fixed
+[13:23:16 +  261.3s] run_linear[vcond_flat_off_4]: solve start (pardiso_ldlt, 1776 nodes, 0 MPC)
+[13:23:22 +  267.2s] run_linear[vcond_flat_off_4]: solve done in 5.9s
+[13:23:23 +  267.9s] run_linear[vcond_flat_off_4]: stress extraction (640 elements)
+[13:23:24 +  268.7s] run_linear[vcond_flat_off_4]: writing outputs
+[V-COND flat_off_4] phi=0.1 eta_min=2.64e-02 kappa=4.973e+10 kmax=1.304e+02 kmin=2.623e-09 cut=621 ties=0
+[13:23:25 +  270.0s] trimmed table: cache hit 526cbc60480d
+[13:23:25 +  270.0s] run_linear[vcond_flat_off_5]: creating 640 cell elements
+[13:23:25 +  270.2s] elements: 160/640 (25%), 0s elapsed, ETA 0s
+[13:23:25 +  270.3s] elements: 320/640 (50%), 0s elapsed, ETA 0s
+[13:23:25 +  270.5s] elements: 480/640 (75%), 0s elapsed, ETA 0s
+[13:23:26 +  270.6s] elements: 640/640 (100%), 1s elapsed, ETA 0s
+[13:23:26 +  270.6s] run_linear[vcond_flat_off_5]: out_mode=drop, 8 OUT cells skipped, 0 inactive control points fixed
+[13:23:26 +  270.7s] run_linear[vcond_flat_off_5]: solve start (pardiso_ldlt, 1776 nodes, 0 MPC)
+[13:23:33 +  277.6s] run_linear[vcond_flat_off_5]: solve done in 6.9s
+[13:23:34 +  278.7s] run_linear[vcond_flat_off_5]: stress extraction (640 elements)
+[13:23:35 +  279.8s] run_linear[vcond_flat_off_5]: writing outputs
+[V-COND flat_off_5] phi=0.5 eta_min=1.85e-03 kappa=4.770e+10 kmax=1.291e+02 kmin=2.707e-09 cut=626 ties=0
+[13:23:36 +  280.7s] trimmed table: cache hit 26eb7b2bd629
+[13:23:36 +  280.7s] run_linear[vcond_flat_off_6]: creating 640 cell elements
+[13:23:36 +  280.9s] elements: 160/640 (25%), 0s elapsed, ETA 1s
+[13:23:36 +  281.0s] elements: 320/640 (50%), 0s elapsed, ETA 0s
+[13:23:36 +  281.1s] elements: 480/640 (75%), 0s elapsed, ETA 0s
+[13:23:36 +  281.3s] elements: 640/640 (100%), 1s elapsed, ETA 0s
+[13:23:36 +  281.3s] run_linear[vcond_flat_off_6]: out_mode=drop, 8 OUT cells skipped, 0 inactive control points fixed
+[13:23:36 +  281.3s] run_linear[vcond_flat_off_6]: solve start (pardiso_ldlt, 1776 nodes, 0 MPC)
+[13:23:44 +  288.9s] run_linear[vcond_flat_off_6]: solve done in 7.6s
+[13:23:45 +  289.7s] run_linear[vcond_flat_off_6]: stress extraction (640 elements)
+[13:23:46 +  290.6s] run_linear[vcond_flat_off_6]: writing outputs
+[V-COND flat_off_6] phi=1 eta_min=8.59e-02 kappa=4.531e+10 kmax=1.275e+02 kmin=2.814e-09 cut=626 ties=0
+[13:23:46 +  291.5s] trimmed table: cache hit 714a06763106
+[13:23:46 +  291.5s] run_linear[vcond_slope_on_20]: creating 80 cell elements
+[13:23:46 +  291.5s] elements: 20/80 (25%), 0s elapsed, ETA 0s
+[13:23:47 +  291.6s] elements: 40/80 (50%), 0s elapsed, ETA 0s
+[13:23:47 +  291.6s] elements: 60/80 (75%), 0s elapsed, ETA 0s
+[13:23:47 +  291.6s] elements: 80/80 (100%), 0s elapsed, ETA 0s
+[13:23:47 +  291.6s] run_linear[vcond_slope_on_20]: out_mode=drop, 0 OUT cells skipped, 0 inactive control points fixed
+[13:23:47 +  291.6s] run_linear[vcond_slope_on_20]: solve start (pardiso_ldlt, 420 nodes, 0 MPC)
+[13:23:48 +  292.9s] run_linear[vcond_slope_on_20]: solve done in 1.3s
+[13:23:48 +  293.3s] run_linear[vcond_slope_on_20]: stress extraction (80 elements)
+[13:23:49 +  293.6s] run_linear[vcond_slope_on_20]: writing outputs
+[V-COND slope_on_20] phi=1 eta_min=2.18e-01 kappa=1.439e+10 kmax=1.680e+02 kmin=1.168e-08 cut=80 ties=0
+[13:23:49 +  293.8s] trimmed table: cache hit 26eb7b2bd629
+[13:23:49 +  293.8s] run_linear[vcond_slope_on_40]: creating 640 cell elements
+[13:23:49 +  294.0s] elements: 160/640 (25%), 0s elapsed, ETA 1s
+[13:23:49 +  294.2s] elements: 320/640 (50%), 0s elapsed, ETA 0s
+[13:23:49 +  294.4s] elements: 480/640 (75%), 1s elapsed, ETA 0s
+[13:23:49 +  294.5s] elements: 640/640 (100%), 1s elapsed, ETA 0s
+[13:23:49 +  294.5s] run_linear[vcond_slope_on_40]: out_mode=drop, 8 OUT cells skipped, 0 inactive control points fixed
+[13:23:50 +  294.6s] run_linear[vcond_slope_on_40]: solve start (pardiso_ldlt, 1776 nodes, 0 MPC)
+[13:23:56 +  301.3s] run_linear[vcond_slope_on_40]: solve done in 6.8s
+[13:23:57 +  302.1s] run_linear[vcond_slope_on_40]: stress extraction (640 elements)
+[13:23:58 +  303.0s] run_linear[vcond_slope_on_40]: writing outputs
+[V-COND slope_on_40] phi=1 eta_min=8.59e-02 kappa=4.531e+10 kmax=1.275e+02 kmin=2.814e-09 cut=626 ties=0
+[13:23:59 +  303.8s] trimmed table: cache hit 686b1d79b45b
+[13:23:59 +  303.8s] run_linear[vcond_slope_on_60]: creating 2160 cell elements
+[13:23:59 +  304.3s] elements: 540/2160 (25%), 0s elapsed, ETA 1s
+[13:24:00 +  304.8s] elements: 1080/2160 (50%), 1s elapsed, ETA 1s
+[13:24:01 +  305.6s] elements: 1620/2160 (75%), 2s elapsed, ETA 1s
+[13:24:01 +  306.1s] elements: 2160/2160 (100%), 2s elapsed, ETA 0s
+[13:24:01 +  306.1s] run_linear[vcond_slope_on_60]: out_mode=drop, 48 OUT cells skipped, 20 inactive control points fixed
+[13:24:01 +  306.3s] run_linear[vcond_slope_on_60]: solve start (pardiso_ldlt, 4556 nodes, 0 MPC)
+[13:24:08 +  313.4s] run_linear[vcond_slope_on_60]: solve done in 7.1s
+[13:24:09 +  314.2s] run_linear[vcond_slope_on_60]: stress extraction (2160 elements)
+[13:24:12 +  316.9s] run_linear[vcond_slope_on_60]: writing outputs
+[V-COND slope_on_60] phi=1 eta_min=5.86e-02 kappa=7.150e+10 kmax=7.907e+01 kmin=1.106e-09 cut=1319 ties=0
+[13:24:14 +  319.2s] trimmed table: cache hit 2bab9e323574
+[13:24:14 +  319.3s] run_linear[vcond_slope_on_80]: creating 5120 cell elements
+[13:24:16 +  321.2s] elements: 1280/5120 (25%), 2s elapsed, ETA 6s
+[13:24:18 +  323.1s] elements: 2560/5120 (50%), 4s elapsed, ETA 4s
+[13:24:20 +  325.0s] elements: 3840/5120 (75%), 6s elapsed, ETA 2s
+[13:24:22 +  326.8s] elements: 5120/5120 (100%), 8s elapsed, ETA 0s
+[13:24:22 +  326.8s] run_linear[vcond_slope_on_80]: out_mode=drop, 128 OUT cells skipped, 72 inactive control points fixed
+[13:24:24 +  329.1s] run_linear[vcond_slope_on_80]: solve start (pardiso_ldlt, 9240 nodes, 72 MPC)
+[13:24:38 +  343.0s] run_linear[vcond_slope_on_80]: solve done in 13.9s
+[13:24:39 +  344.3s] run_linear[vcond_slope_on_80]: stress extraction (5120 elements)
+[13:24:50 +  355.0s] run_linear[vcond_slope_on_80]: writing outputs
+[V-COND slope_on_80] phi=1 eta_min=4.92e-02 kappa=1.078e+11 kmax=5.901e+01 kmin=5.474e-10 cut=3298 ties=72
+[V-COND] flat_on=1.06 (gate <=10), flat_off=1.46e+06, slope=-1.44 (gate -2+-0.3), eta_reached=1.0e-08, ties@phi<=1e-6=120
+V-COND FAIL {'flat': True, 'slope': False, 'nonvacuous': True}
+ |  /           |                  
+ ' /   __| _` | __|  _ \   __|    
+ . \  |   (   | |   (   |\__ \  
+_|\_\_|  \__,_|\__|\___/ ____/
+           Multi-Physics 10.4."3"--96bad120-Release-x86_64
+           Compiled for Windows and Python3.12 with MSVC-1941
+Compiled with threading support. Threading support with OpenMP.
+Maximum number of threads: 16.
+Importing    KratosIgaApplication 
+    KRATOS  _____ _____
+           |_   _/ ____|   /\
+             | || |  __   /  \
+             | || | |_ | / /\ \
+            _| || |__| |/ ____ \
+           |_____\_____/_/    \_\
+Initializing KratosIgaApplication...
+Importing    KratosStructuralMechanicsApplication 
+    KRATOS   ___|  |                   |                   |
+           \___ \  __|  __| |   |  __| __| |   |  __| _` | |
+                 | |   |    |   | (    |   |   | |   (   | |
+           _____/ \__|_|   \__,_|\___|\__|\__,_|_|  \__,_|_| MECHANICS
+Initializing KratosStructuralMechanicsApplication...
+Importing    KratosConstitutiveLawsApplication 
+Initializing KratosConstitutiveLawsApplication...
+Importing    LinearSolversApplication 
+    Kratos  _     _                       ____        _
+           | |   (_)_ __   ___  __ _ _ __/ ___|  ___ | |_   _____ _ __ ___
+           | |   | | '_ \ / _ \/ _` | '__\___ \ / _ \| \ \ / / _ \ '__/ __|
+           | |___| | | | |  __/ (_| | |   ___) | (_) | |\ V /  __/ |  \__ \
+           |_____|_|_| |_|\___|\__,_|_|  |____/ \___/|_| \_/ \___|_|  |___/
+Initializing KratosLinearSolversApplication...
+Using Intel MKL version 2026.0.2 build 20260915
+MKL processor: Intel(R) Advanced Vector Extensions 512 (Intel(R) AVX-512) with support of Intel(R) Deep Learning Boost (Intel(R) DL Boost), EVEX-encoded AES and Carry-Less Multiplication Quadword instructions
+[WARNING] ResidualBasedBlockBuilderAndSolver: ATTENTION! setting the RHS to zero!
+[WARNING] ResidualBasedBlockBuilderAndSolver: ATTENTION! setting the RHS to zero!
+[WARNING] ResidualBasedBlockBuilderAndSolver: ATTENTION! setting the RHS to zero!
+[WARNING] ResidualBasedBlockBuilderAndSolver: ATTENTION! setting the RHS to zero!
+[WARNING] ResidualBasedBlockBuilderAndSolver: ATTENTION! setting the RHS to zero!
+[WARNING] ResidualBasedBlockBuilderAndSolver: ATTENTION! setting the RHS to zero!
+[WARNING] ResidualBasedBlockBuilderAndSolver: ATTENTION! setting the RHS to zero!
+[WARNING] ResidualBasedBlockBuilderAndSolver: ATTENTION! setting the RHS to zero!
+[WARNING] ResidualBasedBlockBuilderAndSolver: ATTENTION! setting the RHS to zero!
+[WARNING] ResidualBasedBlockBuilderAndSolver: ATTENTION! setting the RHS to zero!
+[WARNING] ResidualBasedBlockBuilderAndSolver: ATTENTION! setting the RHS to zero!
+[WARNING] ResidualBasedBlockBuilderAndSolver: ATTENTION! setting the RHS to zero!
+[WARNING] ResidualBasedBlockBuilderAndSolver: ATTENTION! setting the RHS to zero!
+[WARNING] ResidualBasedBlockBuilderAndSolver: ATTENTION! setting the RHS to zero!
+[WARNING] ResidualBasedBlockBuilderAndSolver: ATTENTION! setting the RHS to zero!
+Deregistering KratosMultiphysics
+Deregistering IgaApplication
+Deregistering ConstitutiveLawsApplication
+Deregistering StructuralMechanicsApplication
+Deregistering LinearSolversApplication
+vcond done rc=1

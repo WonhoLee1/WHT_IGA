@@ -1,0 +1,72 @@
+[V02 h=10] peak=3.861924e-06 (vol 3.470e-06) ref=4.317500e-06 err=10.552% cut=80 fb=0 crownfb=0 umax=2.278e-04 out=0 ties=None
+  total_force=[3.999999999883584e-05, 0.0, 0.0] face_avgs={'(0, 1)': [0.00022776702270577815, -7.197766681183345e-16, 2.5940208514650554e-13], '(0, 0)': [0.0, 0.0, 0.0]}
+[V02 h=5] peak=4.673141e-06 (vol 4.302e-06) ref=4.317500e-06 err=8.237% cut=626 fb=16 crownfb=16 umax=2.320e-04 out=8 ties=None
+  total_force=[3.999999999883588e-05, 0.0, 0.0] face_avgs={'(0, 1)': [0.00023197501803550415, 1.0918632470731515e-15, 3.9425588410336005e-13], '(0, 0)': [0.0, 0.0, 0.0]}
+D:\PythonCodeStudy\CAD-CAE-COPILOT\WHT_IGA\wht_iga\geometry\quadrature.py:178: RuntimeWarning: invalid value encountered in cast
+  key = (tuple(np.round(p2 / tol).astype(int)),
+D:\PythonCodeStudy\CAD-CAE-COPILOT\WHT_IGA\wht_iga\geometry\quadrature.py:179: RuntimeWarning: invalid value encountered in cast
+  tuple(np.round(r2 / tol).astype(int)),
+[V02 h=3] peak=4.290654e-06 (vol 4.233e-06) ref=4.317500e-06 err=0.622% cut=1667 fb=16 crownfb=16 umax=3.563e-04 out=42 ties=None
+  total_force=[3.999999999883567e-05, 0.0, 0.0] face_avgs={'(0, 1)': [0.00023199887641030994, -1.067549074994584e-15, -1.332100042416653e-12], '(0, 0)': [0.0, 0.0, 0.0]}
+[V02 h=2.5] peak=4.600234e-06 (vol 4.375e-06) ref=4.317500e-06 err=6.549% cut=3298 fb=48 crownfb=48 umax=2.320e-04 out=128 ties=None
+  total_force=[3.9999999998836044e-05, 0.0, 0.0] face_avgs={'(0, 1)': [0.00023204242372799777, -1.6061056171049789e-15, 1.3066508817137656e-14], '(0, 0)': [0.0, 0.0, 0.0]}
+[V02 h=1.5] peak=4.342333e-06 (vol 4.287e-06) ref=4.317500e-06 err=0.575% cut=8521 fb=32 crownfb=32 umax=2.320e-04 out=468 ties=None
+  total_force=[3.999999999883531e-05, 0.0, 0.0] face_avgs={'(0, 1)': [0.0002320195230530292, 1.2057358728149794e-15, 8.36256314842785e-13], '(0, 0)': [0.0, 0.0, 0.0]}
+ |  /           |                  
+ ' /   __| _` | __|  _ \   __|    
+ . \  |   (   | |   (   |\__ \  
+_|\_\_|  \__,_|\__|\___/ ____/
+           Multi-Physics 10.4."3"--96bad120-Release-x86_64
+           Compiled for Windows and Python3.12 with MSVC-1941
+Compiled with threading support. Threading support with OpenMP.
+Maximum number of threads: 16.
+Importing    KratosIgaApplication 
+    KRATOS  _____ _____
+           |_   _/ ____|   /\
+             | || |  __   /  \
+             | || | |_ | / /\ \
+            _| || |__| |/ ____ \
+           |_____\_____/_/    \_\
+Initializing KratosIgaApplication...
+Importing    KratosStructuralMechanicsApplication 
+    KRATOS   ___|  |                   |                   |
+           \___ \  __|  __| |   |  __| __| |   |  __| _` | |
+                 | |   |    |   | (    |   |   | |   (   | |
+           _____/ \__|_|   \__,_|\___|\__|\__,_|_|  \__,_|_| MECHANICS
+Initializing KratosStructuralMechanicsApplication...
+Importing    KratosConstitutiveLawsApplication 
+Initializing KratosConstitutiveLawsApplication...
+Importing    LinearSolversApplication 
+    Kratos  _     _                       ____        _
+           | |   (_)_ __   ___  __ _ _ __/ ___|  ___ | |_   _____ _ __ ___
+           | |   | | '_ \ / _ \/ _` | '__\___ \ / _ \| \ \ / / _ \ '__/ __|
+           | |___| | | | |  __/ (_| | |   ___) | (_) | |\ V /  __/ |  \__ \
+           |_____|_|_| |_|\___|\__,_|_|  |____/ \___/|_| \_/ \___|_|  |___/
+Initializing KratosLinearSolversApplication...
+Using Intel MKL version 2026.0.0 build 20260401
+MKL processor: Intel(R) Advanced Vector Extensions 512 (Intel(R) AVX-512) with support of Intel(R) Deep Learning Boost (Intel(R) DL Boost), EVEX-encoded AES and Carry-Less Multiplication Quadword instructions
+Traceback (most recent call last):
+  File "D:\PythonCodeStudy\CAD-CAE-COPILOT\WHT_IGA\scripts\v02_roark.py", line 129, in <module>
+    main()
+  File "D:\PythonCodeStudy\CAD-CAE-COPILOT\WHT_IGA\scripts\v02_roark.py", line 114, in main
+    rows = [run_level(nc, shape, evd, inplane[i]) for nc, i in zip(lvls, idx)]
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\PythonCodeStudy\CAD-CAE-COPILOT\WHT_IGA\scripts\v02_roark.py", line 66, in run_level
+    res = run_linear(spec, geo_issues=issues, qp_table=qp_table,
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\PythonCodeStudy\CAD-CAE-COPILOT\WHT_IGA\wht_iga\solver\pipeline.py", line 209, in run_linear
+    keep_parts.append(load_keep)
+    ^^^^^^^^^^^^^^^^
+RuntimeError: Error: Decomposition failed!
+
+
+
+in applications/LinearSolversApplication/custom_solvers/eigen_direct_solver.h:101: EigenDirectSolver<class EigenPardisoLUSolver<double>,class UblasSpace<double,class boost::numeric::ublas::compressed_matrix<...>,class boost::numeric::Vector >,class UblasSpace<double,class boost::numeric::ublas::matrix<double,...>,class boost::numeric::Vector >,class Reorderer<class UblasSpace<double,class boost::numeric::ublas::compressed_matrix<...>,class boost::numeric::Vector >,class UblasSpace<double,class boost::numeric::ublas::matrix<double,...>,class boost::numeric::Vector > > >::InitializeSolutionStep
+   kratos/solving_strategies/builder_and_solvers/residualbased_block_builder_and_solver.h:489: ResidualBasedBlockBuilderAndSolver<class UblasSpace<double,class boost::numeric::ublas::compressed_matrix<...>,class boost::numeric::Vector >,...>::InternalSystemSolveWithPhysics
+   kratos/solving_strategies/builder_and_solvers/residualbased_block_builder_and_solver.h:539: ResidualBasedBlockBuilderAndSolver<class UblasSpace<double,class boost::numeric::ublas::compressed_matrix<...>,class boost::numeric::Vector >,...>::BuildAndSolve
+
+Deregistering KratosMultiphysics
+Deregistering IgaApplication
+Deregistering ConstitutiveLawsApplication
+Deregistering StructuralMechanicsApplication
+Deregistering LinearSolversApplication

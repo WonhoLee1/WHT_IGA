@@ -1,0 +1,152 @@
+[03:36:48 +    0.0s] V02 level n_cells=(33, 7, 1) h=6 p=2 ext=off: tessellate (deflection 0.15)
+[03:36:48 +    0.0s] V02 level h=6: 184 surface triangles; trimmed table
+[03:36:49 +    0.5s] cell rules: 228 non-OUT cells, serial
+ |  /           |                  
+ ' /   __| _` | __|  _ \   __|    
+ . \  |   (   | |   (   |\__ \  
+_|\_\_|  \__,_|\__|\___/ ____/
+           Multi-Physics 10.4."3"--96bad120-Release-x86_64
+           Compiled for Windows and Python3.12 with MSVC-1941
+Compiled with threading support. Threading support with OpenMP.
+Maximum number of threads: 16.
+Importing    KratosIgaApplication 
+    KRATOS  _____ _____
+           |_   _/ ____|   /\
+             | || |  __   /  \
+             | || | |_ | / /\ \
+            _| || |__| |/ ____ \
+           |_____\_____/_/    \_\
+Initializing KratosIgaApplication...
+Importing    KratosStructuralMechanicsApplication 
+    KRATOS   ___|  |                   |                   |
+           \___ \  __|  __| |   |  __| __| |   |  __| _` | |
+                 | |   |    |   | (    |   |   | |   (   | |
+           _____/ \__|_|   \__,_|\___|\__|\__,_|_|  \__,_|_| MECHANICS
+Initializing KratosStructuralMechanicsApplication...
+Importing    KratosConstitutiveLawsApplication 
+Initializing KratosConstitutiveLawsApplication...
+Importing    LinearSolversApplication 
+    Kratos  _     _                       ____        _
+           | |   (_)_ __   ___  __ _ _ __/ ___|  ___ | |_   _____ _ __ ___
+           | |   | | '_ \ / _ \/ _` | '__\___ \ / _ \| \ \ / / _ \ '__/ __|
+           | |___| | | | |  __/ (_| | |   ___) | (_) | |\ V /  __/ |  \__ \
+           |_____|_|_| |_|\___|\__,_|_|  |____/ \___/|_| \_/ \___|_|  |___/
+Initializing KratosLinearSolversApplication...
+Using Intel MKL version 2026.0.0 build 20260401
+MKL processor: Intel(R) Advanced Vector Extensions 512 (Intel(R) AVX-512) with support of Intel(R) Deep Learning Boost (Intel(R) DL Boost), EVEX-encoded AES and Carry-Less Multiplication Quadword instructions
+[03:37:26 +   38.0s] run_linear[v02_h6]: creating 231 cell elements
+[03:37:26 +   38.0s] elements: 57/231 (25%), 0s elapsed, ETA 0s
+[03:37:26 +   38.1s] elements: 114/231 (49%), 0s elapsed, ETA 0s
+[03:37:26 +   38.2s] elements: 171/231 (74%), 0s elapsed, ETA 0s
+[03:37:26 +   38.2s] elements: 228/231 (99%), 0s elapsed, ETA 0s
+[03:37:26 +   38.2s] elements: 231/231 (100%), 0s elapsed, ETA 0s
+[03:37:26 +   38.2s] run_linear[v02_h6]: solve start (pardiso_ldlt, 987 nodes, 0 MPC)
+[03:37:30 +   41.7s] run_linear[v02_h6]: solve done in 3.5s
+[03:37:30 +   42.1s] run_linear[v02_h6]: stress extraction (231 elements)
+[03:37:30 +   42.5s] run_linear[v02_h6]: writing outputs
+[V02 h=6] peak=3.464626e-06 (vol 3.382e-06) ref=4.317500e-06 err=19.754% errAbq=20.316% peakA=3.207193e-06 errA=25.716% errA_Abq=26.237% cut=225 fb=0 crownfb=0 umax=2.305e-04 out=5 ties=None
+  total_force=[3.9999999998835875e-05, 0.0, 0.0] face_avgs={'(0, 1)': [0.00023044924473622708, -6.808122407465111e-16, 4.1506640027852395e-13], '(0, 0)': [0.0, 0.0, 0.0]}
+[03:37:31 +   43.4s] V02 level n_cells=(66, 14, 1) h=3 p=2 ext=off: tessellate (deflection 0.075)
+[03:37:31 +   43.4s] V02 level h=3: 184 surface triangles; trimmed table
+[03:37:32 +   43.8s] cell rules: 920 non-OUT cells, 8 processes, 64 chunks
+[03:37:34 +   45.8s] cell rules: 105/920 (11%), 2s elapsed, ETA 16s
+[03:37:34 +   45.8s] cell rules: 195/920 (21%), 2s elapsed, ETA 8s
+[03:37:56 +   67.6s] cell rules: 285/920 (31%), 24s elapsed, ETA 53s
+[03:37:56 +   67.6s] cell rules: 374/920 (41%), 24s elapsed, ETA 35s
+[03:37:56 +   67.6s] cell rules: 472/920 (51%), 24s elapsed, ETA 23s
+[03:37:56 +   67.6s] cell rules: 556/920 (60%), 24s elapsed, ETA 16s
+[03:37:56 +   67.6s] cell rules: 654/920 (71%), 24s elapsed, ETA 10s
+[03:37:57 +   68.8s] cell rules: 738/920 (80%), 25s elapsed, ETA 6s
+[03:37:57 +   68.8s] cell rules: 836/920 (91%), 25s elapsed, ETA 3s
+[03:37:57 +   68.8s] cell rules: 920/920 (100%), 25s elapsed, ETA 0s
+[03:37:57 +   69.3s] run_linear[v02_h3]: creating 924 cell elements
+[03:37:57 +   69.5s] elements: 231/924 (25%), 0s elapsed, ETA 1s
+[03:37:58 +   69.6s] elements: 462/924 (50%), 0s elapsed, ETA 0s
+[03:37:58 +   69.8s] elements: 693/924 (75%), 1s elapsed, ETA 0s
+[03:37:58 +   70.1s] elements: 924/924 (100%), 1s elapsed, ETA 0s
+[03:37:58 +   70.1s] run_linear[v02_h3]: solve start (pardiso_ldlt, 3348 nodes, 0 MPC)
+[03:38:06 +   77.5s] run_linear[v02_h3]: solve done in 7.5s
+[03:38:06 +   78.4s] run_linear[v02_h3]: stress extraction (924 elements)
+[03:38:08 +   80.1s] run_linear[v02_h3]: writing outputs
+[V02 h=3] peak=4.690119e-06 (vol 4.505e-06) ref=4.317500e-06 err=8.630% errAbq=7.869% peakA=4.659357e-06 errA=7.918% errA_Abq=7.162% cut=892 fb=0 crownfb=0 umax=3.841e-04 out=24 ties=None
+  total_force=[3.9999999998835983e-05, 0.0, 0.0] face_avgs={'(0, 1)': [0.00023200139237957587, -8.129892335267262e-16, 4.595354896247204e-13], '(0, 0)': [0.0, 0.0, 0.0]}
+[03:38:09 +   81.0s] V02 level n_cells=(132, 28, 1) h=1.5 p=2 ext=off: tessellate (deflection 0.0375)
+[03:38:09 +   81.0s] V02 level h=1.5: 224 surface triangles; trimmed table
+[03:38:11 +   82.6s] cell rules: 3680 non-OUT cells, 8 processes, 64 chunks
+[03:38:13 +   84.7s] cell rules: 406/3680 (11%), 2s elapsed, ETA 17s
+[03:38:13 +   84.8s] cell rules: 754/3680 (20%), 2s elapsed, ETA 8s
+[03:38:34 +  105.7s] cell rules: 1160/3680 (32%), 23s elapsed, ETA 50s
+[03:38:34 +  105.7s] cell rules: 1508/3680 (41%), 23s elapsed, ETA 33s
+[03:38:34 +  105.7s] cell rules: 1856/3680 (50%), 23s elapsed, ETA 23s
+[03:38:36 +  108.3s] cell rules: 2255/3680 (61%), 26s elapsed, ETA 16s
+[03:38:38 +  109.6s] cell rules: 2597/3680 (71%), 27s elapsed, ETA 11s
+[03:38:42 +  114.3s] cell rules: 2996/3680 (81%), 32s elapsed, ETA 7s
+[03:38:42 +  114.3s] cell rules: 3338/3680 (91%), 32s elapsed, ETA 3s
+[03:38:42 +  114.3s] cell rules: 3680/3680 (100%), 32s elapsed, ETA 0s
+[03:38:43 +  114.8s] run_linear[v02_h1.5]: creating 3696 cell elements
+[03:38:44 +  115.8s] elements: 924/3696 (25%), 1s elapsed, ETA 3s
+[03:38:45 +  116.9s] elements: 1848/3696 (50%), 2s elapsed, ETA 2s
+[03:38:46 +  117.9s] elements: 2772/3696 (75%), 3s elapsed, ETA 1s
+[03:38:47 +  118.9s] elements: 3696/3696 (100%), 4s elapsed, ETA 0s
+[03:38:47 +  119.0s] run_linear[v02_h1.5]: solve start (pardiso_ldlt, 12228 nodes, 0 MPC)
+[03:38:56 +  127.9s] run_linear[v02_h1.5]: solve done in 8.9s
+[03:38:57 +  129.1s] run_linear[v02_h1.5]: stress extraction (3696 elements)
+[03:39:04 +  136.1s] run_linear[v02_h1.5]: writing outputs
+[V02 h=1.5] peak=4.437042e-06 (vol 4.407e-06) ref=4.317500e-06 err=2.769% errAbq=2.049% peakA=4.437380e-06 errA=2.777% errA_Abq=2.056% cut=3531 fb=1 crownfb=1 umax=2.321e-04 out=116 ties=None
+  total_force=[3.999999999883606e-05, 0.0, 0.0] face_avgs={'(0, 1)': [0.0002320813225734216, -5.007141741650869e-10, -8.617979722006025e-13], '(0, 0)': [0.0, 0.0, 0.0]}
+[03:39:06 +  138.5s] V02 level n_cells=(264, 56, 1) h=0.75 p=2 ext=off: tessellate (deflection 0.01875)
+[03:39:06 +  138.5s] V02 level h=0.75: 308 surface triangles; trimmed table
+[03:39:16 +  148.0s] cell rules: 14746 non-OUT cells, 8 processes, 64 chunks
+[03:39:19 +  150.9s] cell rules: 1617/14746 (11%), 3s elapsed, ETA 23s
+[03:39:19 +  151.1s] cell rules: 3003/14746 (20%), 3s elapsed, ETA 12s
+[03:40:07 +  199.1s] cell rules: 4620/14746 (31%), 51s elapsed, ETA 112s
+[03:40:07 +  199.1s] cell rules: 6006/14746 (41%), 51s elapsed, ETA 74s
+[03:40:07 +  199.1s] cell rules: 7386/14746 (50%), 51s elapsed, ETA 51s
+[03:40:07 +  199.1s] cell rules: 8996/14746 (61%), 51s elapsed, ETA 33s
+[03:40:07 +  199.1s] cell rules: 10376/14746 (70%), 51s elapsed, ETA 22s
+[03:40:29 +  221.5s] cell rules: 11986/14746 (81%), 73s elapsed, ETA 17s
+[03:40:29 +  221.5s] cell rules: 13366/14746 (91%), 73s elapsed, ETA 8s
+[03:40:29 +  221.5s] cell rules: 14746/14746 (100%), 73s elapsed, ETA 0s
+[03:40:31 +  222.6s] run_linear[v02_h0.75]: creating 14784 cell elements
+[03:40:35 +  226.8s] elements: 3696/14784 (25%), 4s elapsed, ETA 13s
+[03:40:39 +  231.0s] elements: 7392/14784 (50%), 8s elapsed, ETA 8s
+[03:40:43 +  235.1s] elements: 11088/14784 (75%), 13s elapsed, ETA 4s
+[03:40:48 +  239.6s] elements: 14784/14784 (100%), 17s elapsed, ETA 0s
+[03:40:48 +  240.1s] run_linear[v02_h0.75]: solve start (pardiso_ldlt, 46620 nodes, 0 MPC)
+[03:41:16 +  267.9s] run_linear[v02_h0.75]: solve done in 27.7s
+[03:41:19 +  271.4s] run_linear[v02_h0.75]: stress extraction (14784 elements)
+[03:41:35 +  287.3s] run_linear[v02_h0.75]: writing outputs
+[V02 h=0.75] peak=4.363121e-06 (vol 4.363e-06) ref=4.317500e-06 err=1.057% errAbq=0.348% peakA=4.356620e-06 errA=0.906% errA_Abq=0.199% cut=13844 fb=0 crownfb=0 umax=2.321e-04 out=524 ties=None
+  total_force=[3.999999999883552e-05, 0.0, 0.0] face_avgs={'(0, 1)': [0.0002321341193476679, 2.694751492715231e-15, 2.432239581402549e-12], '(0, 0)': [0.0, 0.0, 0.0]}
+[03:41:41 +  292.6s] V02 level n_cells=(528, 112, 1) h=0.375 p=2 ext=off: tessellate (deflection 0.009375)
+[03:41:41 +  292.6s] V02 level h=0.375: 428 surface triangles; trimmed table
+[03:44:25 +  456.6s] cell rules: 58918 non-OUT cells, 8 processes, 64 chunks
+[03:44:28 +  459.9s] cell rules: 6447/58918 (11%), 3s elapsed, ETA 26s
+[03:44:28 +  460.5s] cell rules: 11973/58918 (20%), 4s elapsed, ETA 15s
+[03:46:03 +  555.5s] cell rules: 18420/58918 (31%), 99s elapsed, ETA 217s
+[03:46:03 +  555.5s] cell rules: 23946/58918 (41%), 99s elapsed, ETA 144s
+[03:46:03 +  555.5s] cell rules: 29472/58918 (50%), 99s elapsed, ETA 99s
+[03:46:03 +  555.5s] cell rules: 35918/58918 (61%), 99s elapsed, ETA 63s
+[03:46:03 +  555.5s] cell rules: 41438/58918 (70%), 99s elapsed, ETA 42s
+[03:47:00 +  612.1s] cell rules: 47878/58918 (81%), 155s elapsed, ETA 36s
+[03:47:00 +  612.1s] cell rules: 53398/58918 (91%), 155s elapsed, ETA 16s
+[03:47:00 +  612.1s] cell rules: 58918/58918 (100%), 155s elapsed, ETA 0s
+[03:47:03 +  615.4s] run_linear[v02_h0.375]: creating 59136 cell elements
+[03:47:14 +  626.5s] elements: 14784/59136 (25%), 11s elapsed, ETA 33s
+[03:47:25 +  637.3s] elements: 29568/59136 (50%), 22s elapsed, ETA 22s
+[03:47:37 +  648.6s] elements: 44352/59136 (75%), 33s elapsed, ETA 11s
+[03:47:48 +  660.1s] elements: 59136/59136 (100%), 45s elapsed, ETA 0s
+[03:47:50 +  661.8s] run_linear[v02_h0.375]: solve start (pardiso_ldlt, 181932 nodes, 0 MPC)
+[03:50:39 +  830.9s] run_linear[v02_h0.375]: solve done in 169.1s
+[03:50:54 +  846.1s] run_linear[v02_h0.375]: stress extraction (59136 elements)
+[03:52:15 +  927.5s] run_linear[v02_h0.375]: writing outputs
+[V02 h=0.375] peak=4.367443e-06 (vol 4.368e-06) ref=4.317500e-06 err=1.157% errAbq=0.448% peakA=4.346617e-06 errA=0.674% errA_Abq=0.031% cut=55828 fb=0 crownfb=0 umax=2.322e-04 out=2204 ties=None
+  total_force=[3.999999999883522e-05, 0.0, 0.0] face_avgs={'(0, 1)': [0.00023216053628428526, 2.601190711198535e-14, 5.03839753692755e-12], '(0, 0)': [0.0, 0.0, 0.0]}
+[V02] finest point-A peak err vs Roark=0.674% (gate 1%), vs Abaqus=0.031% (facet-max 1.157%); profile self-conv errors=['1.51e-01', '3.13e-02', '9.24e-03', '1.02e-03'] rate_all=2.34 rate_last3=2.47 (gate 1.8)
+V02 ALL PASS
+Deregistering KratosMultiphysics
+Deregistering IgaApplication
+Deregistering ConstitutiveLawsApplication
+Deregistering StructuralMechanicsApplication
+Deregistering LinearSolversApplication
+cfg=off exit 0 966s

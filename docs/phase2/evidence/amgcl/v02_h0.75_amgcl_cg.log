@@ -1,0 +1,20 @@
+[12:08:42 +    0.0s] V02 level n_cells=(264, 56, 1) h=0.75 p=2 ext=theta=0.3: tessellate (deflection 0.01875)
+[12:08:42 +    0.0s] V02 level h=0.75: 308 surface triangles; trimmed table
+[12:08:48 +    6.0s] cell rules: 14746 non-OUT cells, 8 processes, 64 chunks
+[12:08:53 +   10.5s] cell rules: 1617/14746 (11%), 4s elapsed, ETA 36s
+[12:08:53 +   11.0s] cell rules: 3003/14746 (20%), 5s elapsed, ETA 19s
+[12:09:53 +   70.7s] cell rules: 4620/14746 (31%), 65s elapsed, ETA 142s
+[12:09:53 +   70.7s] cell rules: 6006/14746 (41%), 65s elapsed, ETA 94s
+[12:09:53 +   70.7s] cell rules: 7386/14746 (50%), 65s elapsed, ETA 64s
+[12:09:53 +   70.7s] cell rules: 8996/14746 (61%), 65s elapsed, ETA 41s
+[12:09:53 +   70.7s] cell rules: 10376/14746 (70%), 65s elapsed, ETA 27s
+[12:10:15 +   93.1s] cell rules: 11986/14746 (81%), 87s elapsed, ETA 20s
+[12:10:15 +   93.1s] cell rules: 13366/14746 (91%), 87s elapsed, ETA 9s
+[12:10:15 +   93.1s] cell rules: 14746/14746 (100%), 87s elapsed, ETA 0s
+[12:10:16 +   94.3s] run_linear[v02_h0.75]: creating 14784 cell elements
+[12:10:21 +   98.5s] elements: 3696/14784 (25%), 4s elapsed, ETA 13s
+[12:10:24 +  102.4s] elements: 7392/14784 (50%), 8s elapsed, ETA 8s
+[12:10:29 +  106.5s] elements: 11088/14784 (75%), 12s elapsed, ETA 4s
+[12:10:33 +  110.8s] elements: 14784/14784 (100%), 16s elapsed, ETA 0s
+[12:10:46 +  123.9s] run_linear[v02_h0.75]: solve start (amgcl_cg, 46620 nodes, 324 MPC)
+KILLED by integrator at ~12:21 (taskkill PID 24396): amgcl_cg solve running > 10 min with no result line; same level with pardiso_ldlt solves in 33 s (v02_meshfile/run.log, phase1/evidence/v02_cf3_0.3.log). Settings: wht_iga/solver/pipeline.py _AMGCL_SETTINGS (CG, ILU0, aggregation, tol 1e-10, max_iteration 5000); out_mode ghost (alpha 1e-8), penalty BC, 324 MPC.

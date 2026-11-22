@@ -1,0 +1,111 @@
+[02:48:19 +    0.0s] V02 level n_cells=(33, 7, 1) h=6 p=2 ext=theta=0.3: tessellate (deflection 0.15)
+[02:48:19 +    0.0s] V02 level h=6: 184 surface triangles; trimmed table
+[02:48:19 +    0.0s] trimmed table: cache hit 4a7c4d5d9b4b
+ |  /           |                  
+ ' /   __| _` | __|  _ \   __|    
+ . \  |   (   | |   (   |\__ \  
+_|\_\_|  \__,_|\__|\___/ ____/
+           Multi-Physics 10.4."3"--96bad120-Release-x86_64
+           Compiled for Windows and Python3.12 with MSVC-1941
+Compiled with threading support. Threading support with OpenMP.
+Maximum number of threads: 16.
+Importing    KratosIgaApplication 
+    KRATOS  _____ _____
+           |_   _/ ____|   /\
+             | || |  __   /  \
+             | || | |_ | / /\ \
+            _| || |__| |/ ____ \
+           |_____\_____/_/    \_\
+Initializing KratosIgaApplication...
+Importing    KratosStructuralMechanicsApplication 
+    KRATOS   ___|  |                   |                   |
+           \___ \  __|  __| |   |  __| __| |   |  __| _` | |
+                 | |   |    |   | (    |   |   | |   (   | |
+           _____/ \__|_|   \__,_|\___|\__|\__,_|_|  \__,_|_| MECHANICS
+Initializing KratosStructuralMechanicsApplication...
+Importing    KratosConstitutiveLawsApplication 
+Initializing KratosConstitutiveLawsApplication...
+Importing    LinearSolversApplication 
+    Kratos  _     _                       ____        _
+           | |   (_)_ __   ___  __ _ _ __/ ___|  ___ | |_   _____ _ __ ___
+           | |   | | '_ \ / _ \/ _` | '__\___ \ / _ \| \ \ / / _ \ '__/ __|
+           | |___| | | | |  __/ (_| | |   ___) | (_) | |\ V /  __/ |  \__ \
+           |_____|_|_| |_|\___|\__,_|_|  |____/ \___/|_| \_/ \___|_|  |___/
+Initializing KratosLinearSolversApplication...
+Using Intel MKL version 2026.0.0 build 20260401
+MKL processor: Intel(R) Advanced Vector Extensions 512 (Intel(R) AVX-512) with support of Intel(R) Deep Learning Boost (Intel(R) DL Boost), EVEX-encoded AES and Carry-Less Multiplication Quadword instructions
+[02:48:20 +    1.2s] run_linear[v02_h6]: creating 231 cell elements
+[02:48:20 +    1.2s] elements: 57/231 (25%), 0s elapsed, ETA 0s
+[02:48:20 +    1.3s] elements: 114/231 (49%), 0s elapsed, ETA 0s
+[02:48:20 +    1.3s] elements: 171/231 (74%), 0s elapsed, ETA 0s
+[02:48:20 +    1.3s] elements: 228/231 (99%), 0s elapsed, ETA 0s
+[02:48:20 +    1.3s] elements: 231/231 (100%), 0s elapsed, ETA 0s
+[02:48:21 +    1.8s] run_linear[v02_h6]: solve start (pardiso_ldlt, 987 nodes, 9 MPC)
+[02:48:23 +    4.2s] run_linear[v02_h6]: solve done in 2.4s
+[02:48:24 +    4.5s] run_linear[v02_h6]: stress extraction (231 elements)
+[02:48:24 +    4.8s] run_linear[v02_h6]: writing outputs
+[V02 h=6] peak=3.464800e-06 (vol 3.382e-06) ref=4.317500e-06 err=19.750% errAbq=20.312% peakA=3.207171e-06 errA=25.717% errA_Abq=26.237% cut=225 fb=0 crownfb=0 umax=2.305e-04 out=5 ties={'n_ties': 9, 'n_slave': 3, 'n_master': 942, 'theta': 0.3}
+  total_force=[3.9999999998835875e-05, 0.0, 0.0] face_avgs={'(0, 1)': [0.00023044881889831834, 1.3048005272399218e-08, 7.662146018052454e-13], '(0, 0)': [0.0, 0.0, 0.0]}
+[02:48:25 +    5.6s] V02 level n_cells=(66, 14, 1) h=3 p=2 ext=theta=0.3: tessellate (deflection 0.075)
+[02:48:25 +    5.6s] V02 level h=3: 184 surface triangles; trimmed table
+[02:48:25 +    5.6s] trimmed table: cache hit 8676cd40c000
+[02:48:25 +    5.7s] run_linear[v02_h3]: creating 924 cell elements
+[02:48:25 +    5.9s] elements: 231/924 (25%), 0s elapsed, ETA 1s
+[02:48:25 +    6.0s] elements: 462/924 (50%), 0s elapsed, ETA 0s
+[02:48:25 +    6.1s] elements: 693/924 (75%), 0s elapsed, ETA 0s
+[02:48:25 +    6.3s] elements: 924/924 (100%), 1s elapsed, ETA 0s
+[02:48:26 +    6.5s] run_linear[v02_h3]: solve start (pardiso_ldlt, 3348 nodes, 72 MPC)
+[02:48:33 +   13.7s] run_linear[v02_h3]: solve done in 7.2s
+[02:48:34 +   14.5s] run_linear[v02_h3]: stress extraction (924 elements)
+[02:48:35 +   15.8s] run_linear[v02_h3]: writing outputs
+[V02 h=3] peak=4.690153e-06 (vol 4.505e-06) ref=4.317500e-06 err=8.631% errAbq=7.870% peakA=4.659396e-06 errA=7.919% errA_Abq=7.163% cut=892 fb=4 crownfb=4 umax=2.320e-04 out=24 ties={'n_ties': 72, 'n_slave': 24, 'n_master': 3228, 'theta': 0.3}
+  total_force=[3.9999999998835983e-05, 0.0, 0.0] face_avgs={'(0, 1)': [0.00023199972906981094, 1.1834617125552046e-16, 5.837551373479132e-14], '(0, 0)': [0.0, 0.0, 0.0]}
+[02:48:36 +   16.7s] V02 level n_cells=(132, 28, 1) h=1.5 p=2 ext=theta=0.3: tessellate (deflection 0.0375)
+[02:48:36 +   16.7s] V02 level h=1.5: 224 surface triangles; trimmed table
+[02:48:36 +   16.7s] trimmed table: cache hit f945890fe1f3
+[02:48:36 +   16.9s] run_linear[v02_h1.5]: creating 3696 cell elements
+[02:48:37 +   17.6s] elements: 924/3696 (25%), 1s elapsed, ETA 2s
+[02:48:37 +   18.3s] elements: 1848/3696 (50%), 1s elapsed, ETA 1s
+[02:48:38 +   18.9s] elements: 2772/3696 (75%), 2s elapsed, ETA 1s
+[02:48:39 +   19.6s] elements: 3696/3696 (100%), 3s elapsed, ETA 0s
+[02:48:40 +   20.9s] run_linear[v02_h1.5]: solve start (pardiso_ldlt, 12228 nodes, 144 MPC)
+[02:48:49 +   29.9s] run_linear[v02_h1.5]: solve done in 9.1s
+[02:48:50 +   31.0s] run_linear[v02_h1.5]: stress extraction (3696 elements)
+[02:48:55 +   36.2s] run_linear[v02_h1.5]: writing outputs
+[V02 h=1.5] peak=4.437302e-06 (vol 4.407e-06) ref=4.317500e-06 err=2.775% errAbq=2.055% peakA=4.437642e-06 errA=2.783% errA_Abq=2.062% cut=3531 fb=5 crownfb=5 umax=2.321e-04 out=116 ties={'n_ties': 144, 'n_slave': 48, 'n_master': 11796, 'theta': 0.3}
+  total_force=[3.999999999883606e-05, 0.0, 0.0] face_avgs={'(0, 1)': [0.00023208122863821245, -5.309689703903367e-10, -8.631058613921342e-13], '(0, 0)': [0.0, 0.0, 0.0]}
+[02:48:57 +   37.9s] V02 level n_cells=(264, 56, 1) h=0.75 p=2 ext=theta=0.3: tessellate (deflection 0.01875)
+[02:48:57 +   37.9s] V02 level h=0.75: 308 surface triangles; trimmed table
+[02:48:57 +   37.9s] trimmed table: cache hit c60258ac364d
+[02:48:57 +   38.4s] run_linear[v02_h0.75]: creating 14784 cell elements
+[02:49:01 +   41.5s] elements: 3696/14784 (25%), 3s elapsed, ETA 9s
+[02:49:03 +   43.9s] elements: 7392/14784 (50%), 6s elapsed, ETA 6s
+[02:49:06 +   46.4s] elements: 11088/14784 (75%), 8s elapsed, ETA 3s
+[02:49:08 +   49.4s] elements: 14784/14784 (100%), 11s elapsed, ETA 0s
+[02:49:17 +   57.9s] run_linear[v02_h0.75]: solve start (pardiso_ldlt, 46620 nodes, 324 MPC)
+[02:49:43 +   83.5s] run_linear[v02_h0.75]: solve done in 25.6s
+[02:49:46 +   86.9s] run_linear[v02_h0.75]: stress extraction (14784 elements)
+[02:50:02 +  103.1s] run_linear[v02_h0.75]: writing outputs
+[V02 h=0.75] peak=4.363343e-06 (vol 4.363e-06) ref=4.317500e-06 err=1.062% errAbq=0.354% peakA=4.356884e-06 errA=0.912% errA_Abq=0.205% cut=13844 fb=5 crownfb=5 umax=2.321e-04 out=524 ties={'n_ties': 324, 'n_slave': 108, 'n_master': 44904, 'theta': 0.3}
+  total_force=[3.999999999883552e-05, 0.0, 0.0] face_avgs={'(0, 1)': [0.00023213404403805488, 6.000040643365232e-11, 2.0783684775268414e-12], '(0, 0)': [0.0, 0.0, 0.0]}
+[02:50:08 +  108.4s] V02 level n_cells=(528, 112, 1) h=0.375 p=2 ext=theta=0.3: tessellate (deflection 0.009375)
+[02:50:08 +  108.4s] V02 level h=0.375: 428 surface triangles; trimmed table
+[02:50:08 +  108.4s] trimmed table: cache hit f4cdc6593b1a
+[02:50:09 +  110.2s] run_linear[v02_h0.375]: creating 59136 cell elements
+[02:50:22 +  122.6s] elements: 14784/59136 (25%), 12s elapsed, ETA 37s
+[02:50:32 +  132.7s] elements: 29568/59136 (50%), 22s elapsed, ETA 22s
+[02:50:41 +  142.2s] elements: 44352/59136 (75%), 32s elapsed, ETA 11s
+[02:50:53 +  153.5s] elements: 59136/59136 (100%), 43s elapsed, ETA 0s
+[02:52:04 +  224.4s] run_linear[v02_h0.375]: solve start (pardiso_ldlt, 181932 nodes, 720 MPC)
+[02:54:35 +  376.2s] run_linear[v02_h0.375]: solve done in 151.8s
+[02:54:46 +  386.9s] run_linear[v02_h0.375]: stress extraction (59136 elements)
+[02:55:53 +  453.5s] run_linear[v02_h0.375]: writing outputs
+[V02 h=0.375] peak=4.365812e-06 (vol 4.366e-06) ref=4.317500e-06 err=1.119% errAbq=0.410% peakA=4.346793e-06 errA=0.678% errA_Abq=0.027% cut=55828 fb=1 crownfb=1 umax=2.322e-04 out=2204 ties={'n_ties': 720, 'n_slave': 240, 'n_master': 175032, 'theta': 0.3}
+  total_force=[3.999999999883522e-05, 0.0, 0.0] face_avgs={'(0, 1)': [0.00023216052383929713, -1.2364659198780386e-11, 5.485619552359153e-12], '(0, 0)': [0.0, 0.0, 0.0]}
+[V02] finest peak err vs Roark=1.119% (gate 1%), vs Abaqus=0.410%; profile self-conv errors=['1.51e-01', '3.13e-02', '9.25e-03', '1.03e-03'] rate_all=2.34 rate_last3=2.47 (gate 1.8)
+V02 FAIL
+Deregistering KratosMultiphysics
+Deregistering IgaApplication
+Deregistering ConstitutiveLawsApplication
+Deregistering StructuralMechanicsApplication
+Deregistering LinearSolversApplication

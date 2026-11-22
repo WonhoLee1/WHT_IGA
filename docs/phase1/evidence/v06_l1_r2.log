@@ -1,0 +1,64 @@
+ |  /           |                  
+ ' /   __| _` | __|  _ \   __|    
+ . \  |   (   | |   (   |\__ \  
+_|\_\_|  \__,_|\__|\___/ ____/
+           Multi-Physics 10.4."3"--96bad120-Release-x86_64
+           Compiled for Windows and Python3.12 with MSVC-1941
+Compiled with threading support. Threading support with OpenMP.
+Maximum number of threads: 16.
+Importing    KratosIgaApplication 
+    KRATOS  _____ _____
+           |_   _/ ____|   /\
+             | || |  __   /  \
+             | || | |_ | / /\ \
+            _| || |__| |/ ____ \
+           |_____\_____/_/    \_\
+Initializing KratosIgaApplication...
+Importing    KratosStructuralMechanicsApplication 
+    KRATOS   ___|  |                   |                   |
+           \___ \  __|  __| |   |  __| __| |   |  __| _` | |
+                 | |   |    |   | (    |   |   | |   (   | |
+           _____/ \__|_|   \__,_|\___|\__|\__,_|_|  \__,_|_| MECHANICS
+Initializing KratosStructuralMechanicsApplication...
+Importing    KratosConstitutiveLawsApplication 
+Initializing KratosConstitutiveLawsApplication...
+Importing    LinearSolversApplication 
+    Kratos  _     _                       ____        _
+           | |   (_)_ __   ___  __ _ _ __/ ___|  ___ | |_   _____ _ __ ___
+           | |   | | '_ \ / _ \/ _` | '__\___ \ / _ \| \ \ / / _ \ '__/ __|
+           | |___| | | | |  __/ (_| | |   ___) | (_) | |\ V /  __/ |  \__ \
+           |_____|_|_| |_|\___|\__,_|_|  |____/ \___/|_| \_/ \___|_|  |___/
+Initializing KratosLinearSolversApplication...
+Using Intel MKL version 2026.0.0 build 20260401
+MKL processor: Intel(R) Advanced Vector Extensions 512 (Intel(R) AVX-512) with support of Intel(R) Deep Learning Boost (Intel(R) DL Boost), EVEX-encoded AES and Carry-Less Multiplication Quadword instructions
+[04:08:00 +    0.0s] cell rules: 1979 non-OUT cells, 8 processes, 64 chunks
+[04:08:45 +   45.4s] cell rules: 217/1979 (11%), 45s elapsed, ETA 369s
+[04:09:19 +   79.7s] cell rules: 403/1979 (20%), 80s elapsed, ETA 312s
+[04:10:01 +  121.3s] cell rules: 620/1979 (31%), 121s elapsed, ETA 266s
+[04:10:31 +  151.4s] cell rules: 806/1979 (41%), 151s elapsed, ETA 220s
+[04:10:39 +  159.5s] cell rules: 992/1979 (50%), 159s elapsed, ETA 159s
+[04:11:18 +  198.1s] cell rules: 1209/1979 (61%), 198s elapsed, ETA 126s
+[04:11:53 +  233.4s] cell rules: 1395/1979 (70%), 233s elapsed, ETA 98s
+[04:12:30 +  270.7s] cell rules: 1581/1979 (80%), 271s elapsed, ETA 68s
+[04:13:29 +  329.1s] cell rules: 1798/1979 (91%), 329s elapsed, ETA 33s
+[04:13:47 +  347.3s] cell rules: 1979/1979 (100%), 347s elapsed, ETA 0s
+[V06 p=1 h=0.05] u=2.9423e-03 ur=2.8728e-03 srr=1.3767e-01 stt=8.0991e-03 F=1.1018e-06 t=409.6s cut=1751 fb=3 ext=0.2 ties={'n_ties': 1647, 'n_slave': 549, 'n_master': 2481, 'theta': 0.2}
+RES L1 p=1 q=2 n_geo=96: u=2.942e-03 ur=2.873e-03 srr=1.377e-01 stt=8.099e-03 fb=3 t=410s
+[04:15:05 +  425.4s] cell rules: 1979 non-OUT cells, 8 processes, 64 chunks
+[04:17:58 +  597.8s] cell rules: 217/1979 (11%), 172s elapsed, ETA 1400s
+[04:19:35 +  695.3s] cell rules: 403/1979 (20%), 270s elapsed, ETA 1056s
+[04:21:59 +  839.5s] cell rules: 620/1979 (31%), 414s elapsed, ETA 908s
+[04:23:52 +  952.0s] cell rules: 806/1979 (41%), 527s elapsed, ETA 766s
+[04:24:49 + 1009.1s] cell rules: 992/1979 (50%), 584s elapsed, ETA 581s
+[04:27:13 + 1153.5s] cell rules: 1209/1979 (61%), 728s elapsed, ETA 464s
+[04:28:55 + 1254.8s] cell rules: 1395/1979 (70%), 829s elapsed, ETA 347s
+[04:31:02 + 1382.4s] cell rules: 1581/1979 (80%), 957s elapsed, ETA 241s
+[04:33:46 + 1546.6s] cell rules: 1798/1979 (91%), 1121s elapsed, ETA 113s
+[04:34:37 + 1597.4s] cell rules: 1979/1979 (100%), 1172s elapsed, ETA 0s
+[V06 p=2 h=0.05] u=5.7586e-05 ur=5.4670e-05 srr=3.3718e-03 stt=1.9372e-04 F=1.1018e-06 t=1298.7s cut=1751 fb=3 ext=0.2 ties={'n_ties': 1728, 'n_slave': 576, 'n_master': 3634, 'theta': 0.2}
+RES L1 p=2 q=4 n_geo=96: u=5.759e-05 ur=5.467e-05 srr=3.372e-03 stt=1.937e-04 fb=3 t=1299s
+Deregistering KratosMultiphysics
+Deregistering IgaApplication
+Deregistering ConstitutiveLawsApplication
+Deregistering StructuralMechanicsApplication
+Deregistering LinearSolversApplication

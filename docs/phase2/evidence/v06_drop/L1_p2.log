@@ -1,0 +1,78 @@
+[mem] rss=0.04GB
+[12:41:50 +    0.0s] cell rules: 1979 non-OUT cells, 8 processes, 64 chunks
+[mem] rss=0.19GB
+[mem] rss=0.19GB
+[mem] rss=0.19GB
+[mem] rss=0.19GB
+[12:42:53 +   62.3s] cell rules: 217/1979 (11%), 62s elapsed, ETA 505s
+[mem] rss=0.19GB
+[mem] rss=0.19GB
+[12:43:18 +   87.7s] cell rules: 403/1979 (20%), 88s elapsed, ETA 343s
+[mem] rss=0.19GB
+[mem] rss=0.19GB
+[mem] rss=0.19GB
+[12:44:02 +  131.4s] cell rules: 620/1979 (31%), 131s elapsed, ETA 288s
+[12:44:10 +  139.7s] cell rules: 806/1979 (41%), 140s elapsed, ETA 203s
+[mem] rss=0.19GB
+[mem] rss=0.19GB
+[12:44:42 +  171.1s] cell rules: 992/1979 (50%), 171s elapsed, ETA 170s
+[mem] rss=0.19GB
+[mem] rss=0.19GB
+[12:45:12 +  201.3s] cell rules: 1209/1979 (61%), 201s elapsed, ETA 128s
+[mem] rss=0.19GB
+[mem] rss=0.19GB
+[12:45:33 +  222.4s] cell rules: 1395/1979 (70%), 222s elapsed, ETA 93s
+[mem] rss=0.19GB
+[12:45:56 +  245.7s] cell rules: 1581/1979 (80%), 246s elapsed, ETA 62s
+[mem] rss=0.19GB
+[mem] rss=0.19GB
+[mem] rss=0.19GB
+[mem] rss=0.19GB
+[12:46:51 +  300.2s] cell rules: 1798/1979 (91%), 300s elapsed, ETA 30s
+[mem] rss=0.19GB
+[12:47:13 +  322.5s] cell rules: 1979/1979 (100%), 323s elapsed, ETA 0s
+[mem] rss=0.32GB
+[mem] rss=0.86GB
+[mem] rss=1.41GB
+[mem] rss=1.41GB
+[V06 p=2 h=0.05] u=5.7542e-05 ur=5.4624e-05 srr=3.3698e-03 stt=1.9370e-04 F=1.1018e-06 t=383.6s cut=1751 fb=3 ext=0.2 ties={'n_ties': 1728, 'n_slave': 576, 'n_master': 3634, 'theta': 0.2} out=drop inactive=6438 qp=212449
+RES L1 p=2 drop: u=5.754e-05(ok) ur=5.462e-05(ok) srr=3.370e-03(ok) stt=1.937e-04(ok) peak_wset=1.49GB t=384s
+ |  /           |                  
+ ' /   __| _` | __|  _ \   __|    
+ . \  |   (   | |   (   |\__ \  
+_|\_\_|  \__,_|\__|\___/ ____/
+           Multi-Physics 10.4."3"--96bad120-Release-x86_64
+           Compiled for Windows and Python3.12 with MSVC-1941
+Compiled with threading support. Threading support with OpenMP.
+Maximum number of threads: 16.
+Importing    KratosIgaApplication 
+    KRATOS  _____ _____
+           |_   _/ ____|   /\
+             | || |  __   /  \
+             | || | |_ | / /\ \
+            _| || |__| |/ ____ \
+           |_____\_____/_/    \_\
+Initializing KratosIgaApplication...
+Importing    KratosStructuralMechanicsApplication 
+    KRATOS   ___|  |                   |                   |
+           \___ \  __|  __| |   |  __| __| |   |  __| _` | |
+                 | |   |    |   | (    |   |   | |   (   | |
+           _____/ \__|_|   \__,_|\___|\__|\__,_|_|  \__,_|_| MECHANICS
+Initializing KratosStructuralMechanicsApplication...
+Importing    KratosConstitutiveLawsApplication 
+Initializing KratosConstitutiveLawsApplication...
+Importing    LinearSolversApplication 
+    Kratos  _     _                       ____        _
+           | |   (_)_ __   ___  __ _ _ __/ ___|  ___ | |_   _____ _ __ ___
+           | |   | | '_ \ / _ \/ _` | '__\___ \ / _ \| \ \ / / _ \ '__/ __|
+           | |___| | | | |  __/ (_| | |   ___) | (_) | |\ V /  __/ |  \__ \
+           |_____|_|_| |_|\___|\__,_|_|  |____/ \___/|_| \_/ \___|_|  |___/
+Initializing KratosLinearSolversApplication...
+Using Intel MKL version 2026.0.2 build 20260915
+MKL processor: Intel(R) Advanced Vector Extensions 512 (Intel(R) AVX-512) with support of Intel(R) Deep Learning Boost (Intel(R) DL Boost), EVEX-encoded AES and Carry-Less Multiplication Quadword instructions
+Deregistering KratosMultiphysics
+Deregistering IgaApplication
+Deregistering ConstitutiveLawsApplication
+Deregistering StructuralMechanicsApplication
+Deregistering LinearSolversApplication
+L1_p2 done 390s rc=0

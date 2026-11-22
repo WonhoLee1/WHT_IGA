@@ -1,0 +1,187 @@
+[mem] rss=0.04GB
+[mem] rss=0.26GB
+[mem] rss=0.25GB
+[14:29:12 +    0.0s] cell rules: 12472 non-OUT cells, 8 processes, 64 chunks
+[mem] rss=0.20GB
+[mem] rss=0.20GB
+[mem] rss=0.20GB
+[mem] rss=0.20GB
+[mem] rss=0.20GB
+[mem] rss=0.20GB
+[mem] rss=0.20GB
+[mem] rss=0.20GB
+[mem] rss=0.21GB
+[14:31:38 +  145.8s] cell rules: 1365/12472 (11%), 146s elapsed, ETA 1186s
+[mem] rss=0.21GB
+[mem] rss=0.21GB
+[mem] rss=0.21GB
+[mem] rss=0.21GB
+[mem] rss=0.21GB
+[mem] rss=0.21GB
+[mem] rss=0.21GB
+[mem] rss=0.21GB
+[14:33:38 +  266.2s] cell rules: 2535/12472 (20%), 266s elapsed, ETA 1043s
+[mem] rss=0.21GB
+[mem] rss=0.22GB
+[mem] rss=0.22GB
+[mem] rss=0.22GB
+[mem] rss=0.22GB
+[mem] rss=0.22GB
+[mem] rss=0.22GB
+[mem] rss=0.22GB
+[mem] rss=0.22GB
+[14:35:45 +  393.0s] cell rules: 3900/12472 (31%), 393s elapsed, ETA 864s
+[mem] rss=0.22GB
+[mem] rss=0.22GB
+[mem] rss=0.22GB
+[mem] rss=0.22GB
+[mem] rss=0.22GB
+[mem] rss=0.22GB
+[mem] rss=0.22GB
+[mem] rss=0.22GB
+[14:37:52 +  520.2s] cell rules: 5070/12472 (41%), 520s elapsed, ETA 759s
+[mem] rss=0.22GB
+[mem] rss=0.23GB
+[14:38:22 +  550.1s] cell rules: 6240/12472 (50%), 550s elapsed, ETA 549s
+[mem] rss=0.23GB
+[mem] rss=0.23GB
+[mem] rss=0.23GB
+[mem] rss=0.23GB
+[mem] rss=0.23GB
+[mem] rss=0.23GB
+[mem] rss=0.23GB
+[mem] rss=0.23GB
+[mem] rss=0.23GB
+[mem] rss=0.23GB
+[14:40:48 +  696.0s] cell rules: 7605/12472 (61%), 696s elapsed, ETA 445s
+[mem] rss=0.23GB
+[mem] rss=0.23GB
+[mem] rss=0.23GB
+[mem] rss=0.23GB
+[mem] rss=0.23GB
+[mem] rss=0.23GB
+[mem] rss=0.23GB
+[mem] rss=0.24GB
+[mem] rss=0.24GB
+[mem] rss=0.24GB
+[14:43:09 +  837.1s] cell rules: 8775/12472 (70%), 837s elapsed, ETA 353s
+[mem] rss=0.24GB
+[mem] rss=0.24GB
+[mem] rss=0.24GB
+[mem] rss=0.24GB
+[mem] rss=0.24GB
+[mem] rss=0.24GB
+[mem] rss=0.24GB
+[mem] rss=0.24GB
+[14:45:18 +  966.6s] cell rules: 10140/12472 (81%), 967s elapsed, ETA 222s
+[mem] rss=0.24GB
+[mem] rss=0.24GB
+[mem] rss=0.25GB
+[mem] rss=0.25GB
+[mem] rss=0.25GB
+[mem] rss=0.25GB
+[mem] rss=0.25GB
+[mem] rss=0.25GB
+[mem] rss=0.25GB
+[mem] rss=0.25GB
+[14:47:42 + 1110.6s] cell rules: 11308/12472 (91%), 1111s elapsed, ETA 114s
+[mem] rss=0.25GB
+[mem] rss=0.25GB
+[mem] rss=0.25GB
+[mem] rss=0.25GB
+[14:48:41 + 1168.8s] cell rules: 12472/12472 (100%), 1169s elapsed, ETA 0s
+[mem] rss=1.43GB
+[mem] rss=2.15GB
+[mem] rss=2.76GB
+[mem] rss=3.14GB
+[mem] rss=3.15GB
+[mem] rss=3.15GB
+[mem] rss=3.15GB
+[mem] rss=3.15GB
+[mem] rss=3.15GB
+[mem] rss=3.15GB
+[mem] rss=3.15GB
+[mem] rss=3.15GB
+[mem] rss=3.15GB
+[mem] rss=3.15GB
+[mem] rss=3.15GB
+[mem] rss=3.15GB
+[mem] rss=3.15GB
+[mem] rss=3.15GB
+[mem] rss=3.15GB
+[mem] rss=3.15GB
+[mem] rss=3.15GB
+[mem] rss=3.15GB
+[mem] rss=3.15GB
+[mem] rss=3.15GB
+[mem] rss=3.15GB
+[mem] rss=3.15GB
+[mem] rss=3.15GB
+[mem] rss=3.15GB
+[mem] rss=3.15GB
+[mem] rss=3.15GB
+[mem] rss=3.15GB
+[mem] rss=3.15GB
+[mem] rss=3.15GB
+[mem] rss=3.15GB
+[mem] rss=3.15GB
+[mem] rss=3.15GB
+[mem] rss=3.15GB
+[mem] rss=3.15GB
+[mem] rss=3.15GB
+[mem] rss=3.15GB
+[mem] rss=3.15GB
+[mem] rss=3.15GB
+[mem] rss=3.15GB
+[mem] rss=3.15GB
+[mem] rss=3.15GB
+[mem] rss=3.15GB
+[mem] rss=6.24GB
+[mem] rss=6.26GB
+[mem] rss=6.26GB
+[mem] rss=6.26GB
+[mem] rss=6.26GB
+[mem] rss=6.26GB
+[mem] rss=6.26GB
+[V06 p=2 h=0.025] u=1.4289e-05 ur=1.3584e-05 srr=8.6675e-04 stt=4.8769e-05 F=1.1019e-06 t=2062.2s cut=7285 fb=1 ext=0.2 ties={'n_ties': 6942, 'n_slave': 2314, 'n_master': 18403, 'theta': 0.2} out=drop inactive=53371 qp=998013
+[mem] rss=0.28GB
+RES L2 p=2 drop sym=penalty: u=1.429e-05(ok) ur=1.358e-05(ok) srr=8.667e-04(ok) stt=4.877e-05(ok) peak_wset=6.64GB t=2062s
+ |  /           |                  
+ ' /   __| _` | __|  _ \   __|    
+ . \  |   (   | |   (   |\__ \  
+_|\_\_|  \__,_|\__|\___/ ____/
+           Multi-Physics 10.4."3"--96bad120-Release-x86_64
+           Compiled for Windows and Python3.12 with MSVC-1941
+Compiled with threading support. Threading support with OpenMP.
+Maximum number of threads: 16.
+Importing    KratosIgaApplication 
+    KRATOS  _____ _____
+           |_   _/ ____|   /\
+             | || |  __   /  \
+             | || | |_ | / /\ \
+            _| || |__| |/ ____ \
+           |_____\_____/_/    \_\
+Initializing KratosIgaApplication...
+Importing    KratosStructuralMechanicsApplication 
+    KRATOS   ___|  |                   |                   |
+           \___ \  __|  __| |   |  __| __| |   |  __| _` | |
+                 | |   |    |   | (    |   |   | |   (   | |
+           _____/ \__|_|   \__,_|\___|\__|\__,_|_|  \__,_|_| MECHANICS
+Initializing KratosStructuralMechanicsApplication...
+Importing    KratosConstitutiveLawsApplication 
+Initializing KratosConstitutiveLawsApplication...
+Importing    LinearSolversApplication 
+    Kratos  _     _                       ____        _
+           | |   (_)_ __   ___  __ _ _ __/ ___|  ___ | |_   _____ _ __ ___
+           | |   | | '_ \ / _ \/ _` | '__\___ \ / _ \| \ \ / / _ \ '__/ __|
+           | |___| | | | |  __/ (_| | |   ___) | (_) | |\ V /  __/ |  \__ \
+           |_____|_|_| |_|\___|\__,_|_|  |____/ \___/|_| \_/ \___|_|  |___/
+Initializing KratosLinearSolversApplication...
+Using Intel MKL version 2026.0.2 build 20260915
+MKL processor: Intel(R) Advanced Vector Extensions 512 (Intel(R) AVX-512) with support of Intel(R) Deep Learning Boost (Intel(R) DL Boost), EVEX-encoded AES and Carry-Less Multiplication Quadword instructions
+Deregistering KratosMultiphysics
+Deregistering IgaApplication
+Deregistering ConstitutiveLawsApplication
+Deregistering StructuralMechanicsApplication
+Deregistering LinearSolversApplication
+L2_p2 done 2070s rc=0
