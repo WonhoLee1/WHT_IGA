@@ -277,18 +277,25 @@ def test_v08_ghost_cell_hypothesis_and_zero_alpha_probe():
     sys_size_zero = int(body_zero._A.Size1())
     n_elem_zero = int(len(body_zero.mp.Elements))
     n_dofs_ind = int(box_ind.n_dofs)
-    inv_max_zero = int(body_zero._inv.max())
+    _, out_zero, _, _, _ = build_trimmed_table(nodes_ind, tris_ind, box_ind, q=4, cache_dir="off")
+    inact_dofs_zero = np.repeat(inactive_ctrl_mask(box_ind, out_zero), 3)
+    outside_zero = ~body_zero.in_system_mask
     print(
         f"\n[No_ghost(0.0) probe] n_elem_s={n_elem_zero} (vs {res_sd['n_elem_s']}), "
         f"sys_size={sys_size_zero} vs box.n_dofs={n_dofs_ind}, "
-        f"free_s={int(body_zero.free_mask.sum())}, inv_max={inv_max_zero}",
+        f"free_s={int(body_zero.free_mask.sum())}, outside_system={int(outside_zero.sum())}",
         flush=True,
     )
+    # OUT elements skipped: Kratos drops the inactive DOFs, eval maps back to full size
     assert sys_size_zero < n_dofs_ind
-    assert inv_max_zero >= sys_size_zero
-    with pytest.raises(IndexError, match="out of range"):
-        body_zero.eval(np.zeros(n_dofs_ind, dtype=np.float64))
-    del body_zero, box_ind
+    assert np.array_equal(outside_zero, inact_dofs_zero)
+    assert np.all(body_zero.zero_mask[outside_zero])
+    K_zero, f_zero = body_zero.eval(np.zeros(n_dofs_ind, dtype=np.float64))
+    assert K_zero.shape == (n_dofs_ind, n_dofs_ind) and f_zero.shape == (n_dofs_ind,)
+    out_idx = np.flatnonzero(outside_zero)
+    assert K_zero[out_idx].nnz == 0 and K_zero[:, out_idx].nnz == 0
+    assert np.all(f_zero[outside_zero] == 0.0)
+    del body_zero, box_ind, K_zero, f_zero
     _release_solver_memory()
 
     # 1. Algebraic identity R_cut_x - force_total[0] == -(f_int_s[zero_mask_x].sum())

@@ -29,6 +29,13 @@ leaks 5.1 lbf (eq error 3.5e-5) with the contact history unchanged to 0.013 %
 (measured 2026-11-19, scratchpad v08/ghost_r2.py). Neo-Hookean is never used on
 ghost cells (NaN on inverted cells).
 
+``ghost_alpha=0`` creates no element on OUT cells. The inactive control points
+then belong to no element, so Kratos leaves their DOFs out of its system (fewer
+equations than ``box.n_dofs``). ``eval`` maps the reduced system back through
+the builder's DOF set and returns full-size ``K`` / ``f_int`` with exact zeros
+on the missing DOFs; the constructor checks that every missing DOF is in
+``zero_mask`` (it is an inactive control point, fixed at zero).
+
 Friction: the slip history (``slip_state``) is the state at the START of the
 load step and is passed unchanged to every outer iteration; the step-end state
 returned by the last inner solve becomes the next step's start state.
@@ -76,6 +83,8 @@ class KratosBodyOperator:
 
         check_qp_element_name(element)
         check_qp_element_name(ghost_element)
+        if not (np.isfinite(ghost_alpha) and float(ghost_alpha) >= 0.0):
+            raise ValueError(f"ghost_alpha must be finite and >= 0, got {ghost_alpha}")
         self.KM = KM
         self.box = box
         if trim_soup is not None:
@@ -135,7 +144,12 @@ class KratosBodyOperator:
         self._A = self._strat.GetSystemMatrix()
         self._b = self._strat.GetSystemVector()
         self._space = KM.UblasSparseSpace()
-        self._inv = np.argsort(equation_permutation(KM, mp, box))
+        self._n_sys = int(self._A.Size1())
+        self._sys_ref = None  # reference DOF of each Kratos equation (reduced system only)
+        if self._n_sys == box.n_dofs:
+            self._inv = np.argsort(equation_permutation(KM, mp, box))
+        else:
+            self._sys_ref = self._reduced_system_map(box)
         self._ctrl_nodes = sorted((n for n in mp.Nodes if 0 <= n.Id - 1 < box.n_ctrl), key=lambda n: n.Id)
         self._X0 = np.array([[n.X0, n.Y0, n.Z0] for n in self._ctrl_nodes])
 
@@ -157,9 +171,43 @@ class KratosBodyOperator:
                         presc[3 * I + d] = True
         self.zero_mask, self.presc_mask = zero, presc
         self.free_mask = ~(zero | presc)
+        self.in_system_mask = np.ones(box.n_dofs, dtype=bool)
+        if self._sys_ref is not None:
+            self.in_system_mask[:] = False
+            self.in_system_mask[self._sys_ref] = True
+            loose = ~self.in_system_mask & ~zero
+            if np.any(loose):
+                raise RuntimeError(
+                    f"{int(loose.sum())} DOFs outside the Kratos system are not in zero_mask "
+                    f"(e.g. {np.flatnonzero(loose)[:5].tolist()}): they would carry no stiffness"
+                )
+
+    def _reduced_system_map(self, box: Any) -> np.ndarray:
+        """Reference DOF ``3*I + d`` of every Kratos equation id of a reduced system.
+
+        The equation ids of DOFs outside the builder's DOF set are stale (not
+        reset by Kratos), so only the DOF set's nodes are read.
+        """
+        nodes_in = sorted({int(dof.Id()) for dof in self._builder.GetDofSet()})
+        ctrl = np.asarray(nodes_in, dtype=np.int64) - 1
+        if ctrl.size and (ctrl.min() < 0 or ctrl.max() >= box.n_ctrl):
+            raise RuntimeError("Kratos DOF set holds nodes that are not control points")
+        ref = (3 * ctrl[:, None] + np.arange(3)[None, :]).ravel()
+        eq = equation_permutation(self.KM, self.mp, box)[ref]
+        if ref.size != self._n_sys or not np.array_equal(np.sort(eq), np.arange(self._n_sys)):
+            raise RuntimeError(
+                f"Kratos DOF set ({ref.size} DOFs) does not map onto its {self._n_sys} equations"
+            )
+        sys_ref = np.empty(self._n_sys, dtype=np.int64)
+        sys_ref[eq] = ref
+        return sys_ref
 
     def eval(self, u_full: np.ndarray):
-        """Return ``(K_T csr, f_int)`` at ``u_full`` (moves the Kratos mesh to ``X0 + u``)."""
+        """Return ``(K_T csr, f_int)`` at ``u_full`` (moves the Kratos mesh to ``X0 + u``).
+
+        Always full size (``box.n_dofs``); DOFs outside a reduced Kratos system
+        (``ghost_alpha=0``) get exact zero rows, columns and forces.
+        """
         import KratosMultiphysics.scipy_conversion_tools as sct
 
         KM = self.KM
@@ -170,8 +218,18 @@ class KratosBodyOperator:
         self._space.SetToZeroMatrix(self._A)
         self._space.SetToZeroVector(self._b)
         self._builder.Build(self._scheme, self.mp, self._A, self._b)
-        K = sct.to_csr(self._A)[self._inv, :][:, self._inv].tocsr()
-        f_int = -np.array(self._b, copy=True)[self._inv]
+        if self._sys_ref is None:
+            K = sct.to_csr(self._A)[self._inv, :][:, self._inv].tocsr()
+            f_int = -np.array(self._b, copy=True)[self._inv]
+            return K, f_int
+        import scipy.sparse as sp
+
+        n = int(self.box.n_dofs)
+        A = sct.to_csr(self._A).tocoo()
+        r = self._sys_ref
+        K = sp.csr_matrix((A.data, (r[A.row], r[A.col])), shape=(n, n))
+        f_int = np.zeros(n, dtype=np.float64)
+        f_int[r] = -np.array(self._b, copy=True)
         return K, f_int
 
 
