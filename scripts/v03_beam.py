@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 """V03: cantilever beam bending, 5 load cases vs Euler-Bernoulli (G1 gate).
 
-Setup mirrors Coreform verification (0.1 x 0.1 x 1 m, E=2.1e11, nu=0):
+Setup mirrors Coreform verification (0.1 x 0.1 x 1 m, E=2.0e11, nu=0):
 grid == beam bbox exactly (padding 0) -> no CUT/OUT cells, pure IN path.
 Loads: gravity (rho=8000 -> q=784.8 N/m), body force (equivalent 78480 N/m^3),
 uniform pressure 5000 Pa (q=500 N/m), total-force pressure (same resultant),
-end shear traction 5e4 Pa (P=500 N). Moment case excluded per G1.
+end shear traction 500 Pa (P=5 N, spec). Moment case excluded per G1.
 Refs: tip delta = q*L^4/(8EI) (uniform), P*L^3/(3EI) (tip shear).
 Writes WHT_IGA/docs/phase1/evidence/v03/results.json + per-case DB/VTU.
 """
@@ -20,7 +20,7 @@ import numpy as np
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 
-E = 2.1e11
+E = 2.0e11  # spec v03.json materials.E_Pa (was 2.1e11 in error; found 2026-11-23)
 NU = 0.0
 B = H = 0.1
 L = 1.0
@@ -50,8 +50,8 @@ def main() -> None:
          dict(pressures=[PressureLoad(face=(1, 1), magnitude=-5000.0)]),
          500.0 * L ** 4 / (8 * E * IX)),
         ("traction",
-         dict(tractions=[TractionLoad(face=(2, 1), vector=(0.0, -5e4, 0.0))]),
-         500.0 * L ** 3 / (3 * E * IX)),
+         dict(tractions=[TractionLoad(face=(2, 1), vector=(0.0, -500.0, 0.0))]),  # spec: 500 Pa -> P = 5 N
+         5.0 * L ** 3 / (3 * E * IX)),
     ]
     out = {}
     for name, kw, ref in cases:

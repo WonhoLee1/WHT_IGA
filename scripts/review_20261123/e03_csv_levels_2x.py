@@ -1,0 +1,41 @@
+import sys, csv, json, time
+sys.path.insert(0, r"D:/PythonCodeStudy/CAD-CAE-COPILOT/WHT_IGA")
+import numpy as np
+import wht_iga.analyses.thermal_plasticity as TP
+import tests.kratos_spikes.test_p5_e03_p2_coupling as T
+G = r"D:/PythonCodeStudy/CAD-CAE-COPILOT/WHT_IGA/research-cf-IGA/user-guide/generated-downloads/example-problems/glass-to-metal-seal/glass-to-metal-seal-convergence-history.csv"
+rows = [r for r in csv.DictReader(open(G, encoding="utf-8")) if r["accepted"] == "True"]
+levels = [float(r["total_time"]) for r in rows]
+prev = 0.0; _lv = []
+for r in rows:
+    t = float(r["total_time"]); k = int(round(prev)); a = prev
+    if round(t) != round(prev) or True:
+        _lv += [a + (t - a) * 0.5, t]
+    prev = t
+levels = _lv if False else levels
+fine = []
+prev = 0.0
+for r in rows:
+    t = float(r["total_time"]); fine += [(prev + t) / 2.0, t] if round(t) == round(prev) or True else [t]; prev = t
+levels = fine
+steps_count = {}
+for r in rows:
+    steps_count[r["step_name"]] = steps_count.get(r["step_name"], 0) + 1
+print("CSV accepted increments per step:", steps_count, "levels:", len(levels), flush=True)
+TP.thermal_levels = lambda n_steps, inc: list(levels)  # Coreform increment history (accepted total_time)
+bundle_fn = T.e03_p2_bundle.__wrapped__
+t0 = time.perf_counter()
+bundle = bundle_fn()
+print(f"bundle {time.perf_counter()-t0:.1f}s", flush=True)
+mats = TP.e03_materials(T._DATA_DIR)
+t1 = time.perf_counter()
+res = T._build_and_run_e03_p2(bundle, [mats["SS304L_header"], mats["S8061_glass"], mats["Alloy52_pins"]],
+                              increments=[15, 15, 15], bc_mode="rbe3", tol_rel=1e-8, tol_abs=1e-10)
+out = res["out"]
+summary = {"history": out.get("history"), "steps": out.get("steps"), "n_solves": out.get("n_solves"), "level": out.get("level"),
+           "n_levels": len(levels), "solve_s": time.perf_counter() - t1, "peak_rss_mb": res.get("peak_rss_mb"),
+           "snapshots": [{"level": s["level"], "header_vm_max": s["header"]["vm_max"], "header_PEEQ_max": s["header"].get("PEEQ_max"),
+                          "rbe3_residual": s["rbe3_residual"]} for s in res["snapshots"]]}
+print(json.dumps(summary, indent=1, default=str), flush=True)
+json.dump(summary, open(r"C:/Users/GOODMAN/AppData/Local/Temp/claude/694f846d5550b343/57a213e2-2165-46f7-af77-ce5cc827bb7c/scratchpad/overnight/e03_csv_levels_hist.json", "w"), indent=1, default=str)
+print("DONE", flush=True)
