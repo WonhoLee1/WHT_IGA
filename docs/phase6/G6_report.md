@@ -14,6 +14,7 @@
 | **S45 산업용 STEP OBB + AMGCL** | `Generator_bracket.step` OBB 정렬 비교 + `Flange.STEP` (`8,505` DOFs) Trimmed+Ext `AMGCL_CG_ILU0` vs `PardisoLU` | **PASS** | `Generator_bracket.step` OBB `BoxSpline`: active ratio `+59.4%`, 배경 셀 `4.36x` 절감(`p=2` 확장 OBB=AABB 동일 안정성 `5.83e-4`); `Flange.STEP` `8,505` DOFs: `AMGCL_CG_ILU0` vs `PardisoLU` 상대차 **`1.41e-9`**, 솔버 RSS 증가 **`3.70x` 절감 (`105 MB vs 389 MB`)** | [S45_bracket_amgcl.md](file:///D:/PythonCodeStudy/CAD-CAE-COPILOT/WHT_IGA/docs/phase6/S45_bracket_amgcl.md), [test_p6_industrial_bracket_amgcl.py](file:///D:/PythonCodeStudy/CAD-CAE-COPILOT/WHT_IGA/tests/kratos_spikes/test_p6_industrial_bracket_amgcl.py) (`3 passed in 55.72s`) |
 | **§10.5 SBM 비교 트랙** | Kratos `NurbsGeometryModelerSbm` vs 동일 DOF `cut+ext`·`FCM alpha` 비교 (V02/V06) | **PASS (주 경로 `cut+ext` 우위 확정)** | Kratos SBM은 **2D 전용**(3D V06 N/A)이며 비-dyadic knot `1e-15` 교차 결함 보유; 2D Lamé 동일 DOF 비교에서 `cut+ext`가 SBM 대비 **6.5배~58배 높은 정밀도** 달성 | [sbm_comparison.md](file:///D:/PythonCodeStudy/CAD-CAE-COPILOT/WHT_IGA/docs/verification/sbm_comparison.md), [test_p6_sbm_comparison.py](file:///D:/PythonCodeStudy/CAD-CAE-COPILOT/WHT_IGA/tests/kratos_spikes/test_p6_sbm_comparison.py) (`4 passed in 57.88s`) |
 | **Explicit (V-EXP, V-EXP-C)** | `MechanicalExplicitStrategy` + HRZ lumped `M` + 확장 `dt_crit` + penalty 충돌 (`p=1..3`) | **COMPLETE_WITH_OPEN_ITEMS** | **V-EXP**: 평탄부 피크 응력 `-0.20%..+0.27% <= 2%`, 1차 모멘트 도달 시각 `+0.04%..+0.43%`, Airy 세분 격자 `0.5 v0` `<= 1.77%`; **V-EXP-C**: `p=1` (`0.31%, 1.23%`) & `p=2` (`0.35%, 1.50%`) 전체 에너지 `< 2%`, `mom_dev <= 2.33e-15`; **CFL**: 확장 `dt_ext/dt_U = 1.015..1.110` | [TRACK2_COMPLETE.md](file:///D:/PythonCodeStudy/CAD-CAE-COPILOT/WHT_IGA/docs/phase6/TRACK2_COMPLETE.md), [test_vexp_explicit.py](file:///D:/PythonCodeStudy/CAD-CAE-COPILOT/WHT_IGA/tests/kratos_spikes/test_vexp_explicit.py) |
+| **§10.4 Kratos vs 참조 조립기 교차검증** | `V01`–`V12` 중 참조 경로가 있는 축소판: 강성·하중·변위·반력 | **PASS (조건부)**: 참조 가능한 케이스는 `1e-10` 충족. V07 ν=0.49999는 Kratos `pardiso_ldlt` 자체 오차 `3.5e-9`로 기록만 | V02 ghost p=1/2 `6.5e-15 / 2.8e-14`; 벌칙 경계 Dunavant 2p 규칙 미해결(정확 적분 대비 변위 `~1e-8`) | [cross_validation_10_4.md](file:///D:/PythonCodeStudy/CAD-CAE-COPILOT/WHT_IGA/docs/verification/cross_validation_10_4.md), `test_p6_cross_validation_10_4.py` 42 passed |
 | **Track H 방법론 & 번들 STEP** | `recommend_discretization`, OBB, 프리셋, `wht_iga/resources/` PrePoMax STEP 14종 벤치마크 | **PASS** | `L_bracket.step`, `Wrench.stp`, `Hertz.STEP`, `Flange.STEP`, `Contact.STEP` 등 14종 `wht_iga/resources/` 번들 완료; 4종 STEP 벤치마크 통과 | [TRACKH_COMPLETE.md](file:///D:/PythonCodeStudy/CAD-CAE-COPILOT/WHT_IGA/docs/phase6/TRACKH_COMPLETE.md), [S44.md](file:///D:/PythonCodeStudy/CAD-CAE-COPILOT/WHT_IGA/docs/spikes/S44.md) (`4 passed in 29.77s`) |
 
 ---
@@ -25,7 +26,7 @@
    - `use_block_matrices_if_possible=True` + `spai0` 조합은 Trimmed+Extension 모델의 스칼라 slave 구속식 대각(`mScaleFactor * I_slave`)으로 3x3 블록 집계가 깨져 `8.10e-3` 정체 / `1.005` 발산을 유발하므로 사용 금지([perf_vs_coreform.md](file:///D:/PythonCodeStudy/CAD-CAE-COPILOT/WHT_IGA/docs/phase6/perf_vs_coreform.md) §3.3).
    - `IgaApplication.AdditiveSchwarzPreconditioner`는 2건의 Kratos C++ 결함(`M_invert = omega * M_invert` 순서 오류 및 `ProvideAdditionalData`의 slave row 부재)으로 Trimmed+Ext에서 발산(`30.17` / `4.00e14`)해 프로덕션에서 제외했다.
 2. **1M DOF 스케일링 병목 (Coreform E03 178k DOFs = `1,018.39 s` 대비)**:
-   - 직접 솔버(`PardisoLU`/`PardisoLDLT`)는 `178k` DOFs에서 `~146 GB`, `1M` DOFs에서 `~1,258 GB`가 필요해 64 GB 워크스테이션에서 **실행 불가**하며, **`AMGCL_CG_ILU0`** 경로만 `~10.71 GB`로 64 GB 게이트를 통과한다.
+   - 직접 솔버(`PardisoLU`/`PardisoLDLT`)는 `178k` DOFs에서 `~146 GB`, `1M` DOFs에서 `~1,258 GB`가 필요해 64 GB 워크스테이션에서 **실행 불가**하며, **`AMGCL_CG_ILU0`** 경로만 `~10.71 GB`로 64 GB 게이트를 통과한다. **정정 (2026-11-20):** S50 실측 기준 1M 메모리 외삽은 `~37 GB`로, 위 `10.71 GB`는 약 3.5배 과소였다.
    - `build_trimmed_table`은 `>= 400` 활성 셀에서 8스레드 풀 가동 시 `~5.3x` 빠르다(`9.44 ms/cut cell`).
    - 남은 3대 핫스팟(1M DOF `AMGCL` 전체 시간 기준):
      1. `AMGCL_CG_ILU0` 선형 해법 (`~60–80%`, `819 s`)
@@ -36,13 +37,13 @@
 
 ## 3. 정직한 미결 항목 (Open Items Requiring User Decision or C++ Work)
 
-1. **1M DOF 3D 브래킷 실제 완주 & C++ 최적화 미실행**:
+1. **1M DOF 3D 브래킷 실제 완주 & C++ 최적화 미실행** (2026-11-20 갱신, S50 `docs/phase6/S50_bracket_1m_scaling.md`: 실측 최대 `278,112` DOF / `224 s` / 최대 `10.56 GB`; 메모리 지수 `0.98` → 1M 외삽 약 `37 GB`, 시간 약 `1,170 s`(8코어). 이 32 GB PC는 가용 17 GB라 1M 실행 불가, 64 GB 장비에서 미실측):
    - 본 Phase 6에서는 `1,029`–`20,904` DOFs (`Flange.STEP` `8,505` DOFs 포함) 실측 + 법칙 외삽으로 1M DOF 예산(`< 30 min`, `< 64 GB`)과 C++ 우선순위(`ExtendedSplineSolidElement`, Numba `@njit` moment fitting, `PardisoFactor` 재사용)를 도출했다. 실제 `1M` DOF end-to-end 실행과 Kratos C++ (`WhtIgaApplication` / `AdditiveSchwarzPreconditioner`) 수정은 후속 C++ 통합 단계 과제로 남긴다.
 2. **Explicit 동역학 정책 결정 대기 ([TRACK2_COMPLETE.md](file:///D:/PythonCodeStudy/CAD-CAE-COPILOT/WHT_IGA/docs/phase6/TRACK2_COMPLETE.md))**:
    - `V-EXP` 파면 도달 시각 정의(`1차 모멘트` 채택 vs `vexp.json` 격자 `nx=80/160` 상향 vs 허용오차 조정) 및 `V-EXP` 피크 응력의 평탄부(`t ∈ [1.5, 2.0] s`) 평균 정의 승인.
    - `vexp.json` / `vexp_c.json` 정합화, 계획서 대비 HRZ 질량 + 직접 penalty 접촉 경로 승인, `dynamics/explicit.py`의 `build_x_extension` 범용화(`nx=1` / `-x` 확장).
 3. **`aieng-ui` F-bar 브리지 / `WHT_IGA` 경계**:
-   - F-bar 프로브 Cauchy 응력([test_fbar_probe_stress.py](file:///D:/PythonCodeStudy/CAD-CAE-COPILOT/WHT_IGA/tests/unit/test_fbar_probe_stress.py))과 `aieng-ui/backend/app/iga_runner.py` 연계는 완료되었으나, `fbar_trimmed.py`의 `StudySpec`/`methods.py` (`full_iga_immersed`) 배선은 후속 통합 대상이다.
+   - F-bar 프로브 Cauchy 응력([test_fbar_probe_stress.py](file:///D:/PythonCodeStudy/CAD-CAE-COPILOT/WHT_IGA/tests/unit/test_fbar_probe_stress.py))과 `aieng-ui/backend/app/iga_runner.py` 연계는 완료되었으나, `fbar_trimmed.py`의 `methods.py` (`full_iga_immersed`) 배선은 2026-11-20 완료(`test_fbar_trimmed_methods.py` 6 passed); `StudySpec` 배선은 미확인.
 
 ---
 

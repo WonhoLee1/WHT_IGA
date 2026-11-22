@@ -41,7 +41,7 @@
    - 다항 초탄성(`Mooney-Rivlin`/`Yeoh`/`Ogden`) 및 `MixedUP0`/`VMS` 요소는 Kratos C++ `QuadraturePointGeometry::Volume()` 미구현·Python 미노출 상태이며, Kratos 10.4.3 내장 열-J2 법칙 부재로 `CellThermalGroups` + `SetInitialStateProcess3D` 우회 경로를 유지한다.
    - `V07`의 `slope_sigma_xx` (`0.852` / `1.120`)는 셀 상수 압력 `P0` 특성에 의한 $O(h)$ 한계로 source doc(`> 0.5`)은 통과하나 master-plan 목표(`2.2`)에는 C++ 고차 혼합(Q2Q1 등) 요소가 필요하다.
 2. **시험·배선·고해상도 이관 항목**:
-   - `V08` `h=0.125` R2 NLGEOM(`8,018 s`, Claude 인계 `rel_RMS = 1.67% / 0.94%`)의 pytest 승격 여부, `KratosBodyOperator(..., ghost_alpha=0.0)` 활성 DOF `_P_act` 지원, `fbar_trimmed.py` → `methods.py` (`full_iga_immersed`) 본연결, `E03` `0.5 mm` 조밀 메쉬(`146,461` 배경 셀) 및 `E05` `h=2.0 mm` 추가 세분화는 Phase 6 병렬/AMGCL 트랙으로 이관한다.
+   - `V08` `h=0.125` R2 NLGEOM: pytest 승격 완료 (2026-11-20, `1 passed in 6703 s`, `rel_RMS = 1.66% / 0.93%`), `KratosBodyOperator(..., ghost_alpha=0.0)` 지원 (해소 2026-11-20), `fbar_trimmed.py` → `methods.py` (`full_iga_immersed`) 연결 (해소 2026-11-20), `E03` `0.5 mm` 조밀 메쉬(`146,461` 배경 셀) 및 `E05` `h=2.0 mm` 추가 세분화는 Phase 6 병렬/AMGCL 트랙으로 이관한다.
 
 ---
 
