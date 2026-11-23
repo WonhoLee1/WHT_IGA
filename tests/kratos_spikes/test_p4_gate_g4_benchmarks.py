@@ -28,7 +28,11 @@ import pytest
 import scipy.sparse as sp
 from scipy.optimize import brentq
 
-from wht_iga.analyses.modal_dynamics import bossak_free_vibration_theory, modal_coordinate
+from wht_iga.analyses.modal_dynamics import (
+    bossak_free_vibration_theory,
+    generalized_alpha_free_vibration_theory,
+    modal_coordinate,
+)
 from wht_iga.analyses.thermal import (
     STEFAN_BOLTZMANN,
     assemble_capacity,
@@ -40,7 +44,15 @@ from wht_iga.analyses.thermal import (
     steady_thermal,
     transient_thermal,
 )
-from wht_iga.dynamics import BossakConfig, align_degenerate_modes, solve_bossak_linear, solve_eigenmodes
+from wht_iga.dynamics import (
+    HHT_ABAQUS_PRESETS,
+    BossakConfig,
+    GeneralizedAlphaConfig,
+    align_degenerate_modes,
+    solve_bossak_linear,
+    solve_eigenmodes,
+    solve_generalized_alpha_linear,
+)
 from wht_iga.dynamics.case_file import parse_case
 from wht_iga.dynamics.response_spectrum import random_response_from_case, response_spectrum_from_case
 from wht_iga.kratos_backend.dynamics import (
@@ -305,6 +317,58 @@ def test_v10_vibrating_beam_bossak(name: str) -> None:
     assert res["modal"]["f_fit_hz"] == pytest.approx(res["modal"]["f_theory_hz"], rel=1e-5)
     assert res["modal"]["decay_fit"] == pytest.approx(res["modal"]["decay_theory"], rel=1e-2)
     assert acc["fundamental_frequency_rel_error"] == "< 0.02"
+
+
+# Coreform's own spread between native Abaqus and IGA f1 (Table 1: 24745.6 vs
+# 24768.6 Hz, 24681.0 vs 24703.8 Hz) is ~0.09 %; an HHT run of the same
+# application shortcut must land within that scale of the published IGA value.
+V10_HHT_VS_COREFORM_REL = 1.0e-3
+
+
+@pytest.mark.parametrize("name", list(HHT_ABAQUS_PRESETS))
+def test_v10_vibrating_beam_hht(name: str) -> None:
+    """V10 with the Abaqus HHT presets (generalized-alpha, Kratos coefficients, alpha_m = 0)."""
+    box = BoxSpline(lo=(0, 0, 0), hi=(V10_L, 2.0, 2.0), n_cells=(10, 2, 2), degree=2)
+    clamp = face_dofs(box, 0, 0)
+    free = np.setdiff1d(np.arange(box.n_dofs), clamp)
+    K = kratos_box_stiffness(box, V10_E, 0.0, clamp)
+    M = assemble_box_mass(box, V10_RHO)
+    eig = solve_eigenmodes(K, M, n_modes=12, free_dofs=free)
+    ax = int(np.argmax(np.abs(eig.participation_factors[:, 0])))
+    f_exact = math.sqrt(V10_E / V10_RHO) / (4.0 * V10_L)
+    t1 = 1.0 / f_exact
+    dt, n = 2.0e-6, 1000
+    amp = smooth_pulse(t1)
+    f0 = face_traction_force(box, 0, 1, (1.0, 0.0, 0.0))
+    probe = np.array([3 * int(c) for c in box.boundary_control_points(0, 1)])
+
+    cfg = GeneralizedAlphaConfig.abaqus(name, dt, n)
+    res = solve_generalized_alpha_linear(M, None, K, lambda t: amp(t) * f0, cfg, free_dofs=free)
+    window = res.t >= 2.0 * t1
+    fit = fit_free_vibration(res.t[window], res.u[:, probe].mean(axis=1)[window], f_exact)
+    q = modal_coordinate(eig.modes[:, ax], M, res.u)
+    fit_q = fit_free_vibration(res.t[window], q[window], f_exact)
+    f_th, s_th = generalized_alpha_free_vibration_theory(cfg.alpha_m, cfg.alpha_f, eig.omega[ax], dt)
+    span = float(res.t[-1] - 2.0 * t1)
+    coreform = _ref("v10")["reference_values"]["measured_f1"][name]
+
+    out = {"alpha_hht": -cfg.alpha_f, "beta": cfg.beta, "gamma": cfg.gamma, "f1_fit_hz": fit.frequency_hz,
+           "f1_rel_error": fit.frequency_hz / f_exact - 1.0,
+           "rel_vs_coreform_body_fitted": fit.frequency_hz / coreform["body_fitted_Coreform_IGA"] - 1.0,
+           "rel_vs_coreform_immersed": fit.frequency_hz / coreform["immersed_Coreform_IGA"] - 1.0,
+           "modal": {"f_fit_hz": fit_q.frequency_hz, "f_theory_hz": f_th, "decay_fit": fit_q.decay_rate, "decay_theory": s_th},
+           "amplitude_decay_ratio": {"measured_endpoint": math.exp(-fit.decay_rate * span), "theory": math.exp(-s_th * span)}}
+    _record(f"V10_HHT_{name}", out)
+    # Coreform absolute criteria
+    assert abs(out["f1_rel_error"]) < 0.02
+    assert t1 / dt >= 19.9 and n / V10_ABAQUS_INCREMENTS[name] <= 1.10
+    # same application shortcut as Coreform/Abaqus: published IGA f1
+    assert abs(out["rel_vs_coreform_body_fitted"]) < V10_HHT_VS_COREFORM_REL
+    assert abs(out["rel_vs_coreform_immersed"]) < V10_HHT_VS_COREFORM_REL
+    # HHT amplification-matrix theory for the axial mode
+    assert fit_q.frequency_hz == pytest.approx(f_th, rel=1e-5)
+    assert fit_q.decay_rate == pytest.approx(s_th, rel=1e-2)
+    assert abs(out["amplitude_decay_ratio"]["measured_endpoint"] - out["amplitude_decay_ratio"]["theory"]) < 0.03
 
 
 # ---------------------------------------------------------------------------

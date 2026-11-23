@@ -60,6 +60,39 @@ def bossak_amplification_matrix(alpha_b: float, omega: float, dt: float) -> np.n
     return amp
 
 
+def generalized_alpha_amplification_matrix(alpha_m: float, alpha_f: float, omega: float,
+                                           dt: float) -> np.ndarray:
+    """One-step amplification matrix of generalized-alpha for ``a + w**2 u = 0``.
+
+    Kratos coefficient convention (``TimeDiscretization::GeneralizedAlpha``):
+    ``beta = (1 - am + af)**2 / 4``, ``gamma = 1/2 - am + af``; equilibrium
+    ``(1-am) a_{n+1} + am a_n + w**2 ((1-af) u_{n+1} + af u_n) = 0``. Bossak is
+    ``af = 0``; HHT is ``am = 0``, ``af = -alpha_HHT``. State ``(u, v, a)``.
+    """
+    gamma = 0.5 - alpha_m + alpha_f
+    beta = 0.25 * (1.0 - alpha_m + alpha_f) ** 2
+    w2 = omega**2
+    denom = (1.0 - alpha_m) + (1.0 - alpha_f) * beta * w2 * dt**2
+    amp = np.zeros((3, 3))
+    for j in range(3):
+        u0, v0, a0 = np.eye(3)[j]
+        u_pred = u0 + dt * v0 + dt * dt * (0.5 - beta) * a0
+        a1 = (-alpha_m * a0 - w2 * ((1.0 - alpha_f) * u_pred + alpha_f * u0)) / denom
+        amp[:, j] = [u_pred + dt * dt * beta * a1,
+                     v0 + dt * ((1.0 - gamma) * a0 + gamma * a1),
+                     a1]
+    return amp
+
+
+def generalized_alpha_free_vibration_theory(alpha_m: float, alpha_f: float, omega: float,
+                                            dt: float) -> tuple[float, float]:
+    """Frequency (Hz) and envelope decay rate (1/s) of free vibration under
+    generalized-alpha stepping (see :func:`generalized_alpha_amplification_matrix`)."""
+    lam = np.linalg.eigvals(generalized_alpha_amplification_matrix(alpha_m, alpha_f, omega, dt))
+    lam = lam[np.argmax(np.abs(lam.imag))]
+    return float(abs(np.angle(lam)) / (2.0 * np.pi * dt)), float(-np.log(abs(lam)) / dt)
+
+
 def bossak_free_vibration_theory(alpha_b: float, omega: float, dt: float) -> tuple[float, float]:
     """Frequency (Hz) and envelope decay rate (1/s) of free vibration under Bossak stepping.
 

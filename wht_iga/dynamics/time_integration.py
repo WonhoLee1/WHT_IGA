@@ -236,3 +236,146 @@ def solve_bossak_linear(
         energy_potential=e_pot,
         energy_total=e_kin + e_pot,
     )
+
+
+# --------------------------------------------------------------------------- generalized-alpha / HHT
+
+#: Abaqus/Standard ``*DYNAMIC, APPLICATION=`` HHT presets (Abaqus convention alpha <= 0).
+#: TRANSIENT FIDELITY: alpha = -0.05, beta = 0.275625, gamma = 0.55;
+#: MODERATE DISSIPATION: alpha = -0.41421, beta = 0.5, gamma = 0.91421.
+HHT_ABAQUS_PRESETS: dict[str, float] = {
+    "TRANSIENT_FIDELITY": -0.05,
+    "MODERATE_DISSIPATION": -0.41421,
+}
+
+
+@dataclass(frozen=True)
+class GeneralizedAlphaConfig:
+    """Generalized-alpha integrator with Kratos' coefficient convention.
+
+    Coefficients follow ``Kratos::TimeDiscretization::GeneralizedAlpha``
+    (kratos/utilities/time_discretization.h; copied, not imported, since the
+    class has no Python binding): ``beta = beta0 (1 - alpha_m + alpha_f)^2``,
+    ``gamma = gamma0 - alpha_m + alpha_f`` with ``beta0 = 1/4``, ``gamma0 = 1/2``.
+    Balance at ``t_{n+1}``:
+    ``(1-am) M a_{n+1} + am M a_n + (1-af)(C v_{n+1} + K u_{n+1}) + af (C v_n + K u_n)
+    = (1-af) f_{n+1} + af f_n``.
+    Bossak is ``alpha_f = 0`` (``alpha_m = alpha_B <= 0``); HHT is
+    ``alpha_m = 0``, ``alpha_f = -alpha_HHT`` (:meth:`hht`).
+    """
+
+    dt: float
+    n_steps: int
+    alpha_m: float = 0.0
+    alpha_f: float = 0.0
+    beta0: float = 0.25
+    gamma0: float = 0.5
+
+    def __post_init__(self) -> None:
+        if self.dt <= 0.0:
+            raise ValueError(f"dt must be positive, got {self.dt}")
+        if self.n_steps < 1:
+            raise ValueError(f"n_steps must be >= 1, got {self.n_steps}")
+        if not (self.alpha_m <= self.alpha_f <= 0.5):
+            raise ValueError(f"need alpha_m <= alpha_f <= 1/2, got {self.alpha_m}, {self.alpha_f}")
+
+    @property
+    def beta(self) -> float:
+        return self.beta0 * (1.0 - self.alpha_m + self.alpha_f) ** 2
+
+    @property
+    def gamma(self) -> float:
+        return self.gamma0 - self.alpha_m + self.alpha_f
+
+    @classmethod
+    def hht(cls, dt: float, n_steps: int, alpha_hht: float) -> GeneralizedAlphaConfig:
+        """HHT-alpha in the Abaqus sign convention (``-1/2 <= alpha_hht <= 0``)."""
+        if not (-0.5 <= alpha_hht <= 0.0):
+            raise ValueError(f"alpha_hht must lie in [-1/2, 0], got {alpha_hht}")
+        return cls(dt=dt, n_steps=n_steps, alpha_m=0.0, alpha_f=-float(alpha_hht))
+
+    @classmethod
+    def abaqus(cls, application: str, dt: float, n_steps: int) -> GeneralizedAlphaConfig:
+        """Abaqus ``APPLICATION`` preset (``TRANSIENT_FIDELITY`` / ``MODERATE_DISSIPATION``)."""
+        return cls.hht(dt, n_steps, HHT_ABAQUS_PRESETS[application])
+
+
+def solve_generalized_alpha_linear(
+    M: sp.spmatrix | np.ndarray,
+    C: sp.spmatrix | np.ndarray | None,
+    K: sp.spmatrix | np.ndarray,
+    f: ForceInput,
+    config: GeneralizedAlphaConfig,
+    u0: np.ndarray | None = None,
+    v0: np.ndarray | None = None,
+    a0: np.ndarray | None = None,
+    free_dofs: np.ndarray | Sequence[int] | None = None,
+) -> DynamicHistoryResult:
+    """Linear generalized-alpha (incl. HHT and Bossak) time integration.
+
+    Same interface and outputs as :func:`solve_bossak_linear`; with
+    ``alpha_f = 0`` it reproduces it exactly.
+    """
+    M_csr = sp.csr_matrix(M, dtype=float)
+    K_csr = sp.csr_matrix(K, dtype=float)
+    n_dofs = M_csr.shape[0]
+    if M_csr.shape != (n_dofs, n_dofs) or K_csr.shape != (n_dofs, n_dofs):
+        raise ValueError("M and K must be square matrices of identical shape.")
+    C_csr = sp.csr_matrix((n_dofs, n_dofs), dtype=float) if C is None else sp.csr_matrix(C, dtype=float)
+    if C_csr.shape != (n_dofs, n_dofs):
+        raise ValueError("C must have the same shape as M and K.")
+    free = np.arange(n_dofs, dtype=np.int64) if free_dofs is None \
+        else np.unique(np.asarray(free_dofs, dtype=np.int64))
+    if len(free) == 0:
+        raise ValueError("free_dofs must contain at least one DOF.")
+    M_ff = M_csr[free, :][:, free]
+    C_ff = C_csr[free, :][:, free]
+    K_ff = K_csr[free, :][:, free]
+
+    dt, n_steps = float(config.dt), int(config.n_steps)
+    am, af = float(config.alpha_m), float(config.alpha_f)
+    gamma, beta = float(config.gamma), float(config.beta)
+
+    t = np.linspace(0.0, n_steps * dt, n_steps + 1)
+    u_hist = np.zeros((n_steps + 1, n_dofs))
+    v_hist = np.zeros((n_steps + 1, n_dofs))
+    a_hist = np.zeros((n_steps + 1, n_dofs))
+    if u0 is not None:
+        u_hist[0, free] = np.asarray(u0, dtype=float).reshape(n_dofs)[free]
+    if v0 is not None:
+        v_hist[0, free] = np.asarray(v0, dtype=float).reshape(n_dofs)[free]
+    f_prev = _eval_force(f, 0.0, n_dofs)[free]
+    if a0 is not None:
+        a_hist[0, free] = np.asarray(a0, dtype=float).reshape(n_dofs)[free]
+    else:
+        a_hist[0, free] = spla.splu(M_ff.tocsc()).solve(
+            f_prev - C_ff @ v_hist[0, free] - K_ff @ u_hist[0, free])
+
+    K_eff = (1.0 - am) * M_ff + ((1.0 - af) * gamma * dt) * C_ff + ((1.0 - af) * beta * dt * dt) * K_ff
+    k_eff_lu = spla.splu(K_eff.tocsc())
+
+    e_kin = np.zeros(n_steps + 1)
+    e_pot = np.zeros(n_steps + 1)
+    u_f, v_f, a_f = u_hist[0, free].copy(), v_hist[0, free].copy(), a_hist[0, free].copy()
+    e_kin[0] = 0.5 * float(v_f @ (M_ff @ v_f))
+    e_pot[0] = 0.5 * float(u_f @ (K_ff @ u_f))
+
+    for step in range(n_steps):
+        u_pred = u_f + dt * v_f + (dt * dt * (0.5 - beta)) * a_f
+        v_pred = v_f + (dt * (1.0 - gamma)) * a_f
+        f_next = _eval_force(f, float(t[step + 1]), n_dofs)[free]
+        rhs = ((1.0 - af) * f_next + af * f_prev - am * (M_ff @ a_f)
+               - (1.0 - af) * (C_ff @ v_pred + K_ff @ u_pred) - af * (C_ff @ v_f + K_ff @ u_f))
+        a_next = k_eff_lu.solve(rhs)
+        u_f = u_pred + (beta * dt * dt) * a_next
+        v_f = v_pred + (gamma * dt) * a_next
+        a_f = a_next
+        f_prev = f_next
+        u_hist[step + 1, free] = u_f
+        v_hist[step + 1, free] = v_f
+        a_hist[step + 1, free] = a_f
+        e_kin[step + 1] = 0.5 * float(v_f @ (M_ff @ v_f))
+        e_pot[step + 1] = 0.5 * float(u_f @ (K_ff @ u_f))
+
+    return DynamicHistoryResult(t=t, u=u_hist, v=v_hist, a=a_hist, energy_kinetic=e_kin,
+                                energy_potential=e_pot, energy_total=e_kin + e_pot)

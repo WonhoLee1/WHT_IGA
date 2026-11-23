@@ -74,13 +74,19 @@ from wht_iga.dynamics.time_integration import (
     BOSSAK_PRESETS,
     MODERATE_DISSIPATION_ALPHA_B,
     TRANSIENT_FIDELITY_ALPHA_B,
+    HHT_ABAQUS_PRESETS,
     BossakConfig,
     DynamicHistoryResult,
+    GeneralizedAlphaConfig,
     solve_bossak_linear,
+    solve_generalized_alpha_linear,
 )
 
 __all__ = [
     "BOSSAK_PRESETS",
+    "HHT_ABAQUS_PRESETS",
+    "GeneralizedAlphaConfig",
+    "solve_generalized_alpha_linear",
     "CaseFileError",
     "RandomResponseCase",
     "ResponseSpectrumCase",

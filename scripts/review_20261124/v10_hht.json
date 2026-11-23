@@ -1,0 +1,22 @@
+{
+ "TRANSIENT_FIDELITY": {
+  "alpha_hht": -0.05,
+  "beta": 0.275625,
+  "gamma": 0.55,
+  "f1_hz": 24770.25968657354,
+  "rel_vs_25000": -0.009189612537058411,
+  "rel_vs_coreform_immersed": 0.0001396904958872458,
+  "rel_vs_coreform_bodyfit": 6.700768608403074e-05,
+  "decay": 25.951727191560234
+ },
+ "MODERATE_DISSIPATION": {
+  "alpha_hht": -0.41421,
+  "beta": 0.49999748102499997,
+  "gamma": 0.91421,
+  "f1_hz": 24705.502537787524,
+  "rel_vs_25000": -0.01177989848849903,
+  "rel_vs_coreform_immersed": 0.0001377428553654969,
+  "rel_vs_coreform_bodyfit": 6.891805258812944e-05,
+  "decay": 81.09032336648897
+ }
+}

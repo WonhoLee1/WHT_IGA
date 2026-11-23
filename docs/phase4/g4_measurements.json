@@ -119,11 +119,49 @@
    "shock_peak_m": 0.0009844961827386457
   }
  },
+ "V10_HHT_MODERATE_DISSIPATION": {
+  "alpha_hht": -0.41421,
+  "amplitude_decay_ratio": {
+   "measured_endpoint": 0.8558215271801326,
+   "theory": 0.8556010294418241
+  },
+  "beta": 0.49999748102499997,
+  "f1_fit_hz": 24705.502537787524,
+  "f1_rel_error": -0.01177989848849903,
+  "gamma": 0.91421,
+  "modal": {
+   "decay_fit": 81.22453001725258,
+   "decay_theory": 81.22453051740766,
+   "f_fit_hz": 24705.500318468097,
+   "f_theory_hz": 24705.50031804486
+  },
+  "rel_vs_coreform_body_fitted": 6.891805258812944e-05,
+  "rel_vs_coreform_immersed": 0.0001377428553654969
+ },
+ "V10_HHT_TRANSIENT_FIDELITY": {
+  "alpha_hht": -0.05,
+  "amplitude_decay_ratio": {
+   "measured_endpoint": 0.9513937005884938,
+   "theory": 0.9512083406183396
+  },
+  "beta": 0.275625,
+  "f1_fit_hz": 24770.25968657354,
+  "f1_rel_error": -0.009189612537058411,
+  "gamma": 0.55,
+  "modal": {
+   "decay_fit": 26.053210924350786,
+   "decay_theory": 26.05321100092923,
+   "f_fit_hz": 24770.238264363044,
+   "f_theory_hz": 24770.238264311643
+  },
+  "rel_vs_coreform_body_fitted": 6.700768608403074e-05,
+  "rel_vs_coreform_immersed": 0.0001396904958872458
+ },
  "V10_MODERATE_DISSIPATION": {
   "alpha_b": -0.3,
   "amplitude_decay_ratio": {
    "measured_endpoint": 0.5899476801527521,
-   "theory": 0.5897681905139567
+   "theory": 0.589768190513831
   },
   "coreform_published_f1_hz": {
    "immersed": 24702.1,
@@ -133,18 +171,18 @@
   "dt": 2e-06,
   "energy_decay_ratio": {
    "measured_modal": 0.3558130735663887,
-   "theory": 0.3555638776508293
+   "theory": 0.3555638776506808
   },
   "f1_fit_hz": 24602.940933760172,
   "f1_rel_error": -0.015882362649593085,
-  "f_axial_mode_hz": 25000.010621461795,
+  "f_axial_mode_hz": 25000.010621461824,
   "increment_ratio_vs_abaqus": 0.998003992015968,
   "modal": {
-   "decay_fit": 275.0137415823353,
-   "decay_theory": 275.01339412539755,
-   "f_fit_hz": 24602.97900768156,
-   "f_theory_hz": 24602.97932313011,
-   "fit_residual": 5.69690074566067e-06
+   "decay_fit": 275.01374158518416,
+   "decay_theory": 275.0133941255086,
+   "f_fit_hz": 24602.979007680642,
+   "f_theory_hz": 24602.979323130116,
+   "fit_residual": 5.696900745644797e-06
   },
   "n_dofs": 576,
   "n_steps": 1000,
@@ -168,7 +206,7 @@
   "alpha_b": -0.05,
   "amplitude_decay_ratio": {
    "measured_endpoint": 0.9412131998398033,
-   "theory": 0.9410352760352065
+   "theory": 0.9410352760340028
   },
   "coreform_published_f1_hz": {
    "immersed": 24766.8,
@@ -177,19 +215,19 @@
   "decay_rate_fit_endpoint": 31.55499882713157,
   "dt": 2e-06,
   "energy_decay_ratio": {
-   "measured_modal": 0.8878029364908507,
-   "theory": 0.8877926838431034
+   "measured_modal": 0.8878029364908508,
+   "theory": 0.8877926838408796
   },
   "f1_fit_hz": 24767.47593901571,
   "f1_rel_error": -0.009300962439371618,
-  "f_axial_mode_hz": 25000.010621461846,
+  "f_axial_mode_hz": 25000.010621461763,
   "increment_ratio_vs_abaqus": 0.9970089730807578,
   "modal": {
-   "decay_fit": 31.653470229471758,
-   "decay_theory": 31.653464730747686,
+   "decay_fit": 31.653470229472262,
+   "decay_theory": 31.653464731413866,
    "f_fit_hz": 24767.456874931668,
-   "f_theory_hz": 24767.45687846622,
-   "fit_residual": 1.0429307583171536e-07
+   "f_theory_hz": 24767.456878466226,
+   "fit_residual": 1.0429307583359048e-07
   },
   "n_dofs": 576,
   "n_steps": 1000,
