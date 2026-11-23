@@ -1,0 +1,12 @@
+  step 1 uz=0.500mm: outer= 4, peeq=0.0000, RF3_link=  -3.493 kN, RF3_hinge=  +3.493 kN, bal_z=3.94e-05, act=(56,78,0), dt=104.4s, RSS=899MB
+  step 2 uz=1.130mm: outer= 6, peeq=0.0066, RF3_link= -13.211 kN, RF3_hinge= +13.212 kN, bal_z=2.30e-05, act=(187,179,0), dt=48.9s, RSS=914MB
+  step 3 uz=1.664mm: outer= 8, peeq=0.0216, RF3_link= -20.323 kN, RF3_hinge= +20.323 kN, bal_z=2.20e-05, act=(271,250,0), dt=59.1s, RSS=915MB
+  step 4 uz=2.465mm: outer= 7, peeq=0.0485, RF3_link= -28.289 kN, RF3_hinge= +28.290 kN, bal_z=2.34e-05, act=(378,316,0), dt=46.8s, RSS=915MB
+  step 5 uz=3.150mm: outer=10, peeq=0.0733, RF3_link= -33.824 kN, RF3_hinge= +33.824 kN, bal_z=2.51e-05, act=(449,459,0), dt=56.9s, RSS=918MB
+  step 6 uz=3.667mm: outer= 9, peeq=0.0917, RF3_link= -37.673 kN, RF3_hinge= +37.674 kN, bal_z=2.62e-05, act=(507,422,0), dt=54.8s, RSS=918MB
+  step 7 uz=4.350mm: outer=10, peeq=0.1127, RF3_link= -42.485 kN, RF3_hinge= +42.486 kN, bal_z=2.76e-05, act=(582,461,2), dt=79.2s, RSS=924MB
+    [substep] bisecting 4.350 -> 4.675 -> 5.000 mm
+    [substep] bisecting 4.350 -> 4.512 -> 4.675 mm
+    [substep] bisecting 4.350 -> 4.431 -> 4.512 mm
+  step 8 uz=5.000mm: outer=17, peeq=0.1310, RF3_link= -46.763 kN, RF3_hinge= +46.764 kN, bal_z=2.89e-05, act=(624,535,5), dt=1595.3s, RSS=747MB
+  FINAL RF3_link(5.0mm)=-46.763 kN vs Coreform -46.946 kN (rel_err=0.39%, total=2057.6s)

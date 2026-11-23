@@ -232,7 +232,38 @@ ol.refs { font-family: var(--sans); font-size: .85rem; padding-left: 1.3rem; col
 
 <p><b>E05 (도어 락).</b> 실제 Coreform SAT 형상에서 RF3 −46.763 kN, 기준 대비 0.39 %, 힘-변위 곡선은 0.39–3.71 % 안이다(이전 기록).</p>
 
-<h3>3.3 기타 Coreform 구조 그림</h3>
+<h3>3.3 3D CAD 예제 결과 그림 (E03, E05)</h3>
+<p>두 예제를 다시 실행해 결과 필드를 실제 CAD 표면(E03 STEP, E05 SAT 테셀레이션)에 입혔다. 변위는 스플라인 장을 CAD 꼭짓점에서 계산한 값이다. 응력과 PEEQ는 Kratos 적분점 값이며, 표면 점이나 단면 격자점은 같은 부품에서 가장 가까운 적분점 값을 받는다. E03은 거친 개발용 배경 격자(9×6×6 셀, 약 3 mm)라 응력이 셀 크기로 얼룩져 보인다. 다시 실행한 결과의 최대값과 반력은 게이트 기록과 같다(E03 20 °C: 핀 von Mises 252.04 MPa, 유리 최대 주응력 100.85 MPa; E05 RF3 −46.763 kN). 전체 그림(E03 44장, E05 12장)과 VTP 필드는 <code>docs/phase5/evidence/e03</code>, <code>e05</code>에 있다.</p>
+<figure>
+<img src="fig/e03/E03_parts_cutaway_iso.png" alt="E03 부품">
+<figcaption>그림 13. E03 유리-금속 밀봉 커넥터(STEP): 304L 헤더, S-8061 유리, Alloy 52 핀 11개. 절반을 잘라 핀을 감싼 유리를 보였다.</figcaption>
+</figure>
+<figure>
+<img src="fig/e03/E03_2_cool_to_minus55C_vonMises_iso.png" alt="E03 von Mises −55 °C">
+<figcaption>그림 14. E03, −55 °C 단계 끝 von Mises 응력. 금속 앞쪽(나사부)과 핀이 항복 근처에 있다.</figcaption>
+</figure>
+<figure>
+<img src="fig/e03/E03_2_cool_to_minus55C_section_vonMises_y.png" alt="E03 단면">
+<figcaption>그림 15. E03, −55 °C, y = 0 단면 von Mises. 각 고체 안의 단면 격자점이 그 부품의 가장 가까운 적분점 값을 받는다. 유리 오른쪽의 작은 얼룩 몇 개는 유리 구멍 근처의 내부 판정 오류다.</figcaption>
+</figure>
+<figure>
+<img src="fig/e03/E03_3_heat_to_200C_glass_s1_iso.png" alt="E03 유리 주응력">
+<figcaption>그림 16. E03, 200 °C, 유리 최대 주응력(파랑 압축, 빨강 인장). 유리는 대부분 압축이며 가운데 핀 주변에 인장이 생긴다(최대 118 MPa).</figcaption>
+</figure>
+<figure>
+<img src="fig/e03/E03_1_cool_to_room_20C_U_iso.png" alt="E03 변위">
+<figcaption>그림 17. E03, 20 °C(450 °C에서 냉각) 변위 크기(변형 확대). 마운트(x = −25.5 mm)에서 0, 앞쪽 끝에서 최대 0.204 mm.</figcaption>
+</figure>
+<figure>
+<img src="fig/e05/E05_parts_undeformed_iso.png" alt="E05 부품">
+<figcaption>그림 18. E05 도어 락(Coreform SAT): 힌지, 핀(강한 코어와 약한 양끝), 링크.</figcaption>
+</figure>
+<figure>
+<img src="fig/e05/E05_final_uz5.0mm_U_iso.png" alt="E05 변위">
+<figcaption>그림 19. E05, 힌지 u_z = 5 mm에서 변위 크기(실제 배율). 링크 고정 패드 0, 힌지 최대 5.81 mm(회전 포함). 이때 RF3 = −46.763 kN(Coreform 대비 0.39 %).</figcaption>
+</figure>
+
+<h3>3.4 기타 Coreform 구조 그림</h3>
 <figure>
 <img src="fig/fig9_v02_roark.png" alt="노치판 피크 오차">
 <figcaption>그림 9. 노치판(V02) 최대 주응력 피크 오차(Roark 대비). Coreform 국부 세분화와 우리 THB L3는 0.8 % 근처에서 일치한다.</figcaption>
