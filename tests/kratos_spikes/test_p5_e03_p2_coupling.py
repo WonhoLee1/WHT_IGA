@@ -203,6 +203,21 @@ def _principal_and_mises(cauchy_voigt: np.ndarray) -> tuple[np.ndarray, np.ndarr
     return vm, eigs[:, 2], eigs[:, 0]
 
 
+class _IterationCounter:
+    """Strategy proxy recording ``NL_ITERATION_NUMBER`` after every solve attempt."""
+
+    def __init__(self, strategy: Any, mp: Any, KM: Any, sink: list[int]) -> None:
+        self._s, self._mp, self._KM, self._sink = strategy, mp, KM, sink
+
+    def __getattr__(self, name: str) -> Any:
+        return getattr(self._s, name)
+
+    def SolveSolutionStep(self) -> bool:  # noqa: N802 (Kratos API name)
+        ok = self._s.SolveSolutionStep()
+        self._sink.append(int(self._mp.ProcessInfo[self._KM.NL_ITERATION_NUMBER]))
+        return ok
+
+
 def _make_pardiso_newton_strategy(
     KM: Any,
     LA: Any,
@@ -418,8 +433,14 @@ def _build_and_run_e03_p2(
     bc_mode: str,
     tol_rel: float = 1e-8,
     tol_abs: float = 1e-10,
+    levels: list[float] | None = None,
+    newton_iterations: list[int] | None = None,
 ) -> dict[str, Any]:
-    """Assemble and run the p=2 3-region E03 thermal model under ``321`` or ``rbe3`` BCs."""
+    """Assemble and run the p=2 3-region E03 thermal model under ``321`` or ``rbe3`` BCs.
+
+    ``levels`` replays an explicit level schedule (``TP.run_thermal_steps``);
+    ``newton_iterations`` (optional list) receives the Newton iteration count of
+    every solve attempt."""
     t0 = time.perf_counter()
     mods = load_kratos()
     KM = mods["KratosMultiphysics"]
@@ -553,15 +574,22 @@ def _build_and_run_e03_p2(
         peak_rss_mb = max(peak_rss_mb, _rss_stats_mb()[1])
         snapshots.append(entry)
 
+    def make_strategy() -> Any:
+        strat = _make_pardiso_newton_strategy(
+            KM, LA, mp, max_iters=30, tol_rel=tol_rel, tol_abs=tol_abs
+        )
+        if newton_iterations is None:
+            return strat
+        return _IterationCounter(strat, mp, KM, newton_iterations)
+
     out = TP.run_thermal_steps(
         mp,
         KM,
-        lambda: _make_pardiso_newton_strategy(
-            KM, LA, mp, max_iters=30, tol_rel=tol_rel, tol_abs=tol_abs
-        ),
+        make_strategy,
         groups,
         increments=increments,
         on_converged=observer,
+        levels=levels,
     )
     rss_now_mb, peak_wset_mb = _rss_stats_mb()
     peak_rss_mb = max(peak_rss_mb, peak_wset_mb)
@@ -753,3 +781,73 @@ def test_e03_p2_annular_coupling_3step_hardening_nlgeom(e03_p2_bundle: dict[str,
     )
     for snap in res["snapshots"]:
         print(f"  level={snap['level']}: {snap}")
+
+
+# Coreform's E03 run is an Abaqus/Standard solve with default convergence
+# controls (glass-to-metal-seal.md Tables 26-28 set no *CONTROLS; Abaqus default
+# residual tolerance R_n = 5e-3 of the time-averaged force). Kratos' J2 return
+# mapping stops its local iteration at F <= 1e-4 * threshold
+# (generic_cl_integrator_plasticity.h), which leaves a global residual floor:
+# measured 4e-7 .. 1e-6 of the initial residual in the 0.01-size first increment
+# of heat_to_200 (scripts/review_20261124/e03_echo3_failed_increment.log), so
+# tol_rel = 1e-8 stalls there (3 cutbacks). 1e-6 sits above that floor and is
+# still 5e3x tighter than the reference solver; the step-end stresses / PEEQ
+# agree with the 1e-8 run to <= 3.1e-8 relative (scripts/review_20261124).
+_E03_REPLAY_TOL_REL = 1e-6
+_E03_HISTORY_CSV = (
+    Path(__file__).resolve().parents[2]
+    / "research-cf-IGA"
+    / "user-guide"
+    / "generated-downloads"
+    / "example-problems"
+    / "glass-to-metal-seal"
+    / "glass-to-metal-seal-convergence-history.csv"
+)
+
+
+@pytest.mark.slow
+def test_e03_p2_coreform_increment_history_replay(e03_p2_bundle: dict[str, Any]) -> None:
+    """Replay Coreform's 45 accepted increments (15 per step) with zero cutbacks."""
+    import csv
+
+    rows = [r for r in csv.DictReader(_E03_HISTORY_CSV.open(encoding="utf-8")) if r["accepted"] == "True"]
+    levels = [float(r["total_time"]) for r in rows]
+    per_step = [sum(1 for r in rows if r["step"] == s) for s in ("1", "2", "3")]
+    assert per_step == [15, 15, 15]  # Coreform reference: 15 accepted increments per step
+
+    mats_dict = TP.e03_materials(_DATA_DIR)
+    iters: list[int] = []
+    res = _build_and_run_e03_p2(
+        e03_p2_bundle,
+        [mats_dict["SS304L_header"], mats_dict["S8061_glass"], mats_dict["Alloy52_pins"]],
+        increments=[15, 15, 15],
+        bc_mode="rbe3",
+        tol_rel=_E03_REPLAY_TOL_REL,
+        tol_abs=1e-10,
+        levels=levels,
+        newton_iterations=iters,
+    )
+
+    # Gate G5: same accepted increments as Coreform, zero cutbacks
+    assert res["out"]["steps"] == 45
+    assert res["out"]["n_solves"] == 45, f"cutbacks in Coreform-history replay: {res['out']['history']}"
+    assert res["out"]["level"] == pytest.approx(3.0)
+    assert len(iters) == 45 and max(iters) < 30
+
+    s_room, s_cold, s_hot = res["snapshots"]
+    assert [s["level"] for s in res["snapshots"]] == [1.0, 2.0, 3.0]
+    for snap in res["snapshots"]:
+        assert snap["rbe3_residual"] < 1e-10
+    # Same physical checks as the uniform-schedule gate test
+    assert s_room["header"]["vm_max"] > 162.0
+    assert s_cold["header"]["vm_max"] > 194.4
+    assert s_hot["header"]["vm_max"] > 120.2
+    for snap in (s_room, s_cold, s_hot):
+        assert snap["pins"]["vm_max"] > 234.4
+    assert 0.0 < s_room["header"]["peeq_max"] <= s_cold["header"]["peeq_max"] <= s_hot["header"]["peeq_max"]
+    assert 0.0 < s_room["pins"]["peeq_max"] < s_cold["pins"]["peeq_max"] <= s_hot["pins"]["peeq_max"]
+    assert s_room["glass"]["s3_min"] < -300.0
+    assert s_cold["glass"]["s3_min"] < s_room["glass"]["s3_min"]
+    assert 0.0 < s_room["glass"]["s1_max"] < s_cold["glass"]["s1_max"] < s_hot["glass"]["s1_max"]
+    print(f"\n[p=2 Coreform-history replay] steps={res['out']['steps']}, n_solves={res['out']['n_solves']}, "
+          f"newton_iters={iters} (total {sum(iters)}), wall={res['wall_seconds']:.1f}s")

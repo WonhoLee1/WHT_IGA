@@ -98,6 +98,7 @@ __all__ = [
     "point_curve_margin",
     "default_law_factory",
     "thermal_levels",
+    "check_levels",
     "run_thermal_steps",
     "e03_materials_initial_yield",
     "e03_materials",
@@ -574,14 +575,36 @@ def thermal_levels(n_steps: int, increments: int | Sequence[int]) -> list[float]
     return levels
 
 
+def check_levels(levels: Sequence[float], n_steps: int, tol: float = 1e-12) -> list[float]:
+    """Validate an explicit level schedule (e.g. an external solver's accepted
+    increments): strictly increasing, inside ``(0, n_steps]``, and every step
+    end ``k = 1..n_steps`` present (so each thermal state is reached exactly).
+    Returns the levels as floats."""
+    lv = [float(x) for x in levels]
+    if not lv:
+        raise ValueError("empty level schedule")
+    if lv[0] <= 0.0 or any(b <= a for a, b in zip(lv, lv[1:])):
+        raise ValueError("levels must be strictly increasing and > 0")
+    if lv[-1] > n_steps + tol:
+        raise ValueError(f"level {lv[-1]} beyond the last thermal state {n_steps}")
+    missing = [k for k in range(1, n_steps + 1) if not any(abs(x - k) <= tol for x in lv)]
+    if missing:
+        raise ValueError(f"step ends {missing} missing from the level schedule")
+    return lv
+
+
 def run_thermal_steps(mp: Any, KM: Any, make_strategy: Callable[[], Any],
                       groups: CellThermalGroups,
                       increments: int | Sequence[int] = 10,
                       on_converged: Callable[[float], None] | None = None,
                       cutback: float = 0.5, min_frac: float = 1e-3,
-                      mechanical_load: Callable[[float], None] | None = None) -> dict:
+                      mechanical_load: Callable[[float], None] | None = None,
+                      levels: Sequence[float] | None = None) -> dict:
     """Run the thermal history ``groups.states[0] -> ... -> states[-1]``.
 
+    ``levels`` (optional) replaces the uniform schedule of ``increments`` by
+    an explicit one (checked by :func:`check_levels`), e.g. the accepted
+    increments of a reference Abaqus run; ``increments`` is then ignored.
     ``mechanical_load(level)`` (optional) sets absolute mechanical loads /
     prescribed displacements for ``level`` after the thermal state is written.
     After every converged increment (including cutback sub-increments) the
@@ -591,7 +614,8 @@ def run_thermal_steps(mp: Any, KM: Any, make_strategy: Callable[[], Any],
     ``apply_seconds`` (time spent writing thermal / hardening state)."""
     if groups.n_steps < 1:
         raise ValueError("need at least two thermal states")
-    levels = thermal_levels(groups.n_steps, increments)
+    levels = (thermal_levels(groups.n_steps, increments) if levels is None
+              else check_levels(levels, groups.n_steps))
     current = {"level": 0.0}
 
     def apply(level: float) -> None:
