@@ -81,7 +81,19 @@ rec = recommend_discretization("bending", nu=0.49999, n_cells=[3, 2, 2])  # 추�
 | `wht_iga.analyses.contact` | 변형체 SSN 접촉(표면 가우스 점 penalty, 마찰) | `solve_deformable_ssn_contact` |
 | `wht_iga.analyses.nonlinear` | Kratos 비선형 하중 단계와 Newton | `run_load_stepping`, `make_newton_strategy`, `j2_law`, `hyperelastic_neohookean_law` |
 | `wht_iga.analyses.thermal` | 열 전도, 열변형률 | (모듈 내 함수 참고) |
+| `wht_iga.analyses.thermal_plasticity` | 다중체 열-소성(온도 의존 경화, Kratos J2) 열 단계 해석 | `CellThermalGroups`, `run_thermal_steps(..., increments=15)` 또는 `run_thermal_steps(..., levels=[...])`, `check_levels`, `e03_materials` |
 | `wht_iga.analyses.explicit` | 명시적 동역학(중앙차분, 집중 질량) | (모듈 내 함수 참고) |
+
+**열 단계 일정 직접 지정.** `run_thermal_steps`는 기본으로 단계마다 균일 증분(`increments`)을 쓴다. 외부 해석(예: Abaqus 수렴 이력 CSV)의 수락 증분을 그대로 재현하려면 절대 레벨 목록을 준다. 레벨 `k`는 열 상태 `k`(단계 `k` 끝)이고, 목록은 증가해야 하며 단계 끝 `1, 2, …, n_steps`를 모두 포함해야 한다(`check_levels`가 검사).
+
+```python
+levels = [float(r["total_time"]) for r in rows if r["accepted"] == "True"]  # 0.01 ... 3.0
+out = TP.run_thermal_steps(mp, KM, make_strategy, groups, levels=levels)
+```
+
+수렴 허용치 주의: Kratos J2 반환 사상은 국소 반복을 `F ≤ 1e-4·threshold`에서 멈추므로 소성 점이 많은 작은 증분에서는 전역 상대 잔차가 4e-7–1e-6 아래로 내려가지 않는다. 이런 일정에는 `tol_rel = 1e-6`을 쓴다(근거와 비교: `docs/verification/E03.md`).
+
+**잠김 방지(비압축성).** Coreform의 `USE_LOCKING_FREE`(U(p, C^(p−2))/P0)에 해당하는 것은 `fbar`(몸체 적합)와 `fbar_trimmed`(절단 격자)다. Kratos의 `TotalLagrangianQ1P0MixedElement`는 IGA 셀 기하에서 NaN이 나므로(S39, E04 ν = 0.495 재확인) QP 요소 가드가 막는다.
 
 F̄ 해의 응력 탐침(`S`, `MISES`)은 Neo-Hookean F̄ Cauchy 응력으로 계산된다. 선형 해석의 탐침은 `D:ε`를 쓴다. 두 경우 모두 `StepResult.stress_measure`에 표시된다.
 
@@ -103,7 +115,17 @@ F̄ 해의 응력 탐침(`S`, `MISES`)은 Neo-Hookean F̄ Cauchy 응력으로 �
 
 - 진동 응답 스펙트럼: `response_spectrum.py`(Abaqus 주파수 스윕, 정의는 모듈 문서 참고).
 - 랜덤 진동: `random_vibration.py`(PSD 테이블, 옥타브 대역, 모드 중첩 TENP/GRP/DSC). 정의는 Coreform 원문과 일치하지 않는 가정이 있으므로 V09 문서를 먼저 읽는다.
-- 시간 적분: Kratos 경로는 Bossak(`ResidualBasedBossakDisplacementScheme`, 기본 `damp_factor_m = -0.3`, `newmark_beta = 0.25`)을 쓴다. Python 경로(`solve_bossak_linear`)는 집중·일관 질량 모두 지원한다. HHT는 구현되어 있지 않다(V10 문서).
+- 시간 적분: Kratos 경로는 Bossak(`ResidualBasedBossakDisplacementScheme`, 기본 `damp_factor_m = -0.3`, `newmark_beta = 0.25`)을 쓴다. Python 경로(`solve_bossak_linear`)는 집중·일관 질량 모두 지원한다.
+- HHT / 일반화-α: `GeneralizedAlphaConfig`, `solve_generalized_alpha_linear`(선형). 계수는 Kratos core `TimeDiscretization::GeneralizedAlpha`(β = ¼(1−αm+αf)², γ = ½−αm+αf)를 옮긴 것이다. HHT는 αm = 0, αf = −α이고, Abaqus 적용 조건 프리셋이 있다.
+
+```python
+from wht_iga.dynamics import GeneralizedAlphaConfig, solve_generalized_alpha_linear
+cfg = GeneralizedAlphaConfig.abaqus("MODERATE_DISSIPATION", dt=2e-6, n_steps=1000)  # HHT α = -0.41421
+# 또는 GeneralizedAlphaConfig.hht(dt, n_steps, alpha_hht=-0.05), GeneralizedAlphaConfig(dt, n, alpha_m=-0.3) (= Bossak)
+res = solve_generalized_alpha_linear(M, None, K, force, cfg, free_dofs=free)
+```
+
+  αf = 0이면 `solve_bossak_linear`와 같다. 이론 검사: `wht_iga.analyses.modal_dynamics.generalized_alpha_free_vibration_theory`. 비선형(NLGEOM) HHT는 없다.
 
 ## 8. 검증 실행
 

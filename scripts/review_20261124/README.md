@@ -17,3 +17,6 @@ Scripts were run from the session scratchpad; output paths inside them point the
 | `v06_geo_sweep.py` / `.json` | V06 | Tessellation resolution / compensation: no improvement; rejected |
 | `v06_quad_sweep.py` / `.json`, `v06_qmatrix.py` / `.json` | V06 | Cut-cell moment-fitting order q: Coreform p=1 errors lie between q=1 and q=2 for all four quantities (L0, L1); numpy p≥2 stresses unreliable (no small-cell stabilization) |
 | `v10_hht.py` / `.json` | V10 | HHT (generalized-alpha, Kratos coefficients, αm=0) with Abaqus presets; Bossak parity at αf=0 |
+| `t3_1d.py`, `t3_dt.py` | V12 T3 | 1D equivalent of Coreform T3 (10 linear cells): consistent vs lumped capacity, BE with constant and growing increments; Coreform 37.25446 inside the BE range [37.169, 37.392] for dt in [0.1, 0.5] |
+| `e04_nu0495.py` / `.json` | E04 | Cook nu=0.495 Neo-Hookean NLGEOM F-bar/P0: C1, C0 (Coreform), p1 at 16/32/64; limits 6.964 / 6.947 |
+| `e04_kratos_q1p0_nu0495.py` / `.log` | E04 | Kratos plain TL (locking) vs TotalLagrangianQ1P0 (NaN) at nu=0.495, guard bypassed in scratch only |

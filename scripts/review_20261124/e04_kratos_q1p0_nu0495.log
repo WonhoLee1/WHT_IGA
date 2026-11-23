@@ -1,0 +1,5 @@
+TotalLagrangianElement3D4N nx=16 p=1 uy=5.08215 conv=True
+TotalLagrangianElement3D4N nx=16 p=2 uy=6.78691 conv=True
+TotalLagrangianQ1P0MixedElement3D8N nx=16 p=1 uy=nan conv=False
+TotalLagrangianQ1P0MixedElement3D8N nx=16 p=2 uy=nan conv=False
+TotalLagrangianQ1P0MixedElement3D8N nx=32 p=1 uy=nan conv=False
